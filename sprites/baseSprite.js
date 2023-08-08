@@ -27,3 +27,6 @@ class BaseSprite {
         // TODO: base move
     }
 }
+
+const tree = new BaseSprite({range: "5 box ok? btw circle radius right?", kill: function kill(){ if ("touchCO" == 1) {console.log("omae wa mou shindeiru.")}}});
+console.log(tree);

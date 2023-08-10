@@ -10,6 +10,6 @@ function setup() {
 }
 
 function draw() {
-    fill(0);
-    square(10,10,10)
+    fill(200);
+    square(10,10,10);
 }

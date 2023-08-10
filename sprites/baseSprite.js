@@ -25,5 +25,6 @@ class BaseSprite {
 
     _move(deltaTime) {
         // TODO: base move
+        square(0,0,10)
     }
 }

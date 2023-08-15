@@ -1,7 +1,7 @@
-const UP = keyIsDown(UP_ARROW) || keyIsDown(87)
-const RIGHT = keyIsDown(RIGHT_ARROW) || keyIsDown(68)
-const LEFT = keyIsDown(LEFT_ARROW) || keyIsDown(65)
-const DOWN = keyIsDown(DOWN_ARROW) || keyIsDown(83)
+const UP = 0;
+const RIGHT = 0;
+const LEFT = 0;
+const DOWN = 0;
 
 class Sprout extends BaseSprite {
     constructor(x, y) {
@@ -9,6 +9,10 @@ class Sprout extends BaseSprite {
     }
 
     move(deltaTime) {
+        UP = keyIsDown(UP_ARROW) || keyIsDown(87)
+        RIGHT = keyIsDown(RIGHT_ARROW) || keyIsDown(68)
+        LEFT = keyIsDown(LEFT_ARROW) || keyIsDown(65)
+        DOWN = keyIsDown(DOWN_ARROW) || keyIsDown(83)
         this._move(
             deltaTime,
             createVector(

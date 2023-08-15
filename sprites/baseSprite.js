@@ -1,3 +1,5 @@
+let vectDist;
+
 class BaseSprite {
     constructor(config) {
         this.config = config;
@@ -38,11 +40,9 @@ class BaseSprite {
     }
 
     _move(deltaTime, vector = createVector(0, 0)) {
-        // console.log("moved");
         // TODO: base move
-        // console.log(vector.x);
-        // console.log(vector.y);
-        this.x += this.speed * deltaTime * vector.x;
-        this.y += this.speed * deltaTime * vector.y;
+        vectDist = Math.sqrt(vector.x**2 + vector.y **2)
+        this.x += this.speed * deltaTime * (vectDist > vector.x ? vector.x/vectDist : vector.x);
+        this.y += this.speed * deltaTime * (vectDist > vector.y ? vector.y/vectDist : vector.y);
     }
 }

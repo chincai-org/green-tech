@@ -1,7 +1,7 @@
-const UP = 0;
-const RIGHT = 0;
-const LEFT = 0;
-const DOWN = 0;
+let UP;
+let RIGHT;
+let LEFT;
+let DOWN;
 
 class Sprout extends BaseSprite {
     constructor(x, y) {
@@ -16,8 +16,8 @@ class Sprout extends BaseSprite {
         this._move(
             deltaTime,
             createVector(
-                (RIGHT - LEFT,
-                DOWN - UP)
+                (RIGHT - LEFT),
+                (DOWN - UP)
             )
         );
     }

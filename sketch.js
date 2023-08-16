@@ -52,11 +52,11 @@ function drawGridLine() {
 
     stroke(0xffffff);
 
-    for (let i = 0; i < windowWidth / tileSize; i++) {
+    for (let i = 0; i < windowWidth / tileSize + 1; i++) {
         line(i * tileSize - cx, 0, i * tileSize - cx, windowHeight);
     }
 
-    for (let i = 0; i < windowHeight / tileSize; i++) {
+    for (let i = 0; i < windowHeight / tileSize + 1; i++) {
         line(0, i * tileSize - cy, windowWidth, i * tileSize - cy);
     }
 }

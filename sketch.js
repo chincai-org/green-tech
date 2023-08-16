@@ -1,9 +1,11 @@
 const grid = [];
 const movables = [];
 const sprout = new Sprout(100, 100);
+const tileSize = 64;
 
 let lastUpdate = Date.now();
 let deltaTime;
+let displayCoord = false;
 
 function setup() {
     console.log("hi");
@@ -21,6 +23,8 @@ function draw() {
     let now = Date.now();
     deltaTime = now - lastUpdate;
 
+    drawGridLine();
+
     sprout.update(deltaTime);
     sprout.draw();
 
@@ -32,4 +36,27 @@ function draw() {
     lastUpdate = now;
 }
 
-function keyPressed() {}
+function keyPressed() {
+    // Check if key code is CTRL
+    if (keyCode === 17) {
+        displayCoord = !displayCoord;
+    }
+}
+
+function drawGridLine() {
+    let sx = sprout.x;
+    let sy = sprout.y;
+
+    let cx = sx % tileSize;
+    let cy = sy % tileSize;
+
+    stroke(0xffffff);
+
+    for (let i = 0; i < windowWidth / tileSize; i++) {
+        line(i * tileSize - cx, 0, i * tileSize - cx, windowHeight);
+    }
+
+    for (let i = 0; i < windowHeight / tileSize; i++) {
+        line(0, i * tileSize - cy, windowWidth, i * tileSize - cy);
+    }
+}

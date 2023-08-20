@@ -79,7 +79,7 @@ function canvasClicked() {
     let tileY = Math.floor(realY / tileSize);
     console.log(tileX, tileY);
 
-    let tile = tileGrid[tileX][tileY];
+    let tile = tileGrid[tileY][tileX];
     tile.add(new Tree(0, 0));
 }
 

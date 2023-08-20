@@ -11,8 +11,9 @@ class BaseSprite {
         this.damage = config.damage;
         this.speed = config.speed;
         this.cost = config.cost;
+        this.tile = null;
 
-        console.log(config);
+        // console.log(config);
 
         // console.log(this.id);
     }
@@ -27,9 +28,13 @@ class BaseSprite {
     }
 
     draw() {
+        let distance = this.distance(sprout);
+        let drawX = windowWidth / 2 + distance.x;
+        let drawY = windowHeight / 2 + distance.y;
+
         if (this.config.color) {
             fill(this.config.color);
-            circle(this.x, this.y, 10);
+            circle(drawX, drawY, 10);
         } else {
             // TODO: draw image
         }
@@ -41,8 +46,18 @@ class BaseSprite {
 
     _move(deltaTime, vector = createVector(0, 0)) {
         // TODO: base move
-        vectDist = Math.sqrt(vector.x**2 + vector.y **2)
-        this.x += this.speed * deltaTime * (vectDist > vector.x ? vector.x/vectDist : vector.x);
-        this.y += this.speed * deltaTime * (vectDist > vector.y ? vector.y/vectDist : vector.y);
+        vectDist = Math.sqrt(vector.x ** 2 + vector.y ** 2);
+        this.x +=
+            this.speed *
+            deltaTime *
+            (vectDist > vector.x ? vector.x / vectDist : vector.x);
+        this.y +=
+            this.speed *
+            deltaTime *
+            (vectDist > vector.y ? vector.y / vectDist : vector.y);
+    }
+
+    distance(other) {
+        return createVector(this.x - other.x, this.y - other.y);
     }
 }

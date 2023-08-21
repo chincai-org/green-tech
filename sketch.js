@@ -1,7 +1,7 @@
 const grid = [];
 const movables = [];
 const sprout = new Sprout(100, 100);
-const tileSize = 64;
+const tileSize = 32;
 
 let lastUpdate = Date.now();
 let deltaTime;
@@ -41,14 +41,14 @@ function keyPressed() {
     if (keyCode === 17) {
         displayCoord = !displayCoord;
     }
-}
+    }
 
-function drawGridLine() {
-    let sx = sprout.x;
-    let sy = sprout.y;
+    function drawGridLine() {
+        let sx = sprout.x;
+        let sy = sprout.y;
 
-    let cx = sx % tileSize;
-    let cy = sy % tileSize;
+        let cx = sx % tileSize;
+        let cy = sy % tileSize;
 
     stroke(0xffffff);
 

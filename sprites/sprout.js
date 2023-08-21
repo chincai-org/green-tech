@@ -16,7 +16,7 @@ class Sprout extends BaseSprite {
         this._move(deltaTime, createVector(right - left, down - up));
     }
 
-    draw() {
+    draw() { 
         fill(this.config.color);
         circle(windowWidth / 2, windowHeight / 2, 10);
 

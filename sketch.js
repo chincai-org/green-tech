@@ -64,7 +64,7 @@ function keyPressed() {
     if (keyCode === 17) {
         displayCoord = !displayCoord;
     }
-}
+    }
 
 function canvasClicked() {
     let disX = windowWidth / 2 - mouseX;
@@ -100,8 +100,8 @@ function drawGridLine() {
     let sx = sprout.x;
     let sy = sprout.y;
 
-    let cx = sx % tileSize;
-    let cy = sy % tileSize;
+        let cx = sx % tileSize;
+        let cy = sy % tileSize;
 
     stroke(0xffffff);
 

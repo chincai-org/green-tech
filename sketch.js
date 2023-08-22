@@ -1,6 +1,6 @@
 const grid = [];
 const movables = [];
-const sprout = new Sprout(10, 10);
+const sprout = new Sprout(0, 0);
 const tileSize = 64;
 const gridWidth = 70;
 const gridHeight = 70;
@@ -64,7 +64,7 @@ function keyPressed() {
     if (keyCode === 17) {
         displayCoord = !displayCoord;
     }
-    }
+}
 
 function canvasClicked() {
     let disX = windowWidth / 2 - mouseX;
@@ -75,6 +75,8 @@ function canvasClicked() {
     console.log("🚀 ~ file: sketch.js:65 ~ canvasClicked ~ realX:", realX);
     let realY = sprout.y - disY;
     console.log("🚀 ~ file: sketch.js:67 ~ canvasClicked ~ realY:", realY);
+    console.log(Math.floor((mouseX + sprout.x) / 64), "x")
+    console.log(Math.floor((mouseY + sprout.y) / 64), "y")
     let tileX = Math.floor(realX / tileSize);
     let tileY = Math.floor(realY / tileSize);
     console.log(tileX, tileY);
@@ -99,17 +101,20 @@ function initGrid() {
 function drawGridLine() {
     let sx = sprout.x;
     let sy = sprout.y;
-
-        let cx = sx % tileSize;
-        let cy = sy % tileSize;
+    console.log(sx, sy)
+    let cx = sx //% tileSize;
+    let cy = sy //% tileSize;
+    let gx = cx - windowWidth/2;
+    let gy = cy - windowHeight/2;
+    console.log(cx, cy)
 
     stroke(0xffffff);
 
     for (let i = 0; i < windowWidth / tileSize + 1; i++) {
-        line(i * tileSize - cx, 0, i * tileSize - cx, windowHeight);
+        line(i*tileSize - gx, 0, i * tileSize - gx, windowHeight);
     }
 
     for (let i = 0; i < windowHeight / tileSize + 1; i++) {
-        line(0, i * tileSize - cy, windowWidth, i * tileSize - cy);
+        line(0, i * tileSize- gy, windowWidth, i * tileSize - gy);
     }
 }

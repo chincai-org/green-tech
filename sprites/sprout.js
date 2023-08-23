@@ -18,7 +18,7 @@ class Sprout extends BaseSprite {
 
     draw() { 
         fill(this.config.color);
-        circle(windowWidth / 2, windowHeight / 2, 10);
+        circle(windowWidth/2, windowHeight/2, 10);
 
         if (displayCoord) {
             text(

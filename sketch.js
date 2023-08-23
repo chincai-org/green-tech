@@ -101,9 +101,8 @@ function initGrid() {
 function drawGridLine() {
     let sx = sprout.x;
     let sy = sprout.y;
-    console.log(sx, sy)
-    let cx = sx //% tileSize;
-    let cy = sy //% tileSize;
+    let cx = sx;
+    let cy = sy;
     let gx = cx - windowWidth/2;
     let gy = cy - windowHeight/2;
     console.log(cx, cy)

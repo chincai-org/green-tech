@@ -16,17 +16,21 @@ class Sprout extends BaseSprite {
         this._move(deltaTime, createVector(right - left, down - up));
     }
 
-    draw() { 
+    draw() {
         fill(this.config.color);
         let cx = sprout.x;
         let cy = sprout.y;
-        if (cx < windowWidth/2) {
-            cx = windowWidth/2;
+        if (cx < windowWidth / 2) {
+            cx = windowWidth / 2;
         }
-        if (cy < windowHeight/2) {
-            cy = windowHeight/2;
+        if (cy < windowHeight / 2) {
+            cy = windowHeight / 2;
         }
-        circle(windowWidth/2 + sprout.x - cx, windowHeight/2 + sprout.y - cy, 10);
+        circle(
+            windowWidth / 2 + sprout.x - cx,
+            windowHeight / 2 + sprout.y - cy,
+            10
+        );
 
         if (displayCoord) {
             text(

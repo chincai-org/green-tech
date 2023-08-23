@@ -1,7 +1,7 @@
 const grid = [];
 const movables = [];
-const sprout = new Sprout(0, 0);
-const tileSize = 64;
+const sprout = new Sprout(500, 500);
+const tileSize = 32;
 const gridWidth = 70;
 const gridHeight = 70;
 const tileGrid = [];
@@ -103,8 +103,14 @@ function drawGridLine() {
     let sy = sprout.y;
     let cx = sx;
     let cy = sy;
-    let gx = cx - windowWidth/2;
-    let gy = cy - windowHeight/2;
+    if (sx < windowWidth/2) {
+        cx = windowWidth/2
+    }
+    if (sy < windowHeight/2) {
+        cy = windowHeight/2
+    }
+    let gx = (cx - windowWidth/2);
+    let gy = (cy - windowHeight/2);
     console.log(cx, cy)
 
     stroke(0xffffff);
@@ -114,6 +120,6 @@ function drawGridLine() {
     }
 
     for (let i = 0; i < windowHeight / tileSize + 1; i++) {
-        line(0, i * tileSize- gy, windowWidth, i * tileSize - gy);
+        line(0, i * tileSize - gy, windowWidth, i * tileSize - gy);
     }
 }

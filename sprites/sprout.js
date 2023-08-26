@@ -4,7 +4,7 @@ class Sprout extends BaseSprite {
             x,
             y,
             color: 256,
-            speed: 0.2
+            speed: window.innerWidth / 30 / (window.innerWidth / 15)
         });
     }
 
@@ -18,17 +18,21 @@ class Sprout extends BaseSprite {
 
     draw() {
         fill(this.config.color);
-        let cx = sprout.x;
-        let cy = sprout.y;
+        let cx = this.x;
+        let cy = this.y;
         if (cx < windowWidth / 2) {
             cx = windowWidth / 2;
+        } else if (this.x > gridWidth * tileSize - windowWidth / 2) {
+            cx = gridWidth * tileSize - windowWidth / 2;
         }
         if (cy < windowHeight / 2) {
             cy = windowHeight / 2;
+        } else if (this.y > gridHeight * tileSize - windowHeight / 2) {
+            cy = gridHeight * tileSize - windowHeight / 2;
         }
         circle(
-            windowWidth / 2 + sprout.x - cx,
-            windowHeight / 2 + sprout.y - cy,
+            windowWidth / 2 + this.x - cx,
+            windowHeight / 2 + this.y - cy,
             10
         );
 

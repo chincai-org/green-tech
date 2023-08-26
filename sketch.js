@@ -1,14 +1,23 @@
+const initialWinWidth = window.innerWidth;
+const initialWinHeight = window.innerHeight;
 const grid = [];
 const movables = [];
-const sprout = new Sprout(500, 500);
-const tileSize = 32;
-const gridWidth = 70;
-const gridHeight = 70;
+const sprout = new Sprout(0, 0);
+const gridWidth = 100;
+const gridHeight = 100;
 const tileGrid = [];
+let tileSize = initialWinWidth / 30;
 
 let lastUpdate = Date.now();
 let deltaTime;
 let displayCoord = false;
+
+function windowResized() {
+    console.log("resized");
+    tileSize = windowWidth / 30;
+    sprout.speed = window.innerWidth / 30 / (initialWinWidth / 15);
+    resizeCanvas(windowWidth, windowHeight);
+}
 
 function setup() {
     console.log("hi");
@@ -105,12 +114,16 @@ function drawGridLine() {
     let cy = sy;
     if (sx < windowWidth / 2) {
         cx = windowWidth / 2;
+    } else if (sx > gridWidth * tileSize - windowWidth / 2) {
+        cx = (gridWidth * tileSize - windowWidth / 2) % tileSize;
     }
     if (sy < windowHeight / 2) {
         cy = windowHeight / 2;
+    } else if (sy > gridHeight * tileSize - windowHeight / 2) {
+        cy = (gridHeight * tileSize - windowHeight / 2) % tileSize;
     }
-    let gx = cx - windowWidth / 2;
-    let gy = cy - windowHeight / 2;
+    let gx = (cx - windowWidth / 2) % tileSize;
+    let gy = (cy - windowHeight / 2) % tileSize;
     console.log(cx, cy);
 
     stroke(0xffffff);

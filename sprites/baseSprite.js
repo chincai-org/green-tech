@@ -26,7 +26,19 @@ class BaseSprite {
     }
 
     draw() {
-        let distance = this.distance(sprout);
+        let cx = sprout.x;
+        let cy = sprout.y;
+        if (sprout.x < windowWidth / 2) {
+            cx = windowWidth / 2;
+        } else if (sprout.x > gridWidth * tileSize - windowWidth / 2) {
+            cx = windowWidth / 2;
+        }
+        if (sprout.y < windowHeight / 2) {
+            cy = windowHeight / 2;
+        } else if (sprout.y > gridHeight * tileSize - windowHeight / 2) {
+            cy = windowHeight / 2;
+        }
+        let distance = this.distance(0, cx, cy);
         let drawX = windowWidth / 2 + distance.x;
         let drawY = windowHeight / 2 + distance.y;
 
@@ -55,7 +67,10 @@ class BaseSprite {
             (vectDist > vector.y ? vector.y / vectDist : vector.y);
     }
 
-    distance(other) {
-        return createVector(this.x - other.x, this.y - other.y);
+    distance(other, x, y) {
+        return createVector(
+            this.x - (other.x ? other.x : x),
+            this.y - (other.y ? other.y : y)
+        );
     }
 }

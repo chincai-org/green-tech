@@ -75,8 +75,8 @@ function canvasClicked() {
     console.log("🚀 ~ file: sketch.js:65 ~ canvasClicked ~ realX:", realX);
     let realY = sprout.y - disY;
     console.log("🚀 ~ file: sketch.js:67 ~ canvasClicked ~ realY:", realY);
-    console.log(Math.floor((mouseX + sprout.x) / 64), "x")
-    console.log(Math.floor((mouseY + sprout.y) / 64), "y")
+    console.log(Math.floor((mouseX + sprout.x) / 64), "x");
+    console.log(Math.floor((mouseY + sprout.y) / 64), "y");
     let tileX = Math.floor(realX / tileSize);
     let tileY = Math.floor(realY / tileSize);
     console.log(tileX, tileY);
@@ -103,20 +103,20 @@ function drawGridLine() {
     let sy = sprout.y;
     let cx = sx;
     let cy = sy;
-    if (sx < windowWidth/2) {
-        cx = windowWidth/2
+    if (sx < windowWidth / 2) {
+        cx = windowWidth / 2;
     }
-    if (sy < windowHeight/2) {
-        cy = windowHeight/2
+    if (sy < windowHeight / 2) {
+        cy = windowHeight / 2;
     }
-    let gx = (cx - windowWidth/2);
-    let gy = (cy - windowHeight/2);
-    console.log(cx, cy)
+    let gx = cx - windowWidth / 2;
+    let gy = cy - windowHeight / 2;
+    console.log(cx, cy);
 
     stroke(0xffffff);
 
     for (let i = 0; i < windowWidth / tileSize + 1; i++) {
-        line(i*tileSize - gx, 0, i * tileSize - gx, windowHeight);
+        line(i * tileSize - gx, 0, i * tileSize - gx, windowHeight);
     }
 
     for (let i = 0; i < windowHeight / tileSize + 1; i++) {

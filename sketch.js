@@ -39,10 +39,10 @@ function draw() {
     let now = Date.now();
     deltaTime = now - lastUpdate;
 
-    drawGridLine();
-
     sprout.update(deltaTime);
     sprout.draw();
+
+    drawGridLine();
 
     for (let movable of movables) {
         movable.update(deltaTime);

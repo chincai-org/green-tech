@@ -14,10 +14,7 @@ class Sprout extends BaseSprite {
         let up = keyIsDown(UP_ARROW) || keyIsDown(87);
         let down = keyIsDown(DOWN_ARROW) || keyIsDown(83);
         this._move(deltaTime, createVector(right - left, down - up));
-    }
 
-    draw() {
-        fill(this.config.color);
         camX = Math.max(
             Math.min(this.x, gridWidth * tileSize - windowWidth / 2),
             windowWidth / 2
@@ -26,6 +23,10 @@ class Sprout extends BaseSprite {
             Math.min(this.y, gridHeight * tileSize - windowHeight / 2),
             windowHeight / 2
         );
+    }
+
+    draw() {
+        fill(this.config.color);
 
         circle(
             windowWidth / 2 + this.x - camX,

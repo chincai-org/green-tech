@@ -26,7 +26,7 @@ class BaseSprite {
     }
 
     draw() {
-        let distance = this.distance(0, camX, camY);
+        let distance = this.distance({ x: camX, y: camY });
         let drawX = windowWidth / 2 + distance.x;
         let drawY = windowHeight / 2 + distance.y;
 
@@ -43,7 +43,6 @@ class BaseSprite {
     }
 
     _move(deltaTime, vector = createVector(0, 0)) {
-        // TODO: base move
         let vectDist = Math.hypot(vector.x, vector.y);
         this.x +=
             this.speed *
@@ -55,10 +54,7 @@ class BaseSprite {
             (vectDist > vector.y ? vector.y / vectDist : vector.y);
     }
 
-    distance(other, x, y) {
-        return createVector(
-            this.x - (other.x ? other.x : x),
-            this.y - (other.y ? other.y : y)
-        );
+    distance(other) {
+        return createVector(this.x - other.x, this.y - other.y);
     }
 }

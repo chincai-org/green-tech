@@ -36,8 +36,8 @@ class Sprout extends BaseSprite {
         if (displayCoord) {
             text(
                 `(${Math.round(this.x)}, ${Math.round(this.y)})`,
-                windowWidth / 2,
-                windowHeight / 2 - 20
+                windowWidth / 2 + this.x - camX,
+                windowHeight / 2 + this.y - camY - 20
             );
         }
     }

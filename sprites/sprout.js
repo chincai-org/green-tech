@@ -18,21 +18,18 @@ class Sprout extends BaseSprite {
 
     draw() {
         fill(this.config.color);
-        let cx = this.x;
-        let cy = this.y;
-        if (cx < windowWidth / 2) {
-            cx = windowWidth / 2;
-        } else if (this.x > gridWidth * tileSize - windowWidth / 2) {
-            cx = gridWidth * tileSize - windowWidth / 2;
-        }
-        if (cy < windowHeight / 2) {
-            cy = windowHeight / 2;
-        } else if (this.y > gridHeight * tileSize - windowHeight / 2) {
-            cy = gridHeight * tileSize - windowHeight / 2;
-        }
+        camX = Math.max(
+            Math.min(this.x, gridWidth * tileSize - windowWidth / 2),
+            windowWidth / 2
+        );
+        camY = Math.max(
+            Math.min(this.y, gridHeight * tileSize - windowHeight / 2),
+            windowHeight / 2
+        );
+
         circle(
-            windowWidth / 2 + this.x - cx,
-            windowHeight / 2 + this.y - cy,
+            windowWidth / 2 + this.x - camX,
+            windowHeight / 2 + this.y - camY,
             10
         );
 

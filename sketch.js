@@ -11,6 +11,7 @@ let tileSize = initialWinWidth / 30;
 let lastUpdate = Date.now();
 let deltaTime;
 let displayCoord = false;
+let camX, camY;
 
 function windowResized() {
     console.log("resized");

@@ -12,6 +12,7 @@ let lastUpdate = Date.now();
 let deltaTime;
 let displayCoord = false;
 let camX, camY;
+let hotkey = 0;
 
 function windowResized() {
     console.log("resized");
@@ -74,6 +75,11 @@ function keyPressed() {
     if (keyCode === 17) {
         displayCoord = !displayCoord;
     }
+    if (keyCode === 84) {
+        hotkey = 84; //t
+    } else if (keyCode === 80) {
+        hotkey = 80; //p
+    }
 }
 
 function canvasClicked() {
@@ -92,7 +98,11 @@ function canvasClicked() {
     console.log(tileX, tileY);
 
     let tile = tileGrid[tileY][tileX];
-    tile.add(new Tree(0, 0));
+    if (hotkey === 84) {
+        tile.add(new Tree(0, 0));
+    } else if (hotkey === 80) {
+        tile.add(new PoliceStation(0, 0));
+    }
 }
 
 function initGrid() {
@@ -125,7 +135,6 @@ function drawGridLine() {
     }
     let gx = (cx - windowWidth / 2) % tileSize;
     let gy = (cy - windowHeight / 2) % tileSize;
-    console.log(cx, cy);
 
     stroke(0xffffff);
 

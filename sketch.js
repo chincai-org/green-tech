@@ -50,15 +50,15 @@ function draw() {
         movable.draw();
     }
 
-    let startX = sprout.x - windowWidth / 2;
-    let startY = sprout.y - windowHeight / 2;
-    let startTileX = startX / tileSize;
-    let startTileY = startY / tileSize;
+    let startX = camX - windowWidth / 2;
+    let startY = camY - windowHeight / 2;
+    let startTileX = Math.ceil(startX / tileSize);
+    let startTileY = Math.ceil(startY / tileSize);
 
     let endX = startX + windowWidth;
     let endY = startY + windowHeight;
-    let endTileX = endX / tileSize;
-    let endTileY = endY / tileSize;
+    let endTileX = Math.ceil(endX / tileSize);
+    let endTileY = Math.ceil(endY / tileSize);
 
     for (let row of tileGrid.slice(startTileY, endTileY)) {
         for (let tile of row.slice(startTileX, endTileX)) {

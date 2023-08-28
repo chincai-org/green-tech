@@ -6,6 +6,7 @@ const sprout = new Sprout(0, 0);
 const gridWidth = 100;
 const gridHeight = 100;
 const tileGrid = [];
+const initialTileSize = initialWinWidth / 30;
 let tileSize = initialWinWidth / 30;
 
 let lastUpdate = Date.now();
@@ -79,6 +80,8 @@ function keyPressed() {
         hotkey = 84; //t
     } else if (keyCode === 80) {
         hotkey = 80; //p
+    } else if (keyCode === 76) {
+        hotkey = 76;
     }
 }
 
@@ -98,6 +101,13 @@ function canvasClicked() {
         tile.add(new Tree(0, 0));
     } else if (hotkey === 80) {
         tile.add(new PoliceStation(0, 0));
+    } else if (hotkey === 76) {
+        movables.push(
+            new Lumberjack(
+                mouseX + camX - windowWidth / 2,
+                mouseY + camY - windowHeight / 2
+            )
+        );
     }
 }
 

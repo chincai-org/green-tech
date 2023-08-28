@@ -132,7 +132,9 @@ function drawGridLine() {
     let gx = (cx - windowWidth / 2) % tileSize;
     let gy = (cy - windowHeight / 2) % tileSize;
 
+    push();
     stroke(0xffffff);
+    strokeWeight(1);
 
     for (let i = 0; i < windowWidth / tileSize + 1; i++) {
         line(i * tileSize - gx, 0, i * tileSize - gx, windowHeight);
@@ -141,4 +143,9 @@ function drawGridLine() {
     for (let i = 0; i < windowHeight / tileSize + 1; i++) {
         line(0, i * tileSize - gy, windowWidth, i * tileSize - gy);
     }
+    pop();
+}
+
+function randint(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
 }

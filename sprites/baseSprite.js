@@ -36,6 +36,17 @@ class BaseSprite {
         } else {
             // TODO: draw image
         }
+
+        if (displayCoord) {
+            push();
+            stroke(this.config.color);
+            text(
+                `(${Math.round(this.x)}, ${Math.round(this.y)})`,
+                drawX,
+                drawY - 20
+            );
+            pop();
+        }
     }
 
     _update(deltaTime) {
@@ -43,6 +54,7 @@ class BaseSprite {
     }
 
     _move(deltaTime, vector = createVector(0, 0)) {
+        if (this.color == "#40E0D0") console.log(vector);
         let vectDist = Math.hypot(vector.x, vector.y);
         this.x +=
             this.speed *

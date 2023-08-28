@@ -6,6 +6,7 @@ const sprout = new Sprout(0, 0);
 const gridWidth = 100;
 const gridHeight = 100;
 const tileGrid = [];
+const initialTileSize = initialWinWidth / 30;
 let tileSize = initialWinWidth / 30;
 
 let lastUpdate = Date.now();

@@ -27,7 +27,6 @@ class Sprout extends BaseSprite {
 
     draw() {
         fill(this.config.color);
-
         circle(
             windowWidth / 2 + this.x - camX,
             windowHeight / 2 + this.y - camY,

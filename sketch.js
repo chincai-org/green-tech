@@ -84,15 +84,11 @@ function keyPressed() {
 
 function canvasClicked() {
     let disX = windowWidth / 2 - mouseX;
-    console.log("🚀 ~ file: sketch.js:61 ~ canvasClicked ~ disX:", disX);
     let disY = windowHeight / 2 - mouseY;
-    console.log("🚀 ~ file: sketch.js:63 ~ canvasClicked ~ disY:", disY);
-    let realX = sprout.x - disX;
-    console.log("🚀 ~ file: sketch.js:65 ~ canvasClicked ~ realX:", realX);
-    let realY = sprout.y - disY;
-    console.log("🚀 ~ file: sketch.js:67 ~ canvasClicked ~ realY:", realY);
-    console.log(Math.floor((mouseX + sprout.x) / 64), "x");
-    console.log(Math.floor((mouseY + sprout.y) / 64), "y");
+
+    let realX = camX - disX;
+    let realY = camY - disY;
+
     let tileX = Math.floor(realX / tileSize);
     let tileY = Math.floor(realY / tileSize);
     console.log(tileX, tileY);

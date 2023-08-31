@@ -92,11 +92,8 @@ function canvasClicked() {
     let realX = camX - disX;
     let realY = camY - disY;
 
-    let tileX = Math.floor(realX / tileSize);
-    let tileY = Math.floor(realY / tileSize);
-    console.log(tileX, tileY);
+    let tile = getTile(realX, realY);
 
-    let tile = tileGrid[tileY][tileX];
     if (hotkey === 84) {
         tile.add(new Tree(0, 0));
     } else if (hotkey === 80) {
@@ -158,4 +155,8 @@ function drawGridLine() {
 
 function randint(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function getTile(x, y) {
+    return tileGrid[Math.floor(y / tileSize)][Math.floor(x / tileSize)];
 }

@@ -15,10 +15,14 @@ class Sprout extends BaseSprite {
         let down = keyIsDown(DOWN_ARROW) || keyIsDown(83);
         let joyX = right - left;
         let joyY = down - up;
-        if (this.checkNextStep(this.x + this.speed * joyX, this.y)) {
+        if (
+            this.checkNextStep(this.x + this.speed * joyX * deltaTime, this.y)
+        ) {
             joyX = 0;
         }
-        if (this.checkNextStep(this.x, this.y + this.speed * joyY)) {
+        if (
+            this.checkNextStep(this.x, this.y + this.speed * joyY * deltaTime)
+        ) {
             joyY = 0;
         }
         this._move(deltaTime, createVector(joyX, joyY));

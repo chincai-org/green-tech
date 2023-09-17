@@ -15,11 +15,69 @@ let displayCoord = false;
 let camX, camY;
 let hotkey = 0;
 
+var windowInnerWidth = window.innerWidth
+var windowInnerHeight = window.innerHeight
+var elementSelected = -1;
+var elementCoordinate =[];
+const numOfElement = 5;
+const numOfElementAddOne = numOfElement + 1;
+let elementImage = []; 
+var barValue = 
+[
+  {
+    "barName": "carbonEmissionBar",
+    "innerText": "Carbon Emission",
+    "display": true,
+    "min": 0,
+    "max": 1000,
+    "displayValueAndMax": true, 
+    "displayInnerText": true,
+    "value": 600,
+    "backgroundColor": "magenta",
+    "fillColor": "cyan",
+    "valueMaxColor": "black",
+    "innerTextColor": "black"
+
+  }, 
+  {
+    "barName": "carbonEmissionBar",
+    "innerText": "Carbon Emission",
+    "display": true,
+    "min": 0,
+    "max": 1000,
+    "displayValueAndMax": true, 
+    "displayInnerText": true,
+    "value": 600,
+    "backgroundColor": "magenta",
+    "fillColor": "cyan",
+    "valueMaxColor": "black",
+    "innerTextColor": "black"
+
+  },{
+    "barName": "carbonEmissionBar",
+    "innerText": "Carbon Emission",
+    "display": true,
+    "min": 0,
+    "max": 1000,
+    "displayValueAndMax": true, 
+    "displayInnerText": true,
+    "value": 600,
+    "backgroundColor": "magenta",
+    "fillColor": "cyan",
+    "valueMaxColor": "black",
+    "innerTextColor": "black"
+
+  }
+];
+
 function windowResized() {
     console.log("resized");
     tileSize = windowWidth / 30;
     sprout.speed = window.innerWidth / 30 / (initialWinWidth / 15);
     resizeCanvas(windowWidth, windowHeight);
+
+    windowInnerWidth = window.innerWidth
+    windowInnerHeight = window.innerHeight
 }
 
 function setup() {
@@ -33,6 +91,12 @@ function setup() {
     canvas.mouseClicked(canvasClicked);
 
     initGrid();
+
+    elementImage[0] = loadImage("https://placehold.co/64x64/png"); 
+    elementImage[1] = loadImage("https://placehold.co/64x65/png"); 
+    elementImage[2] = loadImage("https://placehold.co/64x66/png"); 
+    elementImage[3] = loadImage("https://placehold.co/64x67/png"); 
+    elementImage[4] = loadImage("https://placehold.co/64x68/png"); 
 }
 
 function draw() {
@@ -69,6 +133,8 @@ function draw() {
     }
 
     lastUpdate = now;
+
+    manageBox();
 }
 
 function keyPressed() {
@@ -160,3 +226,256 @@ function randint(min, max) {
 function getTile(x, y) {
     return tileGrid[Math.floor(y / tileSize)][Math.floor(x / tileSize)];
 }
+
+function manageBox() {
+    var drawBoxReturn = drawBox();
+    drawBar();
+    drawElement(drawBoxReturn[0], drawBoxReturn[1], drawBoxReturn[2], drawBoxReturn[3]);
+    mouseOverElement();
+    emphasizeSelectedElement();
+}
+
+function drawBox() {
+  var lengthOfBox = windowInnerWidth / 3;
+  var heightOfBox = windowInnerHeight / 10;
+  var xOfBox = (windowInnerWidth / 2) - (lengthOfBox / 2);
+  var yOfBox = windowInnerHeight - (windowInnerHeight / 5.9);
+  rect(xOfBox, yOfBox, lengthOfBox, heightOfBox);
+  
+  return [xOfBox, yOfBox, lengthOfBox, heightOfBox];
+}
+
+function drawElement(xob, yob, lob, hob) {
+  var lengthOfElement = lob / numOfElementAddOne
+  var heightOfElement = hob / 1.2;
+  var widthBetweenElement = (lob - (lengthOfElement * numOfElement)) / (numOfElement + 1);
+  var heightBetweenElement = (hob - heightOfElement) / 2;
+  var xOfElement = xob + widthBetweenElement;
+  var yOfElement = yob + heightBetweenElement;
+  elementCoordinate = [];
+  
+  for (var loopElement = 0; loopElement < numOfElement; loopElement = loopElement + 1) {
+    var xOfElementForLoop = xOfElement + (lengthOfElement * loopElement) + (loopElement * widthBetweenElement);
+    rect(xOfElementForLoop, yOfElement, lengthOfElement, heightOfElement);
+    image(elementImage[loopElement], xOfElementForLoop, yOfElement, lengthOfElement, heightOfElement);
+    
+    elementCoordinate.push({xOfElementForLoop, yOfElement, lengthOfElement, heightOfElement});
+  }
+}
+
+function mousePressed() {
+  for (var loopElement = 0; loopElement < numOfElement; loopElement = loopElement + 1) {
+    if ((mouseX < elementCoordinate[loopElement].xOfElementForLoop + elementCoordinate[loopElement].lengthOfElement) && (mouseX > elementCoordinate[loopElement].xOfElementForLoop) && (mouseY > elementCoordinate[loopElement].yOfElement) && (mouseY < elementCoordinate[loopElement].yOfElement + elementCoordinate[loopElement].heightOfElement)) {
+      if (elementSelected == loopElement) {
+        elementSelected = -1;
+      } else {
+
+      
+      elementSelected = loopElement;
+        console.log(loopElement);
+      }
+    } 
+  } 
+}
+
+function mouseOverElement() {
+  for (var loopElement = 0; loopElement < numOfElement; loopElement = loopElement + 1) {
+    if ((mouseX < elementCoordinate[loopElement].xOfElementForLoop + elementCoordinate[loopElement].lengthOfElement) && (mouseX > elementCoordinate[loopElement].xOfElementForLoop) && (mouseY > elementCoordinate[loopElement].yOfElement) && (mouseY < elementCoordinate[loopElement].yOfElement + elementCoordinate[loopElement].heightOfElement)) {
+      console.log(loopElement)
+      rect(elementCoordinate[loopElement].xOfElementForLoop - 10, elementCoordinate[loopElement].yOfElement - 10, elementCoordinate[loopElement].lengthOfElement + 20, elementCoordinate[loopElement].heightOfElement + 20);
+      image(elementImage[loopElement], elementCoordinate[loopElement].xOfElementForLoop - 10, elementCoordinate[loopElement].yOfElement - 10, elementCoordinate[loopElement].lengthOfElement + 20, elementCoordinate[loopElement].heightOfElement + 20);
+      
+    } 
+  } 
+}
+
+function emphasizeSelectedElement() {
+  if (elementSelected == -1) {
+    return
+  } else {
+    rect(elementCoordinate[elementSelected].xOfElementForLoop - 10, elementCoordinate[elementSelected].yOfElement - 10, elementCoordinate[elementSelected].lengthOfElement + 20, elementCoordinate[elementSelected].heightOfElement + 20);
+    
+    image(elementImage[elementSelected], elementCoordinate[elementSelected].xOfElementForLoop - 10, elementCoordinate[elementSelected].yOfElement - 10, elementCoordinate[elementSelected].lengthOfElement + 20, elementCoordinate[elementSelected].heightOfElement + 20);
+
+  }
+}
+
+function drawBar() {
+  var xOfBar = windowInnerWidth / 50;
+  var yOfBar = windowInnerHeight / 50;
+  var heightBetweenBar = windowInnerHeight / 50;
+  var lengthOfBar = windowInnerWidth / 3;
+  var heightOfBar = 10;
+  var hideBar = 0;
+  for (var loopBar = 0; loopBar < barValue.length; loopBar = loopBar + 1) {
+    if (!barValue[loopBar].display) {
+      barValue.splice(loopBar, 1);
+    }
+  }
+  for (var loopBar = 0; loopBar < barValue.length; loopBar = loopBar + 1) {
+
+    var yOfBarForLoop = yOfBar + (heightOfBar * (loopBar - hideBar)) + (heightBetweenBar * (loopBar - hideBar));
+    var lengthOfBarForLoop = (lengthOfBar / (barValue[loopBar].max - barValue[loopBar].min)) * barValue[loopBar].value;
+    fill(barValue[loopBar].backgroundColor);
+    rect(xOfBar, yOfBarForLoop, lengthOfBar, heightOfBar);
+    fill(barValue[loopBar].fillColor);
+    rect(xOfBar, yOfBarForLoop, lengthOfBarForLoop, heightOfBar);
+
+    var xOfInnerText = xOfBar + (lengthOfBar / 2);
+    var yOfInnerText = yOfBarForLoop + 9;
+    if (barValue[loopBar].displayValueAndMax) {
+      fill(barValue[loopBar].valueMaxColor);
+      text(barValue[loopBar].value + "/" + barValue[loopBar].max, xOfInnerText + 11, yOfInnerText);
+    }
+    if (barValue[loopBar].displayInnerText) {
+      fill(barValue[loopBar].innerTextColor);
+      text(barValue[loopBar].innerText, xOfBar + 2, yOfInnerText);
+    }
+  }
+  fill(250)
+}
+
+var fullScreenElement = document.documentElement;
+function openFullscreen() {
+  if (fullScreenElement.requestFullscreen) {
+    fullScreenElement.requestFullscreen();
+
+  } else if (fullScreenElement.webkitRequestFullScreen) {
+    fullScreenElement.webkitRequestFullScreen()
+  } else if (fullScreenElement.msRequestFullScreen) {
+    fullScreenElement.msRequestFullScreen();
+  }
+}
+
+function closeFullscreen() {
+  if (document.exitFullscreen) {
+    document.exitFullscreen();
+  } else if (document.webkitExitFullscreen) {
+    document.webkitExitFullScreen()
+  } else if (document.msExitFullscreen) {
+    document.msExitFullScreen();
+  }
+}
+
+function drawBox() {
+  var lengthOfBox = windowInnerWidth / 3;
+  var heightOfBox = windowInnerHeight / 10;
+  var xOfBox = (windowInnerWidth / 2) - (lengthOfBox / 2);
+  var yOfBox = windowInnerHeight - (windowInnerHeight / 5.9);
+  rect(xOfBox, yOfBox, lengthOfBox, heightOfBox);
+  
+  return [xOfBox, yOfBox, lengthOfBox, heightOfBox];
+}
+
+function drawElement(xob, yob, lob, hob) {
+  var lengthOfElement = lob / numOfElementAddOne
+  var heightOfElement = hob / 1.2;
+  var widthBetweenElement = (lob - (lengthOfElement * numOfElement)) / (numOfElement + 1);
+  var heightBetweenElement = (hob - heightOfElement) / 2;
+  var xOfElement = xob + widthBetweenElement;
+  var yOfElement = yob + heightBetweenElement;
+  elementCoordinate = [];
+  
+  for (var loopElement = 0; loopElement < numOfElement; loopElement = loopElement + 1) {
+    var xOfElementForLoop = xOfElement + (lengthOfElement * loopElement) + (loopElement * widthBetweenElement);
+    rect(xOfElementForLoop, yOfElement, lengthOfElement, heightOfElement);
+    image(elementImage[loopElement], xOfElementForLoop, yOfElement, lengthOfElement, heightOfElement);
+    
+    elementCoordinate.push({xOfElementForLoop, yOfElement, lengthOfElement, heightOfElement});
+  }
+}
+
+function mousePressed() {
+  for (var loopElement = 0; loopElement < numOfElement; loopElement = loopElement + 1) {
+    if ((mouseX < elementCoordinate[loopElement].xOfElementForLoop + elementCoordinate[loopElement].lengthOfElement) && (mouseX > elementCoordinate[loopElement].xOfElementForLoop) && (mouseY > elementCoordinate[loopElement].yOfElement) && (mouseY < elementCoordinate[loopElement].yOfElement + elementCoordinate[loopElement].heightOfElement)) {
+      if (elementSelected == loopElement) {
+        elementSelected = -1;
+      } else {
+
+      
+      elementSelected = loopElement;
+        console.log(loopElement);
+      }
+    } 
+  } 
+}
+
+function mouseOverElement() {
+  for (var loopElement = 0; loopElement < numOfElement; loopElement = loopElement + 1) {
+    if ((mouseX < elementCoordinate[loopElement].xOfElementForLoop + elementCoordinate[loopElement].lengthOfElement) && (mouseX > elementCoordinate[loopElement].xOfElementForLoop) && (mouseY > elementCoordinate[loopElement].yOfElement) && (mouseY < elementCoordinate[loopElement].yOfElement + elementCoordinate[loopElement].heightOfElement)) {
+      console.log(loopElement)
+      rect(elementCoordinate[loopElement].xOfElementForLoop - 10, elementCoordinate[loopElement].yOfElement - 10, elementCoordinate[loopElement].lengthOfElement + 20, elementCoordinate[loopElement].heightOfElement + 20);
+      image(elementImage[loopElement], elementCoordinate[loopElement].xOfElementForLoop - 10, elementCoordinate[loopElement].yOfElement - 10, elementCoordinate[loopElement].lengthOfElement + 20, elementCoordinate[loopElement].heightOfElement + 20);
+      
+    } 
+  } 
+}
+
+function emphasizeSelectedElement() {
+  if (elementSelected == -1) {
+    return
+  } else {
+    rect(elementCoordinate[elementSelected].xOfElementForLoop - 10, elementCoordinate[elementSelected].yOfElement - 10, elementCoordinate[elementSelected].lengthOfElement + 20, elementCoordinate[elementSelected].heightOfElement + 20);
+    
+    image(elementImage[elementSelected], elementCoordinate[elementSelected].xOfElementForLoop - 10, elementCoordinate[elementSelected].yOfElement - 10, elementCoordinate[elementSelected].lengthOfElement + 20, elementCoordinate[elementSelected].heightOfElement + 20);
+
+  }
+}
+
+function drawBar() {
+  var xOfBar = windowInnerWidth / 50;
+  var yOfBar = windowInnerHeight / 50;
+  var heightBetweenBar = windowInnerHeight / 50;
+  var lengthOfBar = windowInnerWidth / 3;
+  var heightOfBar = 10;
+  var hideBar = 0;
+  for (var loopBar = 0; loopBar < barValue.length; loopBar = loopBar + 1) {
+    if (!barValue[loopBar].display) {
+      barValue.splice(loopBar, 1);
+    }
+  }
+  for (var loopBar = 0; loopBar < barValue.length; loopBar = loopBar + 1) {
+
+    var yOfBarForLoop = yOfBar + (heightOfBar * (loopBar - hideBar)) + (heightBetweenBar * (loopBar - hideBar));
+    var lengthOfBarForLoop = (lengthOfBar / (barValue[loopBar].max - barValue[loopBar].min)) * barValue[loopBar].value;
+    fill(barValue[loopBar].backgroundColor);
+    rect(xOfBar, yOfBarForLoop, lengthOfBar, heightOfBar);
+    fill(barValue[loopBar].fillColor);
+    rect(xOfBar, yOfBarForLoop, lengthOfBarForLoop, heightOfBar);
+
+    var xOfInnerText = xOfBar + (lengthOfBar / 2);
+    var yOfInnerText = yOfBarForLoop + 9;
+    if (barValue[loopBar].displayValueAndMax) {
+      fill(barValue[loopBar].valueMaxColor);
+      text(barValue[loopBar].value + "/" + barValue[loopBar].max, xOfInnerText + 11, yOfInnerText);
+    }
+    if (barValue[loopBar].displayInnerText) {
+      fill(barValue[loopBar].innerTextColor);
+      text(barValue[loopBar].innerText, xOfBar + 2, yOfInnerText);
+    }
+  }
+  fill(250)
+}
+
+var fullScreenElement = document.documentElement;
+function openFullscreen() {
+  if (fullScreenElement.requestFullscreen) {
+    fullScreenElement.requestFullscreen();
+
+  } else if (fullScreenElement.webkitRequestFullScreen) {
+    fullScreenElement.webkitRequestFullScreen()
+  } else if (fullScreenElement.msRequestFullScreen) {
+    fullScreenElement.msRequestFullScreen();
+  }
+}
+
+function closeFullscreen() {
+  if (document.exitFullscreen) {
+    document.exitFullscreen();
+  } else if (document.webkitExitFullscreen) {
+    document.webkitExitFullScreen()
+  } else if (document.msExitFullscreen) {
+    document.msExitFullScreen();
+  }
+}
+

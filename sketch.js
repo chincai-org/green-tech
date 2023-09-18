@@ -151,13 +151,10 @@ function keyPressed() {
     } else if (keyCode === 69) {
         sprout.chopWood(); //chop wood
     }
-<<<<<<< HEAD
-=======
 
     if (hotkey !== oldHotkey) {
         oldHotkey = hotkey;
     }
->>>>>>> c7091641e71b6b7e6aa28800cecd3bd895f52cd3
 }
 
 function canvasClicked() {
@@ -208,10 +205,20 @@ function initGrid() {
 }
 
 function inBoundOfGrid(tileX, tileY) {
-    return tileX >= 0 && tileX < tileGrid[0].length && tileY >= 0 && tileY < tileGrid.length;
+    return (
+        tileX >= 0 &&
+        tileX < tileGrid[0].length &&
+        tileY >= 0 &&
+        tileY < tileGrid.length
+    );
 }
 function inBoundOfMap(x, y) {
-    return x >= 0 && x < tileGrid[0].length * gridWidth && y >= 0 && y < tileGrid.length * gridHeight;
+    return (
+        x >= 0 &&
+        x < tileGrid[0].length * gridWidth &&
+        y >= 0 &&
+        y < tileGrid.length * gridHeight
+    );
 }
 
 function drawGridLine() {

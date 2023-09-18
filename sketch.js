@@ -21,7 +21,7 @@ let windowInnerHeight = window.innerHeight;
 let elementCoordinate = [];
 const numOfElement = 5;
 const numOfElementAddOne = numOfElement + 1;
-let elementImage = [];
+var elementImage = [];
 let barValue = [
     {
         barName: "carbonEmissionBar",

@@ -37,10 +37,13 @@ class Sprout extends BaseSprite {
     }
 
     checkNextStep(x, y) {
-        let tile = getTile(x, y);
-        if (tile.sprite) {
+        // Cheak if next step has sprite or is out of map
+        if (!inBoundOfMap(x, y)) {
+            return true;
+        } else if (getTile(x, y).sprite) {
             return true;
         }
+        return false;
     }
 
     chopWood() {
@@ -54,8 +57,7 @@ class Sprout extends BaseSprite {
         ];
 
         for (const [adjX, adjY] of adjacentTiles) {
-            // Check if the adjacent tile is within the grid boundaries
-            if (adjX >= 0 && adjX < tileGrid[0].length && adjY >= 0 && adjY < tileGrid.length) {
+            if (inBoundOfGrid(adjX, adjY)) {
                 if (tileGrid[adjY][adjX].sprite instanceof Tree) {
                     tileGrid[adjY][adjX].remove();
                     // tree + 1

@@ -14,6 +14,7 @@ let lastUpdate = Date.now();
 let deltaTime;
 let displayCoord = false;
 let camX, camY;
+let oldHotkey = -1;
 let hotkey = -1;
 
 let windowInnerWidth = window.innerWidth;
@@ -147,9 +148,9 @@ function keyPressed() {
         hotkey = 1; // police station
     } else if (keyCode === 76) {
         hotkey = 2; // lumberjack
-    }else if (keyCode === 69) {
-      sprout.chopWood(); //chop wood
-  }
+    } else if (keyCode === 69) {
+        sprout.chopWood(); //chop wood
+    }
 }
 
 function canvasClicked() {
@@ -160,6 +161,11 @@ function canvasClicked() {
     let realY = camY - disY;
 
     let tile = getTile(realX, realY);
+
+    if (hotkey !== oldHotkey) {
+        oldHotkey = hotkey; // Fix bug where you place stuff when clicking the options
+        return;
+    }
 
     switch (hotkey) {
         case 0:

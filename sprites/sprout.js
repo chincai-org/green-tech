@@ -64,6 +64,7 @@ class Sprout extends BaseSprite {
                 }
             }
         }
+        return false;
     }
 
     draw() {

@@ -23,7 +23,7 @@ class Tile extends BaseSprite {
     }
 
     remove() {
-        if (sprite) {
+        if (this.sprite) {
             this.sprite.tile = null;
             this.sprite = null;
         }

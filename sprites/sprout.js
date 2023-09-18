@@ -43,6 +43,29 @@ class Sprout extends BaseSprite {
         }
     }
 
+    chopWood() {
+        let tileX = Math.floor(this.x / tileSize);
+        let tileY = Math.floor(this.y / tileSize);
+        const adjacentTiles = [
+            [tileX - 1, tileY],   // Left
+            [tileX + 1, tileY],   // Right
+            [tileX, tileY - 1],   // Up
+            [tileX, tileY + 1]    // Down
+        ];
+
+        for (const [adjX, adjY] of adjacentTiles) {
+            // Check if the adjacent tile is within the grid boundaries
+            if (adjX >= 0 && adjX < tileGrid[0].length && adjY >= 0 && adjY < tileGrid.length) {
+                if (tileGrid[adjY][adjX].sprite instanceof Tree) {
+                    tileGrid[adjY][adjX].remove();
+                    // tree + 1
+
+                    return true;
+                }
+            }
+        }
+    }
+
     draw() {
         fill(this.config.color);
         circle(

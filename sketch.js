@@ -147,7 +147,9 @@ function keyPressed() {
         hotkey = 1; // police station
     } else if (keyCode === 76) {
         hotkey = 2; // lumberjack
-    }
+    }else if (keyCode === 69) {
+      sprout.chopWood(); //chop wood
+  }
 }
 
 function canvasClicked() {

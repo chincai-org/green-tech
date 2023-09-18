@@ -147,9 +147,9 @@ function keyPressed() {
         hotkey = 1; // police station
     } else if (keyCode === 76) {
         hotkey = 2; // lumberjack
-    }else if (keyCode === 69) {
-      sprout.chopWood(); //chop wood
-  }
+    } else if (keyCode === 69) {
+        sprout.chopWood(); //chop wood
+    }
 }
 
 function canvasClicked() {
@@ -353,37 +353,36 @@ function drawBar() {
     let lengthOfBar = windowInnerWidth / 3;
     let heightOfBar = 10;
     let hideBar = 0;
-    for (let loopBar = 0; loopBar < barValue.length; loopBar = loopBar + 1) {
-        if (!barValue[loopBar].display) {
+    for (let [loopBar, barItem] of barValue.entries()) {
+        if (!barItem.display) {
             barValue.splice(loopBar, 1);
         }
     }
-    for (let loopBar = 0; loopBar < barValue.length; loopBar = loopBar + 1) {
+    for (let [loopBar, barItem] of barValue.entries()) {
         let yOfBarForLoop =
             yOfBar +
             heightOfBar * (loopBar - hideBar) +
             heightBetweenBar * (loopBar - hideBar);
         let lengthOfBarForLoop =
-            (lengthOfBar / (barValue[loopBar].max - barValue[loopBar].min)) *
-            barValue[loopBar].value;
-        fill(barValue[loopBar].backgroundColor);
+            (lengthOfBar / (barItem.max - barItem.min)) * barItem.value;
+        fill(barItem.backgroundColor);
         rect(xOfBar, yOfBarForLoop, lengthOfBar, heightOfBar);
-        fill(barValue[loopBar].fillColor);
+        fill(barItem.fillColor);
         rect(xOfBar, yOfBarForLoop, lengthOfBarForLoop, heightOfBar);
 
         let xOfInnerText = xOfBar + lengthOfBar / 2;
         let yOfInnerText = yOfBarForLoop + 9;
-        if (barValue[loopBar].displayValueAndMax) {
-            fill(barValue[loopBar].valueMaxColor);
+        if (barItem.displayValueAndMax) {
+            fill(barItem.valueMaxColor);
             text(
-                barValue[loopBar].value + "/" + barValue[loopBar].max,
+                barItem.value + "/" + barItem.max,
                 xOfInnerText + 11,
                 yOfInnerText
             );
         }
-        if (barValue[loopBar].displayInnerText) {
-            fill(barValue[loopBar].innerTextColor);
-            text(barValue[loopBar].innerText, xOfBar + 2, yOfInnerText);
+        if (barItem.displayInnerText) {
+            fill(barItem.innerTextColor);
+            text(barItem.innerText, xOfBar + 2, yOfInnerText);
         }
     }
     fill(250);

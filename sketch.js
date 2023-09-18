@@ -147,7 +147,9 @@ function keyPressed() {
     } else if (keyCode === 80) {
         hotkey = 80; //p
     } else if (keyCode === 76) {
-        hotkey = 76;
+        hotkey = 76; //l
+    } else if (keyCode === 69) {
+        sprout.chopWood(); //e
     }
 }
 

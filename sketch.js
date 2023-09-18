@@ -3,7 +3,7 @@ const initialWinHeight = window.innerHeight;
 const fullScreenElement = document.documentElement;
 const grid = [];
 const movables = [];
-const sprout = new Sprout(0, 0);
+const sprout = new Sprout(50, 50);
 const gridWidth = 100;
 const gridHeight = 100;
 const tileGrid = [];
@@ -14,6 +14,7 @@ let lastUpdate = Date.now();
 let deltaTime;
 let displayCoord = false;
 let camX, camY;
+let oldHotkey = -1;
 let hotkey = -1;
 
 let windowInnerWidth = window.innerWidth;
@@ -150,6 +151,13 @@ function keyPressed() {
     } else if (keyCode === 69) {
         sprout.chopWood(); //chop wood
     }
+<<<<<<< HEAD
+=======
+
+    if (hotkey !== oldHotkey) {
+        oldHotkey = hotkey;
+    }
+>>>>>>> c7091641e71b6b7e6aa28800cecd3bd895f52cd3
 }
 
 function canvasClicked() {
@@ -160,6 +168,13 @@ function canvasClicked() {
     let realY = camY - disY;
 
     let tile = getTile(realX, realY);
+
+    if (hotkey !== oldHotkey) {
+        oldHotkey = hotkey; // Stop placing stuff when clicking the options
+        return;
+    } else if (getTile(sprout.x, sprout.y) === tile) {
+        return; // Prevent place sprite in yourselve
+    }
 
     switch (hotkey) {
         case 0:
@@ -190,6 +205,13 @@ function initGrid() {
 
         tileGrid.push(row);
     }
+}
+
+function inBoundOfGrid(tileX, tileY) {
+    return tileX >= 0 && tileX < tileGrid[0].length && tileY >= 0 && tileY < tileGrid.length;
+}
+function inBoundOfMap(x, y) {
+    return x >= 0 && x < tileGrid[0].length * gridWidth && y >= 0 && y < tileGrid.length * gridHeight;
 }
 
 function drawGridLine() {

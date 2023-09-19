@@ -1,5 +1,5 @@
 /**
- * Sprite for spawning police
+ * Sprite for spawning policeeee
  * @class
  * @extends {BaseSprite}
  */

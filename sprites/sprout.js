@@ -1,5 +1,5 @@
 /**
- * The class for the player
+ * The class for the playerrrr
  * @class
  * @extends {BaseSprite}
  */

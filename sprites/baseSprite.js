@@ -1,5 +1,5 @@
 /**
- * The template of every sprite
+ * The template of every spriteee
  * @class
  */
 class BaseSprite {

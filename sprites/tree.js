@@ -1,5 +1,5 @@
 /**
- * Sprite for decreasing pollution level
+ * Sprite for decreasing pollution levellll
  * @class
  * @extends {BaseSprite}
  */

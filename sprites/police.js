@@ -1,5 +1,5 @@
 /**
- * Sprite for catching enemies
+ * Sprite for catching enemiessss
  * @class
  * @extends {BaseSprite}
  */

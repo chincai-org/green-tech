@@ -1,6 +1,6 @@
 const allUi = [];
 const allUiKey = []
-
+//e
 class Ui {
     constructor(positionX, positionY, width, height, color = "white") {
         this.positionX = positionX;

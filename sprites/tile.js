@@ -1,5 +1,5 @@
 /**
- * Sprite that literally acts as a tile
+ * Sprite that literally acts as a tileeee
  * # Warning: the x and y position is the tile coordinate, not the global coordinate
  * @class
  * @extends {BaseSprite}

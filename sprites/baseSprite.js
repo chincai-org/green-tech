@@ -1,3 +1,7 @@
+/**
+ * The template of every sprite
+ * @class
+ */
 class BaseSprite {
     constructor(config) {
         this.config = config;
@@ -16,11 +20,19 @@ class BaseSprite {
         // console.log(this.id);
     }
 
+    /**
+     * Update the sprite
+     * @param {Number} deltaTime - Time in milliseconds since last update
+     */
     update(deltaTime) {
         // console.log("update");
         this._update(deltaTime);
     }
 
+    /**
+     * @param {Number} deltaTime - Time in milliseconds since last update
+     * @param {Vector} vector - The direction to move to
+     */
     move(deltaTime, vector) {
         this._move(deltaTime, vector);
     }
@@ -49,10 +61,18 @@ class BaseSprite {
         }
     }
 
+    /**
+     * Update the sprite
+     * @param {Number} deltaTime - Time in milliseconds since last update
+     */
     _update(deltaTime) {
         this.move(deltaTime);
     }
 
+    /**
+     * @param {Number} deltaTime - Time in milliseconds since last update
+     * @param {Vector} [vector] - The direction to move to
+     */
     _move(deltaTime, vector = createVector(0, 0)) {
         if (this.color == "#40E0D0") console.log(vector);
         let vectDist = Math.hypot(vector.x, vector.y);
@@ -68,5 +88,24 @@ class BaseSprite {
 
     distance(other) {
         return createVector(this.x - other.x, this.y - other.y);
+    }
+
+    /**
+     *
+     * @param {BaseSprite} other - Another sprite to detect collision
+     * @returns {Boolean}
+     */
+    collide(other) {
+        this._collide(other);
+    }
+
+    /**
+     *
+     * @param {BaseSprite} other - Another sprite to detect collision
+     * @returns {Boolean}
+     */
+    _collide(other) {
+        // TODO: collide detecting
+        return false;
     }
 }

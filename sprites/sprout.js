@@ -1,3 +1,8 @@
+/**
+ * The class for the player
+ * @class
+ * @extends {BaseSprite}
+ */
 class Sprout extends BaseSprite {
     constructor(x, y) {
         super({
@@ -50,10 +55,10 @@ class Sprout extends BaseSprite {
         let tileX = Math.floor(this.x / tileSize);
         let tileY = Math.floor(this.y / tileSize);
         const adjacentTiles = [
-            [tileX - 1, tileY],   // Left
-            [tileX + 1, tileY],   // Right
-            [tileX, tileY - 1],   // Up
-            [tileX, tileY + 1]    // Down
+            [tileX - 1, tileY], // Left
+            [tileX + 1, tileY], // Right
+            [tileX, tileY - 1], // Up
+            [tileX, tileY + 1] // Down
         ];
 
         for (const [adjX, adjY] of adjacentTiles) {

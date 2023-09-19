@@ -1,3 +1,9 @@
+/** Type definition code here
+ * @typedef {Object} Vector
+ * @property {Number} x
+ * @property {Number} y
+ */
+
 const initialWinWidth = window.innerWidth;
 const initialWinHeight = window.innerHeight;
 const fullScreenElement = document.documentElement;
@@ -257,6 +263,12 @@ function randint(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+/**
+ *
+ * @param {number} x
+ * @param {number} y
+ * @returns {Tile}
+ */
 function getTile(x, y) {
     return tileGrid[Math.floor(y / tileSize)][Math.floor(x / tileSize)];
 }
@@ -435,4 +447,56 @@ function closeFullscreen() {
     } else if (document.msExitFullscreen) {
         document.msExitFullScreen();
     }
+}
+
+/**
+ * @typedef {Class} - Just the class
+ * @param {BaseSprite} sprite - The instance of the sprite to start from
+ * @param {Class} targetClass  - The class that you wish to find, example: Tree
+ * @returns {Array<Vector>}
+ */
+function pathFind(sprite, targetClass) {
+    const startX = sprite.x;
+    const startY = sprite.y;
+    const startTile = getTile(startX, startY);
+    const tileX = startTile.x;
+    const tileY = startTile.y;
+
+    // implement BFS
+    const queue = [[createVector(tileX, tileY)]];
+
+    while (queue.length > 0) {
+        // Check if the queue is empty
+        const currentPath = queue.shift();
+        const lastTile = currentPath.at(-1);
+
+        for (const neighbor of findNeighbour(lastTile)) {
+            const neighborTile = getTile(neighbor.x, neighbor.y);
+
+            if (neighborTile.sprite.collide(sprite)) continue;
+
+            const newPath = currentPath.concat([neighborTile]);
+
+            if (neighborTile.sprite instanceof targetClass) return newPath;
+
+            queue.push(newPath); // Add the newPath to the queue
+        }
+    }
+
+    return []; // No path found
+}
+
+function findNeighbour(vector) {
+    const { x, y } = vector;
+
+    return [
+        [x + 1, y],
+        [x - 1, y],
+        [x, y + 1],
+        [x, y - 1],
+        [x + 1, y + 1],
+        [x + 1, y - 1],
+        [x - 1, y - 1],
+        [x - 1, y + 1]
+    ].map(v => createVector(...v));
 }

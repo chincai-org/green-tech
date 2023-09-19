@@ -1,3 +1,8 @@
+/**
+ * Sprite for cutting trees
+ * @class
+ * @extends {BaseSprite}
+ */
 class Lumberjack extends BaseSprite {
     constructor(x, y) {
         super({

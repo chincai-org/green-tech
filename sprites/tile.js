@@ -1,6 +1,15 @@
+/**
+ * Sprite that literally acts as a tile
+ * # Warning: the x and y position is the tile coordinate, not the global coordinate
+ * @class
+ * @extends {BaseSprite}
+ */
 class Tile extends BaseSprite {
     constructor(x, y, sprite = null) {
         super({ x, y });
+
+        /** @type {BaseSprite} */
+        this.sprite = null;
         this.add(sprite);
     }
 
@@ -12,6 +21,10 @@ class Tile extends BaseSprite {
         this.sprite?.update(deltaTime);
     }
 
+    /**
+     *
+     * @param {BaseSprite} sprite - Sprite to add to this tile
+     */
     add(sprite) {
         this.sprite = sprite;
 

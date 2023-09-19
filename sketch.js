@@ -14,7 +14,6 @@ let lastUpdate = Date.now();
 let deltaTime;
 let displayCoord = false;
 let camX, camY;
-let oldHotkey = -1;
 let hotkey = -1;
 
 let windowInnerWidth = window.innerWidth;
@@ -25,7 +24,7 @@ const numOfElementAddOne = numOfElement + 1;
 let elementImage = [];
 let infoBoxOpen = false;
 let infoBoxIndicator = [];
-let barValue = [ 
+let barValue = [
     {
         barName: "carbonEmissionBar",
         innerText: "Carbon Emission",
@@ -72,7 +71,6 @@ let barValue = [
 
 
 function windowResized() {
-    console.log("resized");
     tileSize = windowWidth / 30;
     sprout.speed = window.innerWidth / 30 / (initialWinWidth / 15);
     resizeCanvas(windowWidth, windowHeight);
@@ -82,7 +80,6 @@ function windowResized() {
 }
 
 function setup() {
-    console.log("hi");
     let canvas = createCanvas(windowWidth, windowHeight);
     canvas.style("position", "fixed");
     canvas.style("top", "0");
@@ -155,10 +152,6 @@ function keyPressed() {
     } else if (keyCode === 69) {
         sprout.chopWood(); //chop wood
     }
-
-    if (hotkey !== oldHotkey) {
-        oldHotkey = hotkey;
-    }
 }
 
 function canvasClicked() {
@@ -170,8 +163,7 @@ function canvasClicked() {
 
     let tile = getTile(realX, realY);
 
-    if (hotkey !== oldHotkey) {
-        oldHotkey = hotkey; // Stop placing stuff when clicking the options
+    if (isMouseOnAnyUi()) {
         return;
     } else if (getTile(sprout.x, sprout.y) === tile) {
         return; // Prevent place sprite in yourselve
@@ -277,7 +269,7 @@ function drawBox() {
     let heightOfBox = windowInnerHeight / 10;
     let xOfBox = windowInnerWidth / 2 - lengthOfBox / 2;
     let yOfBox = windowInnerHeight - windowInnerHeight / 5.9;
-    rect(xOfBox, yOfBox, lengthOfBox, heightOfBox);
+    new Ui(xOfBox, yOfBox, lengthOfBox, heightOfBox)
 
     return [xOfBox, yOfBox, lengthOfBox, heightOfBox];
 }
@@ -295,7 +287,7 @@ function drawElement(xob, yob, lob, hob) {
     for (let index = 0; index < numOfElement; index = index + 1) {
         let xOfElementForLoop =
             xOfElement + lengthOfElement * index + index * widthBetweenElement;
-        rect(xOfElementForLoop, yOfElement, lengthOfElement, heightOfElement);
+        new Ui(xOfElementForLoop, yOfElement, lengthOfElement, heightOfElement)
         image(
             elementImage[index],
             xOfElementForLoop,
@@ -315,27 +307,16 @@ function drawElement(xob, yob, lob, hob) {
 
 function mousePressed() {
     for (let [index, element] of elementCoordinate.entries()) {
-        if (
-            mouseX < element.xOfElementForLoop + element.lengthOfElement &&
-            mouseX > element.xOfElementForLoop &&
-            mouseY > element.yOfElement &&
-            mouseY < element.yOfElement + element.heightOfElement
-        ) {
+        if (isMouseOver(element.xOfElementForLoop, element.yOfElement, element.lengthOfElement, element.heightOfElement)) {
             if (hotkey == index) {
                 hotkey = -1;
             } else {
                 hotkey = index;
-                console.log(index);
             }
         }
     }
 
-    if (
-        mouseX < infoBoxIndicator[0] + infoBoxIndicator[2] &&
-        mouseX > infoBoxIndicator[0] &&
-        mouseY > infoBoxIndicator[1] &&
-        mouseY < infoBoxIndicator[1] + infoBoxIndicator[3]
-    ) {
+    if (isMouseOver(infoBoxIndicator[0], infoBoxIndicator[1], infoBoxIndicator[2], infoBoxIndicator[3])) {
         if (infoBoxOpen) {
             infoBoxOpen = false;
         } else {
@@ -346,14 +327,9 @@ function mousePressed() {
 
 function mouseOverElement() {
     for (let [index, element] of elementCoordinate.entries()) {
-        if (
-            mouseX < element.xOfElementForLoop + element.lengthOfElement &&
-            mouseX > element.xOfElementForLoop &&
-            mouseY > element.yOfElement &&
-            mouseY < element.yOfElement + element.heightOfElement
-        ) {
+        if (isMouseOver(element.xOfElementForLoop, element.yOfElement, element.lengthOfElement, element.heightOfElement)) {
             console.log(index);
-            rect(
+            new Ui(
                 element.xOfElementForLoop - 10,
                 element.yOfElement - 10,
                 element.lengthOfElement + 20,
@@ -368,6 +344,15 @@ function mouseOverElement() {
             );
         }
     }
+}
+
+function isMouseOver(positionX, positionY, width, height) {
+    return (
+        mouseX < positionX + width &&
+        mouseX > positionX &&
+        mouseY > positionY &&
+        mouseY < positionY + height
+    );
 }
 
 function emphasizeSelectedElement() {
@@ -411,10 +396,9 @@ function drawBar() {
             heightBetweenBar * (loopBar - hideBar);
         let lengthOfBarForLoop =
             (lengthOfBar / (barItem.max - barItem.min)) * barItem.value;
-        fill(barItem.backgroundColor);
-        rect(xOfBar, yOfBarForLoop, lengthOfBar, heightOfBar);
-        fill(barItem.fillColor);
-        rect(xOfBar, yOfBarForLoop, lengthOfBarForLoop, heightOfBar);
+
+        new Ui(xOfBar, yOfBarForLoop, lengthOfBar, heightOfBar, barItem.backgroundColor);
+        new Ui(xOfBar, yOfBarForLoop, lengthOfBarForLoop, heightOfBar, barItem.fillColor);
 
         let xOfInnerText = xOfBar + lengthOfBar / 2;
         let yOfInnerText = yOfBarForLoop + 9;
@@ -466,17 +450,16 @@ function manageInfoBox() {
     } else {
         xOfBoxForLoop = xOfBox + wOfBox;
     }
-    fill(250); 
-    rect(xOfBoxForLoop, yOfBox, wOfBox, hOfBox);
+    new Ui(xOfBoxForLoop, yOfBox, wOfBox, hOfBox, 250)
     let xOfIndicator = xOfBoxForLoop - wOfBox / 10;
     let yOfIndicator = (windowInnerHeight / 2) - ((hOfBox / 10) / 2);
     let wOfIndicator = wOfBox / 10;
     let hOfIndicator = hOfBox / 10;
-    rect(xOfIndicator, yOfIndicator, wOfIndicator, hOfIndicator);
+    new Ui(xOfIndicator, yOfIndicator, wOfIndicator, hOfIndicator, 250)
     infoBoxIndicator = [xOfIndicator, yOfIndicator, wOfIndicator, hOfIndicator]
-    
-    
-    
+
+
+
 
 
 }

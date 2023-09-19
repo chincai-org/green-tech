@@ -15,6 +15,7 @@ const gridHeight = 100;
 const tileGrid = [];
 const initialTileSize = initialWinWidth / 30;
 let tileSize = initialWinWidth / 30;
+let song;
 
 let lastUpdate = Date.now();
 let deltaTime;
@@ -84,6 +85,11 @@ function windowResized() {
     windowInnerHeight = window.innerHeight;
 }
 
+function preload() {
+    soundFormats("ogg", "wav");
+    song = loadSound("bestmusic.wav");
+}
+
 function setup() {
     let canvas = createCanvas(windowWidth, windowHeight);
     canvas.style("position", "fixed");
@@ -102,6 +108,7 @@ function setup() {
         loadImage("https://placehold.co/64x67/png"),
         loadImage("https://placehold.co/64x68/png")
     ];
+    bgsong();
 }
 
 function draw() {
@@ -141,6 +148,10 @@ function draw() {
 
     manageBox();
     manageInfoBox();
+}
+
+function bgsong() {
+    song.loop();
 }
 
 function keyPressed() {
@@ -280,7 +291,7 @@ function drawBox() {
     let heightOfBox = windowInnerHeight / 10;
     let xOfBox = windowInnerWidth / 2 - lengthOfBox / 2;
     let yOfBox = windowInnerHeight - windowInnerHeight / 5.9;
-    new Ui(xOfBox, yOfBox, lengthOfBox, heightOfBox)
+    new Ui(xOfBox, yOfBox, lengthOfBox, heightOfBox);
 
     return [xOfBox, yOfBox, lengthOfBox, heightOfBox];
 }
@@ -298,7 +309,7 @@ function drawElement(xob, yob, lob, hob) {
     for (let index = 0; index < numOfElement; index = index + 1) {
         let xOfElementForLoop =
             xOfElement + lengthOfElement * index + index * widthBetweenElement;
-        new Ui(xOfElementForLoop, yOfElement, lengthOfElement, heightOfElement)
+        new Ui(xOfElementForLoop, yOfElement, lengthOfElement, heightOfElement);
         image(
             elementImage[index],
             xOfElementForLoop,
@@ -318,7 +329,14 @@ function drawElement(xob, yob, lob, hob) {
 
 function mousePressed() {
     for (let [index, element] of elementCoordinate.entries()) {
-        if (isMouseOver(element.xOfElementForLoop, element.yOfElement, element.lengthOfElement, element.heightOfElement)) {
+        if (
+            isMouseOver(
+                element.xOfElementForLoop,
+                element.yOfElement,
+                element.lengthOfElement,
+                element.heightOfElement
+            )
+        ) {
             if (hotkey == index) {
                 hotkey = -1;
             } else {
@@ -327,7 +345,14 @@ function mousePressed() {
         }
     }
 
-    if (isMouseOver(infoBoxIndicator[0], infoBoxIndicator[1], infoBoxIndicator[2], infoBoxIndicator[3])) {
+    if (
+        isMouseOver(
+            infoBoxIndicator[0],
+            infoBoxIndicator[1],
+            infoBoxIndicator[2],
+            infoBoxIndicator[3]
+        )
+    ) {
         if (infoBoxOpen) {
             infoBoxOpen = false;
             unregisterUi("infoBox");
@@ -339,7 +364,14 @@ function mousePressed() {
 
 function mouseOverElement() {
     for (let [index, element] of elementCoordinate.entries()) {
-        if (isMouseOver(element.xOfElementForLoop, element.yOfElement, element.lengthOfElement, element.heightOfElement)) {
+        if (
+            isMouseOver(
+                element.xOfElementForLoop,
+                element.yOfElement,
+                element.lengthOfElement,
+                element.heightOfElement
+            )
+        ) {
             console.log(index);
             new Ui(
                 element.xOfElementForLoop - 10,
@@ -409,8 +441,20 @@ function drawBar() {
         let lengthOfBarForLoop =
             (lengthOfBar / (barItem.max - barItem.min)) * barItem.value;
 
-        new Ui(xOfBar, yOfBarForLoop, lengthOfBar, heightOfBar, barItem.backgroundColor);
-        new Ui(xOfBar, yOfBarForLoop, lengthOfBarForLoop, heightOfBar, barItem.fillColor);
+        new Ui(
+            xOfBar,
+            yOfBarForLoop,
+            lengthOfBar,
+            heightOfBar,
+            barItem.backgroundColor
+        );
+        new Ui(
+            xOfBar,
+            yOfBarForLoop,
+            lengthOfBarForLoop,
+            heightOfBar,
+            barItem.fillColor
+        );
 
         let xOfInnerText = xOfBar + lengthOfBar / 2;
         let yOfInnerText = yOfBarForLoop + 9;
@@ -461,15 +505,15 @@ function manageInfoBox() {
     } else {
         xOfBoxForLoop = xOfBox + wOfBox;
     }
-    new Ui(xOfBoxForLoop, yOfBox, wOfBox, hOfBox, 250, "infoBox")
+    new Ui(xOfBoxForLoop, yOfBox, wOfBox, hOfBox, 250, "infoBox");
 
     let xOfIndicator = xOfBoxForLoop - wOfBox / 10;
     let yOfIndicator = windowInnerHeight / 2 - hOfBox / 10 / 2;
     let wOfIndicator = wOfBox / 10;
     let hOfIndicator = hOfBox / 10;
-    new Ui(xOfIndicator, yOfIndicator, wOfIndicator, hOfIndicator, 250, "infoBox")
+    new Ui(xOfIndicator, yOfIndicator, wOfIndicator, hOfIndicator, 250, "infoBox");
     infoBoxIndicator = [xOfIndicator, yOfIndicator, wOfIndicator, hOfIndicator];
-
+    
 }
 
 /**
@@ -523,4 +567,3 @@ function findNeighbour(vector) {
         [x - 1, y + 1]
     ].map(v => createVector(...v));
 }
-

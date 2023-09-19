@@ -23,6 +23,9 @@ let displayCoord = false;
 let camX, camY;
 let hotkey = -1;
 
+let resource = 0;
+let energy = 1000;
+
 let windowInnerWidth = window.innerWidth;
 let windowInnerHeight = window.innerHeight;
 let elementCoordinate = [];
@@ -121,6 +124,7 @@ function draw() {
     sprout.draw();
 
     drawGridLine();
+    drawText();
 
     for (let movable of movables) {
         movable.update(deltaTime);
@@ -159,14 +163,22 @@ function keyPressed() {
     if (keyCode === 17) {
         displayCoord = !displayCoord;
     }
-    if (keyCode === 84) {
-        hotkey = 0; // tree
-    } else if (keyCode === 80) {
-        hotkey = 1; // police station
-    } else if (keyCode === 76) {
-        hotkey = 2; // lumberjack
-    } else if (keyCode === 69) {
-        sprout.chopWood(); //chop wood
+
+    switch (keyCode) {
+        case 84:
+            hotkey = 0; // tree
+            break;
+        case 80:
+            hotkey = 1; // police station
+            break;
+        case 76:
+            hotkey = 2; // lumberjack
+            break;
+        case 69:
+            sprout.chopWood(); //chop wood
+            break;
+        case 107:
+            resource += 100;
     }
 }
 
@@ -263,6 +275,14 @@ function drawGridLine() {
         line(0, i * tileSize - gy, windowWidth, i * tileSize - gy);
     }
     pop();
+}
+
+function drawText() {
+    virtualEdit(() => {
+        stroke("#f5f5dc");
+        textSize(20);
+        text(`Resource: ${resource}`, windowWidth / 2, 20);
+    });
 }
 
 function randint(min, max) {
@@ -551,6 +571,11 @@ function pathFind(sprite, targetClass) {
     return []; // No path found
 }
 
+/**
+ *
+ * @param {Vector} vector - coordinate of the tile
+ * @returns {Array<Vector>} - all the neighbour of the tile
+ */
 function findNeighbour(vector) {
     const { x, y } = vector;
 
@@ -564,4 +589,14 @@ function findNeighbour(vector) {
         [x - 1, y - 1],
         [x - 1, y + 1]
     ].map(v => createVector(...v));
+}
+
+/**
+ *
+ * @param {CallableFunction} callable
+ */
+function virtualEdit(callable) {
+    push();
+    callable();
+    pop();
 }

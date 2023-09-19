@@ -29,6 +29,8 @@ let elementCoordinate = [];
 const numOfElement = 5;
 const numOfElementAddOne = numOfElement + 1;
 let elementImage = [];
+let infoBoxOpen = false;
+let infoBoxIndicator = [];
 let barValue = [
     {
         barName: "carbonEmissionBar",
@@ -141,6 +143,7 @@ function draw() {
     lastUpdate = now;
 
     manageBox();
+    manageInfoBox();
 }
 
 function keyPressed() {
@@ -337,6 +340,19 @@ function mousePressed() {
             }
         }
     }
+
+    if (
+        mouseX < infoBoxIndicator[0] + infoBoxIndicator[2] &&
+        mouseX > infoBoxIndicator[0] &&
+        mouseY > infoBoxIndicator[1] &&
+        mouseY < infoBoxIndicator[1] + infoBoxIndicator[3]
+    ) {
+        if (infoBoxOpen) {
+            infoBoxOpen = false;
+        } else {
+            infoBoxOpen = true;
+        }
+    }
 }
 
 function mouseOverElement() {
@@ -447,6 +463,27 @@ function closeFullscreen() {
     } else if (document.msExitFullscreen) {
         document.msExitFullScreen();
     }
+}
+
+function manageInfoBox() {
+    let wOfBox = windowInnerWidth / 5;
+    let hOfBox = windowInnerHeight / 1.25;
+    let xOfBox = windowInnerWidth - wOfBox;
+    let yOfBox = windowInnerHeight / 2 - hOfBox / 2;
+    let xOfBoxForLoop;
+    if (infoBoxOpen) {
+        xOfBoxForLoop = xOfBox;
+    } else {
+        xOfBoxForLoop = xOfBox + wOfBox;
+    }
+    fill(250);
+    rect(xOfBoxForLoop, yOfBox, wOfBox, hOfBox);
+    let xOfIndicator = xOfBoxForLoop - wOfBox / 10;
+    let yOfIndicator = windowInnerHeight / 2 - hOfBox / 10 / 2;
+    let wOfIndicator = wOfBox / 10;
+    let hOfIndicator = hOfBox / 10;
+    rect(xOfIndicator, yOfIndicator, wOfIndicator, hOfIndicator);
+    infoBoxIndicator = [xOfIndicator, yOfIndicator, wOfIndicator, hOfIndicator];
 }
 
 /**

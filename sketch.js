@@ -330,6 +330,7 @@ function mousePressed() {
     if (isMouseOver(infoBoxIndicator[0], infoBoxIndicator[1], infoBoxIndicator[2], infoBoxIndicator[3])) {
         if (infoBoxOpen) {
             infoBoxOpen = false;
+            unregisterUi("infoBox");
         } else {
             infoBoxOpen = true;
         }
@@ -460,15 +461,15 @@ function manageInfoBox() {
     } else {
         xOfBoxForLoop = xOfBox + wOfBox;
     }
-    new Ui(xOfBoxForLoop, yOfBox, wOfBox, hOfBox, 250)
+    new Ui(xOfBoxForLoop, yOfBox, wOfBox, hOfBox, 250, "infoBox")
 
     let xOfIndicator = xOfBoxForLoop - wOfBox / 10;
     let yOfIndicator = windowInnerHeight / 2 - hOfBox / 10 / 2;
     let wOfIndicator = wOfBox / 10;
     let hOfIndicator = hOfBox / 10;
-    new Ui(xOfIndicator, yOfIndicator, wOfIndicator, hOfIndicator, 250)
+    new Ui(xOfIndicator, yOfIndicator, wOfIndicator, hOfIndicator, 250, "infoBox")
     infoBoxIndicator = [xOfIndicator, yOfIndicator, wOfIndicator, hOfIndicator];
-    
+
 }
 
 /**

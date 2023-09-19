@@ -1,17 +1,17 @@
-const allUi = [];
-const allUiKey = []
+let allUi = [];
 
 class Ui {
-    constructor(positionX, positionY, width, height, color = "white") {
+    constructor(positionX, positionY, width, height, color = "white", tag = "") {
         this.positionX = positionX;
         this.positionY = positionY;
         this.width = width;
         this.height = height;
         this.color = color;
+        this.tag = tag;
 
         this.key = this.getKey();
 
-        if (!allUiKey.includes(this.key)) {
+        if (!allUi.some(ui => ui.key === this.key)) {
             this.register();
         }
 
@@ -25,7 +25,6 @@ class Ui {
 
 
     register() {
-        allUiKey.push(this.key);
         allUi.push(this);
     }
 
@@ -37,7 +36,13 @@ class Ui {
     //TODO: text
 }
 
+function unregisterUi(tag) {
+    uiToUnregister = allUi.find(ui => ui.tag === tag);
+    allUi = allUi.filter(ui => ui.tag !== tag);
+}
+
 function isMouseOnAnyUi() {
+    console.log(allUi.length);
     return allUi.some(ui =>
         mouseX < ui.positionX + ui.width &&
         mouseX > ui.positionX &&

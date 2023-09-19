@@ -87,7 +87,7 @@ function windowResized() {
 
 function preload() {
     soundFormats("ogg", "wav");
-    song = loadSound("rickroll.wav");
+    song = loadSound("bestmusic.wav");
 }
 
 function setup() {

@@ -313,7 +313,7 @@ function drawBox() {
     let heightOfBox = windowInnerHeight / 10;
     let xOfBox = windowInnerWidth / 2 - lengthOfBox / 2;
     let yOfBox = windowInnerHeight - windowInnerHeight / 5.9;
-    let Box = getUIByTag("box");
+    let Box = getUiByTag("box");
     Box.positionX = xOfBox;
     Box.positionY = yOfBox;
     Box.width = lengthOfBox;
@@ -335,18 +335,18 @@ function drawElement(xob, yob, lob, hob) {
     for (let index = 0; index < numOfElement; index = index + 1) {
         let xOfElementForLoop =
             xOfElement + lengthOfElement * index + index * widthBetweenElement;
-        let element = getUIByTag(index.toString());
+        let element = getUiByTag("element" + index.toString());
         element.positionX = xOfElementForLoop;
         element.positionY = yOfElement;
         element.width = lengthOfElement;
         element.height = heightOfElement;
-        image(
-            elementImage[index],
-            xOfElementForLoop,
-            yOfElement,
-            lengthOfElement,
-            heightOfElement
-        );
+
+        let elementImg = getUiByTag("elementImg" + index.toString());
+        elementImg.img = elementImage[index];
+        elementImg.positionX = xOfElementForLoop;
+        elementImg.positionY = yOfElement;
+        elementImg.width = lengthOfElement;
+        elementImg.height = heightOfElement;
 
         elementCoordinate.push({
             xOfElementForLoop,
@@ -401,18 +401,18 @@ function mouseOverElement() {
                 element.heightOfElement
             )
         ) {
-            let _element = getUIByTag(index.toString());
-            _element.positionX = element.xOfElementForLoop;
-            _element.positionY = element.yOfElement;
-            _element.width = element.lengthOfElement;
-            _element.height = element.heightOfElement;
-            image(
-                elementImage[index],
-                element.xOfElementForLoop - 10,
-                element.yOfElement - 10,
-                element.lengthOfElement + 20,
-                element.heightOfElement + 20
-            );
+            let elementUi = getUiByTag("element" + index.toString());
+            elementUi.positionX = element.xOfElementForLoop;
+            elementUi.positionY = element.yOfElement;
+            elementUi.width = element.lengthOfElement;
+            elementUi.height = element.heightOfElement;
+
+
+            let elementImg = getUiByTag("elementImg" + index.toString());
+            elementImg.positionX = element.xOfElementForLoop - 10;
+            elementImg.positionY = element.yOfElement - 10;
+            elementImg.width = element.lengthOfElement + 20;
+            elementImg.height = element.heightOfElement + 20;
         }
     }
 }
@@ -431,20 +431,21 @@ function emphasizeSelectedElement() {
         return;
     } else {
         const element = elementCoordinate[hotkey];
-        rect(
-            element.xOfElementForLoop - 10,
-            element.yOfElement - 10,
-            element.lengthOfElement + 20,
-            element.heightOfElement + 20
-        );
 
-        image(
-            elementImage[hotkey],
-            element.xOfElementForLoop - 10,
-            element.yOfElement - 10,
-            element.lengthOfElement + 20,
-            element.heightOfElement + 20
-        );
+        let elementUi = getUiByTag("element" + (hotkey).toString());
+
+        elementUi.positionX = element.xOfElementForLoop - 10;
+        elementUi.positionY = element.yOfElement - 10;
+        elementUi.width = element.lengthOfElement + 20;
+        elementUi.height = element.heightOfElement + 20;
+
+        let elementImg = getUiByTag("elementImg" + (hotkey).toString());
+
+        elementImg.positionX = element.xOfElementForLoop - 10;
+        elementImg.positionY = element.yOfElement - 10;
+        elementImg.width = element.lengthOfElement + 20;
+        elementImg.height = element.heightOfElement + 20;
+
     }
 }
 
@@ -468,14 +469,14 @@ function drawBar() {
         let lengthOfBarForLoop =
             (lengthOfBar / (barItem.max - barItem.min)) * barItem.value;
 
-        let barPart1 = getUIByTag("bar" + loopBar.toString() + "1");
+        let barPart1 = getUiByTag("bar" + loopBar.toString() + "1");
         barPart1.positionX = xOfBar;
         barPart1.positionY = yOfBarForLoop;
         barPart1.width = lengthOfBar;
         barPart1.height = heightOfBar;
         barPart1.color = barItem.backgroundColor;
 
-        let barPart2 = getUIByTag("bar" + loopBar.toString() + "2");
+        let barPart2 = getUiByTag("bar" + loopBar.toString() + "2");
         barPart2.positionX = xOfBar;
         barPart2.positionY = yOfBarForLoop;
         barPart2.width = lengthOfBarForLoop;
@@ -532,7 +533,7 @@ function manageInfoBox() {
         xOfBoxForLoop = xOfBox + wOfBox;
     }
 
-    let infoBox = getUIByTag("infoBox");
+    let infoBox = getUiByTag("infoBox");
     infoBox.positionX = xOfBoxForLoop;
     infoBox.positionY = yOfBox;
     infoBox.width = wOfBox;
@@ -544,7 +545,7 @@ function manageInfoBox() {
     let wOfIndicator = wOfBox / 10;
     let hOfIndicator = hOfBox / 10;
 
-    let indicator = getUIByTag("indicator");
+    let indicator = getUiByTag("indicator");
     indicator.positionX = xOfIndicator;
     indicator.positionY = yOfIndicator;
     indicator.width = wOfIndicator;

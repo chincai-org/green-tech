@@ -1,6 +1,6 @@
 const allUi = [];
-const allUiKey = []
-
+const allUiKey = [];
+//test
 class Ui {
     constructor(positionX, positionY, width, height, color = "white") {
         this.positionX = positionX;
@@ -23,7 +23,6 @@ class Ui {
         return `${this.positionX}_${this.positionY}_${this.width}_${this.height}_${this.color}`;
     }
 
-
     register() {
         allUiKey.push(this.key);
         allUi.push(this);
@@ -38,10 +37,11 @@ class Ui {
 }
 
 function isMouseOnAnyUi() {
-    return allUi.some(ui =>
-        mouseX < ui.positionX + ui.width &&
-        mouseX > ui.positionX &&
-        mouseY > ui.positionY &&
-        mouseY < ui.positionY + ui.height
+    return allUi.some(
+        ui =>
+            mouseX < ui.positionX + ui.width &&
+            mouseX > ui.positionX &&
+            mouseY > ui.positionY &&
+            mouseY < ui.positionY + ui.height
     );
 }

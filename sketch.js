@@ -1,4 +1,4 @@
-/** Type definition code here
+/** Type definition code heree
  * @typedef {Object} Vector
  * @property {Number} x
  * @property {Number} y

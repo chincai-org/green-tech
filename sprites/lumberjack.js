@@ -16,7 +16,8 @@ class Lumberjack extends BaseSprite {
     _update(deltaTime) {
         this.move(
             deltaTime,
-            createVector(sprout.x - this.x, sprout.y - this.y)
+            pathFind(this, Tree, Sprout)
+            // createVector(sprout.x - this.x, sprout.y - this.y)
         );
     }
 }

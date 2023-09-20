@@ -68,11 +68,12 @@ function drawAllUi() {
 }
 
 function initUi() {
-    let tempImg = loadImage("https://placehold.co/64x64/png");
+    let tempImg64x64 = loadImage("https://placehold.co/64x64/png");
+    let tempImg600x350 = loadImage("https://placehold.co/600x350/png");
     new RectUi(0, 0, 1, 1, "white", "box");
     for (let index = 0; index < numOfElement; index = index + 1) {
         new RectUi(0, 0, 1, 1, "white", "element" + index.toString());
-        new ImgUi(tempImg, 0, 0, 1, 1, "elementImg" + index.toString());
+        new ImgUi(tempImg64x64, 0, 0, 1, 1, "elementImg" + index.toString());
     }
 
 
@@ -83,6 +84,9 @@ function initUi() {
 
     new RectUi(0, 0, 1, 1, 250, "indicator");
     new RectUi(0, 0, 1, 1, 250, "infoBox");
+
+    new RectUi(0, 0, 1, 1, 250, "infoBoxElementBigImageBox");
+    new ImgUi(tempImg600x350, 0, 1, 1, 1, "infoBoxElementBigImageBoxImg"); 
 }
 
 /*

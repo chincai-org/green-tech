@@ -109,7 +109,8 @@ function setup() {
         loadImage("https://placehold.co/64x65/png"),
         loadImage("https://placehold.co/64x66/png"),
         loadImage("https://placehold.co/64x67/png"),
-        loadImage("https://placehold.co/64x68/png")
+        loadImage("https://placehold.co/64x68/png"),
+        loadImage("https://placehold.co/600x350/png")
     ];
     bgsong();
 }
@@ -552,6 +553,24 @@ function manageInfoBox() {
     indicator.height = hOfIndicator;
     indicator.color = 250;
     infoBoxIndicator = [xOfIndicator, yOfIndicator, wOfIndicator, hOfIndicator];
+
+    let wOfBoxElementBox = wOfBox / 1.5;
+    let hOfBoxElementBox = hOfBox / 4.5 ;
+    let xOfBoxElementBox = (xOfBoxForLoop + (wOfBox / 2)) - (wOfBoxElementBox / 2);
+    let yOfBoxElementBox = yOfBox + 20;
+
+    let infoBoxElementBox = getUiByTag("infoBoxElementBigImageBox");
+    infoBoxElementBox.positionX = xOfBoxElementBox;
+    infoBoxElementBox.positionY = yOfBoxElementBox;
+    infoBoxElementBox.width = wOfBoxElementBox;
+    infoBoxElementBox.height = hOfBoxElementBox;
+
+    let infoBoxElementBoxImg = getUiByTag("infoBoxElementBigImageBoxImg");
+    infoBoxElementBoxImg.img = elementImage[5];
+    infoBoxElementBoxImg.positionX = xOfBoxElementBox
+    infoBoxElementBoxImg.positionY = yOfBoxElementBox;
+    infoBoxElementBoxImg.width = wOfBoxElementBox;
+    infoBoxElementBoxImg.height = hOfBoxElementBox;
 }
 
 /**

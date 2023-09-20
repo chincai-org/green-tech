@@ -66,6 +66,7 @@ class Sprout extends BaseSprite {
                 if (tileGrid[adjY][adjX].sprite instanceof Tree) {
                     tileGrid[adjY][adjX].remove();
                     // tree + 1
+                    resource += 1;
 
                     return true;
                 }

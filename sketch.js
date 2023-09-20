@@ -103,6 +103,7 @@ function setup() {
     canvas.mouseClicked(canvasClicked);
 
     initGrid();
+    initUi();
 
     elementImage = [
         loadImage("https://placehold.co/64x64/png"),
@@ -149,6 +150,8 @@ function draw() {
     }
 
     lastUpdate = now;
+
+    drawAllUi();
 
     manageBox();
     manageInfoBox();
@@ -311,7 +314,11 @@ function drawBox() {
     let heightOfBox = windowInnerHeight / 10;
     let xOfBox = windowInnerWidth / 2 - lengthOfBox / 2;
     let yOfBox = windowInnerHeight - windowInnerHeight / 5.9;
-    new Ui(xOfBox, yOfBox, lengthOfBox, heightOfBox);
+    let Box = getUIByTag("box");
+    Box.positionX = xOfBox;
+    Box.positionY = yOfBox;
+    Box.width = lengthOfBox;
+    Box.height = heightOfBox;
 
     return [xOfBox, yOfBox, lengthOfBox, heightOfBox];
 }
@@ -329,7 +336,11 @@ function drawElement(xob, yob, lob, hob) {
     for (let index = 0; index < numOfElement; index = index + 1) {
         let xOfElementForLoop =
             xOfElement + lengthOfElement * index + index * widthBetweenElement;
-        new Ui(xOfElementForLoop, yOfElement, lengthOfElement, heightOfElement);
+        let element = getUIByTag(index.toString());
+        element.positionX = xOfElementForLoop;
+        element.positionY = yOfElement;
+        element.width = lengthOfElement;
+        element.height = heightOfElement;
         image(
             elementImage[index],
             xOfElementForLoop,
@@ -391,13 +402,11 @@ function mouseOverElement() {
                 element.heightOfElement
             )
         ) {
-            console.log(index);
-            new Ui(
-                element.xOfElementForLoop - 10,
-                element.yOfElement - 10,
-                element.lengthOfElement + 20,
-                element.heightOfElement + 20
-            );
+            let _element = getUIByTag(index.toString());
+            _element.positionX = element.xOfElementForLoop;
+            _element.positionY = element.yOfElement;
+            _element.width = element.lengthOfElement;
+            _element.height = element.heightOfElement;
             image(
                 elementImage[index],
                 element.xOfElementForLoop - 10,
@@ -460,20 +469,19 @@ function drawBar() {
         let lengthOfBarForLoop =
             (lengthOfBar / (barItem.max - barItem.min)) * barItem.value;
 
-        new Ui(
-            xOfBar,
-            yOfBarForLoop,
-            lengthOfBar,
-            heightOfBar,
-            barItem.backgroundColor
-        );
-        new Ui(
-            xOfBar,
-            yOfBarForLoop,
-            lengthOfBarForLoop,
-            heightOfBar,
-            barItem.fillColor
-        );
+        let barPart1 = getUIByTag("bar" + loopBar.toString() + "1");
+        barPart1.positionX = xOfBar;
+        barPart1.positionY = yOfBarForLoop;
+        barPart1.width = lengthOfBar;
+        barPart1.height = heightOfBar;
+        barPart1.color = barItem.backgroundColor;
+
+        let barPart2 = getUIByTag("bar" + loopBar.toString() + "2");
+        barPart2.positionX = xOfBar;
+        barPart2.positionY = yOfBarForLoop;
+        barPart2.width = lengthOfBarForLoop,
+            barPart2.height = heightOfBar;
+        barPart2.color = barItem.fillColor;
 
         let xOfInnerText = xOfBar + lengthOfBar / 2;
         let yOfInnerText = yOfBarForLoop + 9;
@@ -524,13 +532,26 @@ function manageInfoBox() {
     } else {
         xOfBoxForLoop = xOfBox + wOfBox;
     }
-    new Ui(xOfBoxForLoop, yOfBox, wOfBox, hOfBox, 250);
+
+    let infoBox = getUIByTag("infoBox");
+    infoBox.positionX = xOfBoxForLoop;
+    infoBox.positionY = yOfBox;
+    infoBox.width = wOfBox;
+    infoBox.height = hOfBox;
+    infoBox.color = 250;
 
     let xOfIndicator = xOfBoxForLoop - wOfBox / 10;
     let yOfIndicator = windowInnerHeight / 2 - hOfBox / 10 / 2;
     let wOfIndicator = wOfBox / 10;
     let hOfIndicator = hOfBox / 10;
-    new Ui(xOfIndicator, yOfIndicator, wOfIndicator, hOfIndicator, 250);
+
+
+    let indicator = getUIByTag("indicator");
+    indicator.positionX = xOfIndicator;
+    indicator.positionY = yOfIndicator;
+    indicator.width = wOfIndicator;
+    indicator.height = hOfIndicator;
+    indicator.color = 250;
     infoBoxIndicator = [xOfIndicator, yOfIndicator, wOfIndicator, hOfIndicator];
 }
 

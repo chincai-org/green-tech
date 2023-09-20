@@ -558,7 +558,7 @@ function pathFind(sprite, ...targetClasses) {
         for (const neighbor of findNeighbour(lastTile)) {
             const neighborTile = getTile(neighbor.x, neighbor.y);
 
-            if (neighborTile.sprite.collide(sprite)) continue;
+            if (neighborTile.sprite?.collide(sprite)) continue;
 
             const newPath = currentPath.concat([neighborTile]);
 

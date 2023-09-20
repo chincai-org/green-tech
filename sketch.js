@@ -535,12 +535,12 @@ function manageInfoBox() {
 }
 
 /**
- * @typedef {Class} - Just the class
+ * @typedef {Object} Class - Just the class
  * @param {BaseSprite} sprite - The instance of the sprite to start from
- * @param {Class} targetClass  - The class that you wish to find, example: Tree
+ * @param {...Class} targetClasses  - The class that you wish to find, example: Tree
  * @returns {Array<Vector>}
  */
-function pathFind(sprite, targetClass) {
+function pathFind(sprite, ...targetClasses) {
     const startX = sprite.x;
     const startY = sprite.y;
     const startTile = getTile(startX, startY);
@@ -562,7 +562,7 @@ function pathFind(sprite, targetClass) {
 
             const newPath = currentPath.concat([neighborTile]);
 
-            if (neighborTile.sprite instanceof targetClass) return newPath;
+            if (anyInstance(neighborTile.sprite, targetClasses)) return newPath;
 
             queue.push(newPath); // Add the newPath to the queue
         }
@@ -591,8 +591,17 @@ function findNeighbour(vector) {
     ].map(v => createVector(...v));
 }
 
+function anyInstance(target, classes) {
+    for (const typeClass of classes) {
+        if (target instanceof typeClass) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 /**
- *
  * @param {CallableFunction} callable
  */
 function virtualEdit(callable) {

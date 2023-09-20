@@ -579,7 +579,7 @@ function pathFind(sprite, ...targetClasses) {
         for (const neighbor of findNeighbour(lastTile)) {
             const neighborTile = getTile(neighbor.x, neighbor.y);
 
-            if (neighborTile.sprite.collide(sprite)) continue;
+            if (neighborTile.sprite?.collide(sprite)) continue;
 
             const newPath = currentPath.concat([neighborTile]);
 
@@ -600,16 +600,18 @@ function pathFind(sprite, ...targetClasses) {
 function findNeighbour(vector) {
     const { x, y } = vector;
 
-    return [
-        [x + 1, y],
-        [x - 1, y],
-        [x, y + 1],
-        [x, y - 1],
-        [x + 1, y + 1],
-        [x + 1, y - 1],
-        [x - 1, y - 1],
-        [x - 1, y + 1]
-    ].map(v => createVector(...v));
+    let result = [];
+
+    // returns neighbour to all 6 directions, and x and y cannot be lower than 0 and higher than the map size
+    for (let dx = -1; dx <= 1; dx++) {
+        for (let dy = -1; dy <= 1; dy++) {
+            if (dx === 0 && dy === 0) continue;
+            const neighbour = createVector(x + dx, y + dy);
+            if (inBoundOfGrid(neighbour.x, neighbour.y)) result.push(neighbour);
+        }
+    }
+
+    return result;
 }
 
 function anyInstance(target, classes) {

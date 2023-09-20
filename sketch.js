@@ -7,7 +7,6 @@
 const initialWinWidth = window.innerWidth;
 const initialWinHeight = window.innerHeight;
 const fullScreenElement = document.documentElement;
-const grid = [];
 const movables = [];
 const sprout = new Sprout(50, 50);
 const gridWidth = 100;
@@ -479,8 +478,8 @@ function drawBar() {
         let barPart2 = getUIByTag("bar" + loopBar.toString() + "2");
         barPart2.positionX = xOfBar;
         barPart2.positionY = yOfBarForLoop;
-        barPart2.width = lengthOfBarForLoop,
-            barPart2.height = heightOfBar;
+        barPart2.width = lengthOfBarForLoop;
+        barPart2.height = heightOfBar;
         barPart2.color = barItem.fillColor;
 
         let xOfInnerText = xOfBar + lengthOfBar / 2;
@@ -545,7 +544,6 @@ function manageInfoBox() {
     let wOfIndicator = wOfBox / 10;
     let hOfIndicator = hOfBox / 10;
 
-
     let indicator = getUIByTag("indicator");
     indicator.positionX = xOfIndicator;
     indicator.positionY = yOfIndicator;
@@ -571,7 +569,7 @@ function pathFind(sprite, ...targetClasses) {
     // implement BFS
     const queue = [[createVector(tileX, tileY)]];
     const visited = new Set();
-    visited.add(`${startX},${startY}`);
+    visited.add(`${tileX},${tileY}`);
 
     while (queue.length > 0) {
         // Check if the queue is empty
@@ -579,7 +577,7 @@ function pathFind(sprite, ...targetClasses) {
         const lastTile = currentPath.at(-1);
 
         for (const neighbor of findNeighbour(lastTile)) {
-            const neighborTile = grid[neighbor.x][neighbor.y];
+            const neighborTile = tileGrid[neighbor.y][neighbor.x];
 
             if (visited.has(`${neighbor.x},${neighbor.y}`)) continue; // Ignore visited tile
             if (neighborTile.sprite?.collide(sprite)) continue; // Ignore collision tile

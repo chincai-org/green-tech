@@ -549,6 +549,8 @@ function pathFind(sprite, ...targetClasses) {
 
     // implement BFS
     const queue = [[createVector(tileX, tileY)]];
+    const visited = new Set();
+    visited.add(`${startX},${startY}`);
 
     while (queue.length > 0) {
         // Check if the queue is empty
@@ -556,9 +558,12 @@ function pathFind(sprite, ...targetClasses) {
         const lastTile = currentPath.at(-1);
 
         for (const neighbor of findNeighbour(lastTile)) {
-            const neighborTile = getTile(neighbor.x, neighbor.y);
+            const neighborTile = grid[neighbor.x][neighbor.y];
 
-            if (neighborTile.sprite?.collide(sprite)) continue;
+            if (visited.has(`${neighbor.x},${neighbor.y}`)) continue; // Ignore visited tile
+            if (neighborTile.sprite?.collide(sprite)) continue; // Ignore collision tile
+
+            visited.add(`${neighbor.x},${neighbor.y}`);
 
             const newPath = currentPath.concat([neighborTile]);
 

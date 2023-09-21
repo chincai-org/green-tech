@@ -46,7 +46,8 @@ let barValue = [
         backgroundColor: "magenta",
         fillColor: "cyan",
         valueMaxColor: "black",
-        innerTextColor: "black"
+        innerTextColor: "black",
+        barTextSize: 10
     },
     {
         barName: "carbonEmissionBar",
@@ -60,7 +61,8 @@ let barValue = [
         backgroundColor: "magenta",
         fillColor: "cyan",
         valueMaxColor: "black",
-        innerTextColor: "black"
+        innerTextColor: "black",
+        barTextSize: 10
     },
     {
         barName: "carbonEmissionBar",
@@ -74,7 +76,8 @@ let barValue = [
         backgroundColor: "magenta",
         fillColor: "cyan",
         valueMaxColor: "black",
-        innerTextColor: "black"
+        innerTextColor: "black",
+        barTextSize: 10
     }
 ];
 
@@ -282,9 +285,13 @@ function drawGridLine() {
 
 function drawText() {
     virtualEdit(() => {
-        stroke("#f5f5dc");
-        textSize(20);
-        text(`Resource: ${resource}`, windowWidth / 2, 20);
+        let resourceUi = getUiByTag("resource");
+        resourceUi.textColor = "white";
+        resourceUi.textStroke = "#f5f5dc";
+        resourceUi.textSize = 20;
+        resourceUi.text = `Resource: ${resource}`;
+        resourceUi.positionX = windowWidth / 2;
+        resourceUi.positionY = 20;
     });
 }
 
@@ -470,14 +477,14 @@ function drawBar() {
         let lengthOfBarForLoop =
             (lengthOfBar / (barItem.max - barItem.min)) * barItem.value;
 
-        let barPart1 = getUiByTag("bar" + loopBar.toString() + "1");
+        let barPart1 = getUiByTag("bar" + loopBar + "1");
         barPart1.positionX = xOfBar;
         barPart1.positionY = yOfBarForLoop;
         barPart1.width = lengthOfBar;
         barPart1.height = heightOfBar;
         barPart1.color = barItem.backgroundColor;
 
-        let barPart2 = getUiByTag("bar" + loopBar.toString() + "2");
+        let barPart2 = getUiByTag("bar" + loopBar + "2");
         barPart2.positionX = xOfBar;
         barPart2.positionY = yOfBarForLoop;
         barPart2.width = lengthOfBarForLoop;
@@ -487,16 +494,20 @@ function drawBar() {
         let xOfInnerText = xOfBar + lengthOfBar / 2;
         let yOfInnerText = yOfBarForLoop + 9;
         if (barItem.displayValueAndMax) {
-            fill(barItem.valueMaxColor);
-            text(
-                barItem.value + "/" + barItem.max,
-                xOfInnerText + 11,
-                yOfInnerText
-            );
+            let barValueText = getUiByTag("barValueText" + loopBar);
+            barValueText.textColor = barItem.valueMaxColor;
+            barValueText.text = barItem.value + "/" + barItem.max;
+            barValueText.positionX = xOfInnerText + 11;
+            barValueText.positionY = yOfInnerText;
+            barValueText.textSize = barItem.barTextSize;
         }
         if (barItem.displayInnerText) {
-            fill(barItem.innerTextColor);
-            text(barItem.innerText, xOfBar + 2, yOfInnerText);
+            let barInnerText = getUiByTag("barInnerText" + loopBar);
+            barInnerText.textColor = barItem.innerTextColor;
+            barInnerText.text = barItem.innerText;
+            barInnerText.positionX = xOfBar + 2;
+            barInnerText.positionY = yOfInnerText;
+            barInnerText.textSize = barItem.barTextSize;
         }
     }
     fill(250);

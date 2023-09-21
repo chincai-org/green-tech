@@ -18,6 +18,11 @@ class RectUi extends Ui {
         this.color = color;
         this.tag = tag;
     }
+
+    draw() {
+        fill(this.color);
+        rect(this.positionX, this.positionY, this.width, this.height);
+    }
 }
 
 class ImgUi extends Ui {
@@ -29,8 +34,33 @@ class ImgUi extends Ui {
         this.height = height;
         this.tag = tag;
     }
-}
 
+    draw() {
+        image(this.image, this.positionX, this.positionY, this.width, this.height);
+    }
+}
+class TextUi extends Ui {
+    constructor(text, positionX, positionY, textSize, textColor, tag = "not set") {
+        super(positionX, positionY);
+        this.text = text;
+        this.textSize = textSize;
+        this.textColor = textColor;
+        this.tag = tag;
+
+        this.textStroke = null;
+    }
+
+    draw() {
+        push(); // Save the current drawing style
+        textSize(this.textSize);
+        fill(this.textColor);
+        if (this.textStroke != null) {
+            stroke(this.textStroke);
+        }
+        text(this.text, this.positionX, this.positionY);
+        pop(); // Restore the previous drawing style
+    }
+}
 
 function getUiByTag(tag) {
     return allUi.find(ui => ui.tag === tag);
@@ -58,12 +88,7 @@ function isMouseOverUi(tag) {
 
 function drawAllUi() {
     allUi.forEach(ui => {
-        if (ui instanceof RectUi) {
-            fill(ui.color);
-            rect(ui.positionX, ui.positionY, ui.width, ui.height);
-        } else if (ui instanceof ImgUi) {
-            image(ui.image, ui.positionX, ui.positionY, ui.width, ui.height);
-        }
+        ui.draw();
     });
 }
 
@@ -79,6 +104,8 @@ function initUi() {
     for (let loopBar = 0; loopBar < barValue.length; loopBar = loopBar + 1) {
         new RectUi(0, 0, 1, 1, "white", "bar" + loopBar.toString() + "1");
         new RectUi(0, 0, 1, 1, "white", "bar" + loopBar.toString() + "2");
+        new TextUi("", 0, 0, 1, 250, "barInnerText" + loopBar.toString());
+        new TextUi("", 0, 0, 1, 250, "barValueText" + loopBar.toString())
     }
 
     new RectUi(0, 0, 1, 1, 250, "indicator");
@@ -86,8 +113,6 @@ function initUi() {
 
     new RectUi(0, 0, 1, 1, 250, "infoBoxElementBigImageBox");
     new ImgUi(tempImage, 0, 1, 1, 1, "infoBoxElementBigImageBoxImg");
-}
 
-/*
-TODO: picture and text...
-*/
+    new TextUi("", 0, 0, 1, 250, "resource");
+}

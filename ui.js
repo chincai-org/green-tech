@@ -86,6 +86,12 @@ function initUi() {
 
     new RectUi(0, 0, 1, 1, 250, "infoBoxElementBigImageBox");
     new ImgUi(tempImage, 0, 1, 1, 1, "infoBoxElementBigImageBoxImg");
+
+    for (let index0 = 0; index0 < 3; index0 = index0 + 1) {
+        for (let index = 0; index < 3; index = index + 1) {
+            new RectUi(0, 1, 1, 1, 250, "infoBoxElementLevel" + index0.toString() + "-" + index.toString());
+        }
+    } 
 }
 
 /*

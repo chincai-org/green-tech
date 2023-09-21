@@ -571,6 +571,19 @@ function manageInfoBox() {
     infoBoxElementBoxImg.positionY = yOfBoxElementBox;
     infoBoxElementBoxImg.width = wOfBoxElementBox;
     infoBoxElementBoxImg.height = hOfBoxElementBox;
+
+
+    let secondYPosition = yOfBoxElementBox + hOfBoxElementBox;
+    for (let index0 = 0; index0 < 3; index0 = index0 + 1) {
+        for (let index = 0; index < 3; index = index + 1) {
+            let element = getUiByTag(`infoBoxElementLevel${index0.toString()}-${index.toString()}`);
+            element.positionX = xOfBoxForLoop + (wOfBox / 6.5)
+            element.positionY = (wOfBox / 12 * index) + 20 + (index * 10) + secondYPosition
+            element.width = wOfBox / 12
+            element.height = element.width 
+        }
+        secondYPosition = getUiByTag(`infoBoxElementLevel${index0.toString()}-2`).positionY + (wOfBox / 12) + 30;
+    } 
 }
 
 /**

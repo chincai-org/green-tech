@@ -358,6 +358,7 @@ function manageInfoBox() {
     infoBoxElementBoxImg.positionY = yOfBoxElementBox;
     infoBoxElementBoxImg.width = wOfBoxElementBox;
     infoBoxElementBoxImg.height = hOfBoxElementBox;
+    
 }
 
 /**

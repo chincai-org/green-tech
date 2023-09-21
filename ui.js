@@ -1,4 +1,8 @@
 const allUi = [];
+const numOfElement = 5;
+const numOfElementAddOne = numOfElement + 1;
+
+let elementCoordinate = [];
 
 let barValue = [
     {
@@ -99,14 +103,14 @@ class TextUi extends Ui {
     }
 
     draw() {
-        push(); // Save the current drawing style
+        push();
         textSize(this.textSize);
         fill(this.textColor);
         if (this.textStroke != null) {
             stroke(this.textStroke);
         }
         text(this.text, this.positionX, this.positionY);
-        pop(); // Restore the previous drawing style
+        pop();
     }
 }
 
@@ -124,13 +128,27 @@ function isMouseOnAnyUi() {
     );
 }
 
-function isMouseOverUi(tag) {
-    let ui = getUiByTag(tag);
+/**
+ * Checks if the mouse cursor is over a UI element.
+ *
+ * @param {Ui} ui - The UI element to check.
+ * @returns {boolean} True if the mouse is over the UI element, false otherwise.
+ */
+function isMouseOverUi(ui) {
     return (
         mouseX < ui.positionX + ui.width &&
         mouseX > ui.positionX &&
         mouseY > ui.positionY &&
         mouseY < ui.positionY + ui.height
+    );
+}
+
+function isMouseOver(positionX, positionY, width, height) {
+    return (
+        mouseX < positionX + width &&
+        mouseX > positionX &&
+        mouseY > positionY &&
+        mouseY < positionY + height
     );
 }
 
@@ -140,18 +158,22 @@ function drawAllUi() {
     });
 }
 
-function updateUi() {
-    // Update Ui
+function manageUi() {
+    mouseOverUi();
+    emphasizeSelectedElement();
 }
 
 function initUi() {
-    let tempImage = loadImage("https://placehold.co/64x64/png");
-    new RectUi(0, 0, 1, 1, "white", "box");
-    for (let index = 0; index < numOfElement; index = index + 1) {
-        new RectUi(0, 0, 1, 1, "white", "element" + index.toString());
-        new ImgUi(tempImage, 0, 0, 1, 1, "elementImg" + index.toString());
-    }
+    elementImage = [
+        loadImage("https://placehold.co/64x64/png"),
+        loadImage("https://placehold.co/64x65/png"),
+        loadImage("https://placehold.co/64x66/png"),
+        loadImage("https://placehold.co/64x67/png"),
+        loadImage("https://placehold.co/64x68/png"),
+        loadImage("https://placehold.co/600x350/png")
+    ];
 
+    drawElement();
 
     drawBar();
 
@@ -159,7 +181,7 @@ function initUi() {
     new RectUi(0, 0, 1, 1, 250, "infoBox");
 
     new RectUi(0, 0, 1, 1, 250, "infoBoxElementBigImageBox");
-    new ImgUi(tempImage, 0, 1, 1, 1, "infoBoxElementBigImageBoxImg");
+    new ImgUi(elementImage[0], 0, 1, 1, 1, "infoBoxElementBigImageBoxImg");
 
     new TextUi("", 0, 0, 1, 250, "resource");
 }
@@ -207,5 +229,100 @@ function drawBar() {
                 "barValueText" + loopBar
             );
         }
+    }
+}
+
+function drawElement() {
+    // Draw Box
+    let lengthOfBox = windowInnerWidth / 3;
+    let heightOfBox = windowInnerHeight / 10;
+    let xOfBox = windowInnerWidth / 2 - lengthOfBox / 2;
+    let yOfBox = windowInnerHeight - windowInnerHeight / 5.9;
+    new RectUi(xOfBox, yOfBox, lengthOfBox, heightOfBox, "white", "box");
+
+    // Draw Element
+    let lengthOfElement = lengthOfBox / numOfElementAddOne;
+    let heightOfElement = heightOfBox / 1.2;
+    let widthBetweenElement =
+        (lengthOfBox - lengthOfElement * numOfElement) / (numOfElement + 1);
+    let heightBetweenElement = (heightOfBox - heightOfElement) / 2;
+    let xOfElement = xOfBox + widthBetweenElement;
+    let yOfElement = yOfBox + heightBetweenElement;
+
+    for (let index = 0; index < numOfElement; index = index + 1) {
+        let xOfElementForLoop =
+            xOfElement + lengthOfElement * index + index * widthBetweenElement;
+
+        new RectUi(xOfElementForLoop, yOfElement, lengthOfElement, heightOfElement, "white", "element" + index.toString());
+        new ImgUi(elementImage[index], xOfElementForLoop, yOfElement, lengthOfElement, heightOfElement, "elementImg" + index.toString());
+
+        elementCoordinate.push({
+            xOfElementForLoop,
+            yOfElement,
+            lengthOfElement,
+            heightOfElement
+        });
+    }
+}
+
+function mouseOverUi() {
+    // Element
+    for (let [index, element] of elementCoordinate.entries()) {
+        if (
+            isMouseOver(
+                element.xOfElementForLoop,
+                element.yOfElement,
+                element.lengthOfElement,
+                element.heightOfElement
+            )
+        ) {
+            let elementUi = getUiByTag("element" + index.toString());
+            elementUi.positionX = element.xOfElementForLoop - 10;
+            elementUi.positionY = element.yOfElement - 10;
+            elementUi.width = element.lengthOfElement + 20;
+            elementUi.height = element.heightOfElement + 20;
+
+            let elementImg = getUiByTag("elementImg" + index.toString());
+            elementImg.positionX = element.xOfElementForLoop - 10;
+            elementImg.positionY = element.yOfElement - 10;
+            elementImg.width = element.lengthOfElement + 20;
+            elementImg.height = element.heightOfElement + 20;
+        } else {
+            let elementUi = getUiByTag("element" + index.toString());
+            elementUi.positionX = element.xOfElementForLoop;
+            elementUi.positionY = element.yOfElement;
+            elementUi.width = element.lengthOfElement;
+            elementUi.height = element.heightOfElement;
+
+            let elementImg = getUiByTag("elementImg" + index.toString());
+            elementImg.positionX = element.xOfElementForLoop;
+            elementImg.positionY = element.yOfElement;
+            elementImg.width = element.lengthOfElement;
+            elementImg.height = element.heightOfElement;
+        }
+    }
+}
+
+
+function emphasizeSelectedElement() {
+    if (hotkey == -1) {
+        return;
+    } else {
+        const element = elementCoordinate[hotkey];
+
+        let elementUi = getUiByTag("element" + (hotkey).toString());
+
+        elementUi.positionX = element.xOfElementForLoop - 10;
+        elementUi.positionY = element.yOfElement - 10;
+        elementUi.width = element.lengthOfElement + 20;
+        elementUi.height = element.heightOfElement + 20;
+
+        let elementImg = getUiByTag("elementImg" + (hotkey).toString());
+
+        elementImg.positionX = element.xOfElementForLoop - 10;
+        elementImg.positionY = element.yOfElement - 10;
+        elementImg.width = element.lengthOfElement + 20;
+        elementImg.height = element.heightOfElement + 20;
+
     }
 }

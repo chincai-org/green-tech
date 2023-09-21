@@ -27,10 +27,6 @@ let energy = 1000;
 
 let windowInnerWidth = window.innerWidth;
 let windowInnerHeight = window.innerHeight;
-let elementCoordinate = [];
-const numOfElement = 5;
-const numOfElementAddOne = numOfElement + 1;
-let elementImage = [];
 let infoBoxOpen = false;
 let infoBoxIndicator = [];
 
@@ -60,14 +56,6 @@ function setup() {
     initGrid();
     initUi();
 
-    elementImage = [
-        loadImage("https://placehold.co/64x64/png"),
-        loadImage("https://placehold.co/64x65/png"),
-        loadImage("https://placehold.co/64x66/png"),
-        loadImage("https://placehold.co/64x67/png"),
-        loadImage("https://placehold.co/64x68/png"),
-        loadImage("https://placehold.co/600x350/png")
-    ];
     bgsong();
 }
 
@@ -107,6 +95,7 @@ function draw() {
 
     lastUpdate = now;
 
+    manageUi();
     drawAllUi();
 
     manageBox();
@@ -263,58 +252,7 @@ function getTile(x, y) {
 }
 
 function manageBox() {
-    drawElement(...drawBox());
-    mouseOverElement();
     emphasizeSelectedElement();
-}
-
-function drawBox() {
-    let lengthOfBox = windowInnerWidth / 3;
-    let heightOfBox = windowInnerHeight / 10;
-    let xOfBox = windowInnerWidth / 2 - lengthOfBox / 2;
-    let yOfBox = windowInnerHeight - windowInnerHeight / 5.9;
-    let Box = getUiByTag("box");
-    Box.positionX = xOfBox;
-    Box.positionY = yOfBox;
-    Box.width = lengthOfBox;
-    Box.height = heightOfBox;
-
-    return [xOfBox, yOfBox, lengthOfBox, heightOfBox];
-}
-
-function drawElement(xob, yob, lob, hob) {
-    let lengthOfElement = lob / numOfElementAddOne;
-    let heightOfElement = hob / 1.2;
-    let widthBetweenElement =
-        (lob - lengthOfElement * numOfElement) / (numOfElement + 1);
-    let heightBetweenElement = (hob - heightOfElement) / 2;
-    let xOfElement = xob + widthBetweenElement;
-    let yOfElement = yob + heightBetweenElement;
-    elementCoordinate = [];
-
-    for (let index = 0; index < numOfElement; index = index + 1) {
-        let xOfElementForLoop =
-            xOfElement + lengthOfElement * index + index * widthBetweenElement;
-        let element = getUiByTag("element" + index.toString());
-        element.positionX = xOfElementForLoop;
-        element.positionY = yOfElement;
-        element.width = lengthOfElement;
-        element.height = heightOfElement;
-
-        let elementImg = getUiByTag("elementImg" + index.toString());
-        elementImg.image = elementImage[index];
-        elementImg.positionX = xOfElementForLoop;
-        elementImg.positionY = yOfElement;
-        elementImg.width = lengthOfElement;
-        elementImg.height = heightOfElement;
-
-        elementCoordinate.push({
-            xOfElementForLoop,
-            yOfElement,
-            lengthOfElement,
-            heightOfElement
-        });
-    }
 }
 
 function mousePressed() {
@@ -350,65 +288,6 @@ function mousePressed() {
         }
     }
 }
-
-function mouseOverElement() {
-    for (let [index, element] of elementCoordinate.entries()) {
-        if (
-            isMouseOver(
-                element.xOfElementForLoop,
-                element.yOfElement,
-                element.lengthOfElement,
-                element.heightOfElement
-            )
-        ) {
-            let elementUi = getUiByTag("element" + index.toString());
-            elementUi.positionX = element.xOfElementForLoop;
-            elementUi.positionY = element.yOfElement;
-            elementUi.width = element.lengthOfElement;
-            elementUi.height = element.heightOfElement;
-
-
-            let elementImg = getUiByTag("elementImg" + index.toString());
-            elementImg.positionX = element.xOfElementForLoop - 10;
-            elementImg.positionY = element.yOfElement - 10;
-            elementImg.width = element.lengthOfElement + 20;
-            elementImg.height = element.heightOfElement + 20;
-        }
-    }
-}
-
-function isMouseOver(positionX, positionY, width, height) {
-    return (
-        mouseX < positionX + width &&
-        mouseX > positionX &&
-        mouseY > positionY &&
-        mouseY < positionY + height
-    );
-}
-
-function emphasizeSelectedElement() {
-    if (hotkey == -1) {
-        return;
-    } else {
-        const element = elementCoordinate[hotkey];
-
-        let elementUi = getUiByTag("element" + (hotkey).toString());
-
-        elementUi.positionX = element.xOfElementForLoop - 10;
-        elementUi.positionY = element.yOfElement - 10;
-        elementUi.width = element.lengthOfElement + 20;
-        elementUi.height = element.heightOfElement + 20;
-
-        let elementImg = getUiByTag("elementImg" + (hotkey).toString());
-
-        elementImg.positionX = element.xOfElementForLoop - 10;
-        elementImg.positionY = element.yOfElement - 10;
-        elementImg.width = element.lengthOfElement + 20;
-        elementImg.height = element.heightOfElement + 20;
-
-    }
-}
-
 
 function openFullscreen() {
     if (fullScreenElement.requestFullscreen) {

@@ -1,5 +1,53 @@
 const allUi = [];
 
+let barValue = [
+    {
+        barName: "carbonEmissionBar",
+        innerText: "Carbon Emission",
+        display: true,
+        min: 0,
+        max: 1000,
+        displayValueAndMax: true,
+        displayInnerText: true,
+        value: 600,
+        backgroundColor: "magenta",
+        fillColor: "cyan",
+        valueMaxColor: "black",
+        innerTextColor: "black",
+        barTextSize: 10
+    },
+    {
+        barName: "carbonEmissionBar",
+        innerText: "Carbon Emission",
+        display: true,
+        min: 0,
+        max: 1000,
+        displayValueAndMax: true,
+        displayInnerText: true,
+        value: 600,
+        backgroundColor: "magenta",
+        fillColor: "cyan",
+        valueMaxColor: "black",
+        innerTextColor: "black",
+        barTextSize: 10
+    },
+    {
+        barName: "carbonEmissionBar",
+        innerText: "Carbon Emission",
+        display: true,
+        min: 0,
+        max: 1000,
+        displayValueAndMax: true,
+        displayInnerText: true,
+        value: 600,
+        backgroundColor: "magenta",
+        fillColor: "cyan",
+        valueMaxColor: "black",
+        innerTextColor: "black",
+        barTextSize: 10
+    }
+];
+
 class Ui {
     constructor(positionX, positionY) {
         this.positionX = positionX;
@@ -92,6 +140,10 @@ function drawAllUi() {
     });
 }
 
+function updateUi() {
+    // Update Ui
+}
+
 function initUi() {
     let tempImage = loadImage("https://placehold.co/64x64/png");
     new RectUi(0, 0, 1, 1, "white", "box");
@@ -101,12 +153,7 @@ function initUi() {
     }
 
 
-    for (let loopBar = 0; loopBar < barValue.length; loopBar = loopBar + 1) {
-        new RectUi(0, 0, 1, 1, "white", "bar" + loopBar.toString() + "1");
-        new RectUi(0, 0, 1, 1, "white", "bar" + loopBar.toString() + "2");
-        new TextUi("", 0, 0, 1, 250, "barInnerText" + loopBar.toString());
-        new TextUi("", 0, 0, 1, 250, "barValueText" + loopBar.toString())
-    }
+    drawBar();
 
     new RectUi(0, 0, 1, 1, 250, "indicator");
     new RectUi(0, 0, 1, 1, 250, "infoBox");
@@ -115,4 +162,50 @@ function initUi() {
     new ImgUi(tempImage, 0, 1, 1, 1, "infoBoxElementBigImageBoxImg");
 
     new TextUi("", 0, 0, 1, 250, "resource");
+}
+
+
+function drawBar() {
+    let xOfBar = windowInnerWidth / 50;
+    let yOfBar = windowInnerHeight / 50;
+    let heightBetweenBar = windowInnerHeight / 50;
+    let lengthOfBar = windowInnerWidth / 3;
+    let heightOfBar = 10;
+    let hideBar = 0;
+    for (let [loopBar, barItem] of barValue.entries()) {
+        if (!barItem.display) {
+            barValue.splice(loopBar, 1);
+        }
+    }
+    for (let [loopBar, barItem] of barValue.entries()) {
+        let yOfBarForLoop =
+            yOfBar +
+            heightOfBar * (loopBar - hideBar) +
+            heightBetweenBar * (loopBar - hideBar);
+        let lengthOfBarForLoop =
+            (lengthOfBar / (barItem.max - barItem.min)) * barItem.value;
+
+
+        new RectUi(xOfBar, yOfBarForLoop, lengthOfBar, heightOfBar, barItem.backgroundColor, "bar" + loopBar + "1");
+        new RectUi(xOfBar, yOfBarForLoop, lengthOfBarForLoop, heightOfBar, barItem.fillColor, "bar" + loopBar + "2");
+
+        let xOfInnerText = xOfBar + lengthOfBar / 2;
+        let yOfInnerText = yOfBarForLoop + 9;
+        if (barItem.displayValueAndMax) {
+            new TextUi(barItem.value + "/" + barItem.max,
+                xOfInnerText + 11, yOfInnerText,
+                barItem.barTextSize,
+                barItem.valueMaxColor,
+                "barInnerText" + loopBar
+            );
+        }
+        if (barItem.displayInnerText) {
+            new TextUi(barItem.innerText,
+                xOfBar + 2, yOfInnerText,
+                barItem.barTextSize,
+                barItem.innerTextColor,
+                "barValueText" + loopBar
+            );
+        }
+    }
 }

@@ -343,7 +343,7 @@ function drawElement(xob, yob, lob, hob) {
         element.height = heightOfElement;
 
         let elementImg = getUiByTag("elementImg" + index.toString());
-        elementImg.img = elementImage[index];
+        elementImg.image = elementImage[index];
         elementImg.positionX = xOfElementForLoop;
         elementImg.positionY = yOfElement;
         elementImg.width = lengthOfElement;
@@ -555,7 +555,7 @@ function manageInfoBox() {
     infoBoxIndicator = [xOfIndicator, yOfIndicator, wOfIndicator, hOfIndicator];
 
     let wOfBoxElementBox = wOfBox / 1.5;
-    let hOfBoxElementBox = hOfBox / 4.5 ;
+    let hOfBoxElementBox = hOfBox / 4.5;
     let xOfBoxElementBox = (xOfBoxForLoop + (wOfBox / 2)) - (wOfBoxElementBox / 2);
     let yOfBoxElementBox = yOfBox + 20;
 
@@ -566,7 +566,7 @@ function manageInfoBox() {
     infoBoxElementBox.height = hOfBoxElementBox;
 
     let infoBoxElementBoxImg = getUiByTag("infoBoxElementBigImageBoxImg");
-    infoBoxElementBoxImg.img = elementImage[5];
+    infoBoxElementBoxImg.image = elementImage[5];
     infoBoxElementBoxImg.positionX = xOfBoxElementBox
     infoBoxElementBoxImg.positionY = yOfBoxElementBox;
     infoBoxElementBoxImg.width = wOfBoxElementBox;

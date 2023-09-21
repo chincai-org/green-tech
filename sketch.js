@@ -33,6 +33,53 @@ const numOfElementAddOne = numOfElement + 1;
 let elementImage = [];
 let infoBoxOpen = false;
 let infoBoxIndicator = [];
+let barValue = [
+    {
+        barName: "carbonEmissionBar",
+        innerText: "Carbon Emission",
+        display: true,
+        min: 0,
+        max: 1000,
+        displayValueAndMax: true,
+        displayInnerText: true,
+        value: 600,
+        backgroundColor: "magenta",
+        fillColor: "cyan",
+        valueMaxColor: "black",
+        innerTextColor: "black",
+        barTextSize: 10
+    },
+    {
+        barName: "carbonEmissionBar",
+        innerText: "Carbon Emission",
+        display: true,
+        min: 0,
+        max: 1000,
+        displayValueAndMax: true,
+        displayInnerText: true,
+        value: 600,
+        backgroundColor: "magenta",
+        fillColor: "cyan",
+        valueMaxColor: "black",
+        innerTextColor: "black",
+        barTextSize: 10
+    },
+    {
+        barName: "carbonEmissionBar",
+        innerText: "Carbon Emission",
+        display: true,
+        min: 0,
+        max: 1000,
+        displayValueAndMax: true,
+        displayInnerText: true,
+        value: 600,
+        backgroundColor: "magenta",
+        fillColor: "cyan",
+        valueMaxColor: "black",
+        innerTextColor: "black",
+        barTextSize: 10
+    }
+];
 
 function windowResized() {
     tileSize = windowWidth / 30;
@@ -263,6 +310,7 @@ function getTile(x, y) {
 }
 
 function manageBox() {
+    drawBar();
     drawElement(...drawBox());
     mouseOverElement();
     emphasizeSelectedElement();
@@ -409,6 +457,61 @@ function emphasizeSelectedElement() {
     }
 }
 
+function drawBar() {
+    let xOfBar = windowInnerWidth / 50;
+    let yOfBar = windowInnerHeight / 50;
+    let heightBetweenBar = windowInnerHeight / 50;
+    let lengthOfBar = windowInnerWidth / 3;
+    let heightOfBar = 10;
+    let hideBar = 0;
+    for (let [loopBar, barItem] of barValue.entries()) {
+        if (!barItem.display) {
+            barValue.splice(loopBar, 1);
+        }
+    }
+    for (let [loopBar, barItem] of barValue.entries()) {
+        let yOfBarForLoop =
+            yOfBar +
+            heightOfBar * (loopBar - hideBar) +
+            heightBetweenBar * (loopBar - hideBar);
+        let lengthOfBarForLoop =
+            (lengthOfBar / (barItem.max - barItem.min)) * barItem.value;
+
+        let barPart1 = getUiByTag("bar" + loopBar + "1");
+        barPart1.positionX = xOfBar;
+        barPart1.positionY = yOfBarForLoop;
+        barPart1.width = lengthOfBar;
+        barPart1.height = heightOfBar;
+        barPart1.color = barItem.backgroundColor;
+
+        let barPart2 = getUiByTag("bar" + loopBar + "2");
+        barPart2.positionX = xOfBar;
+        barPart2.positionY = yOfBarForLoop;
+        barPart2.width = lengthOfBarForLoop;
+        barPart2.height = heightOfBar;
+        barPart2.color = barItem.fillColor;
+
+        let xOfInnerText = xOfBar + lengthOfBar / 2;
+        let yOfInnerText = yOfBarForLoop + 9;
+        if (barItem.displayValueAndMax) {
+            let barValueText = getUiByTag("barValueText" + loopBar);
+            barValueText.textColor = barItem.valueMaxColor;
+            barValueText.text = barItem.value + "/" + barItem.max;
+            barValueText.positionX = xOfInnerText + 11;
+            barValueText.positionY = yOfInnerText;
+            barValueText.textSize = barItem.barTextSize;
+        }
+        if (barItem.displayInnerText) {
+            let barInnerText = getUiByTag("barInnerText" + loopBar);
+            barInnerText.textColor = barItem.innerTextColor;
+            barInnerText.text = barItem.innerText;
+            barInnerText.positionX = xOfBar + 2;
+            barInnerText.positionY = yOfInnerText;
+            barInnerText.textSize = barItem.barTextSize;
+        }
+    }
+    fill(250);
+}
 
 function openFullscreen() {
     if (fullScreenElement.requestFullscreen) {

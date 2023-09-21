@@ -14,10 +14,15 @@ class Lumberjack extends BaseSprite {
     }
 
     _update(deltaTime) {
-        this.move(
-            deltaTime,
-            pathFind(this, Tree, Sprout)
-            // createVector(sprout.x - this.x, sprout.y - this.y)
-        );
+        if (pathFind(this, Tree, Sprout)) {
+            console.log(pathFind(this, Tree, Sprout));
+            this.move(deltaTime, pathFind(this, Tree, Sprout)[1]);
+        } else {
+            this.move(
+                deltaTime,
+                // createVector(sprout.x - this.x, sprout.y - this.y)
+                0
+            );
+        }
     }
 }

@@ -68,7 +68,6 @@ function draw() {
     sprout.draw();
 
     drawGridLine();
-    drawText();
 
     for (let movable of movables) {
         movable.update(deltaTime);

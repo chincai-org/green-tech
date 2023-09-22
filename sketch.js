@@ -221,18 +221,6 @@ function drawGridLine() {
     pop();
 }
 
-function drawText() {
-    virtualEdit(() => {
-        let resourceUi = allUi["resource"];
-        resourceUi.textColor = "white";
-        resourceUi.textStroke = "#f5f5dc";
-        resourceUi.textSize = 20;
-        resourceUi.text = `Resource: ${resource}`;
-        resourceUi.positionX = windowWidth / 2;
-        resourceUi.positionY = 20;
-    });
-}
-
 function randint(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }

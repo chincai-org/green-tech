@@ -161,6 +161,7 @@ function updateUi() {
     manageBar();
     manageElement();
     manageInfoBox();
+    manageResourceText();
 }
 
 function initUi() {
@@ -194,7 +195,8 @@ function initUi() {
     new RectUi(0, 0, 1, 1, 250, "infoBoxElementBigImageBox");
     new ImgUi(elementImage[0], 0, 1, 1, 1, "infoBoxElementBigImageBoxImg");
 
-    new TextUi("", 0, 0, 1, 250, "resource");
+    new TextUi("", 0, 0, 20, 250, "resource");
+    allUi["resource"].textStroke = "#f5f5dc";
 }
 
 
@@ -352,6 +354,12 @@ function manageInfoBox() {
     allUi["infoBoxElementBigImageBoxImg"].width = wOfBoxElementBox;
     allUi["infoBoxElementBigImageBoxImg"].height = hOfBoxElementBox;
 
+}
+
+function manageResourceText() {
+    allUi["resource"].text = `Resource: ${resource}`;
+    allUi["resource"].positionX = windowWidth / 2;
+    allUi["resource"].positionY = 20;
 }
 
 function mousePressed() {

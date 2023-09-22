@@ -251,15 +251,8 @@ function getTile(x, y) {
 }
 
 function mousePressed() {
-    for (let [index, element] of elementCoordinate.entries()) {
-        if (
-            isMouseOver(
-                element.xOfElementForLoop,
-                element.yOfElement,
-                element.lengthOfElement,
-                element.heightOfElement
-            )
-        ) {
+    for (let index = 0; index < numOfElement; index = index + 1) {
+        if (isMouseOverUi(allUi["element" + index])) {
             if (hotkey == index) {
                 hotkey = -1;
             } else {

@@ -2,8 +2,6 @@ const allUi = {};
 const numOfElement = 5;
 const numOfElementAddOne = numOfElement + 1;
 
-let elementCoordinate = [];
-
 let barValue = [
     {
         barName: "carbonEmissionBar",
@@ -159,8 +157,7 @@ function drawAllUi() {
 
 function updateUi() {
     manageBar();
-    mouseOverUi();
-    emphasizeSelectedElement();
+    manageElement();
 }
 
 function initUi() {
@@ -173,14 +170,19 @@ function initUi() {
         loadImage("https://placehold.co/600x350/png")
     ];
 
-    drawElement();
-
     for (let [loopBar, barItem] of barValue.entries()) {
         new RectUi(0, 0, 0, 0, barItem.backgroundColor, "bar" + loopBar + "1");
         new RectUi(0, 0, 0, 0, barItem.fillColor, "bar" + loopBar + "2");
         new TextUi(barItem.value + "/" + barItem.max, 0, 0, barItem.barTextSize, barItem.valueMaxColor, "barInnerText" + loopBar);
         new TextUi(barItem.innerText, 0, 0, barItem.barTextSize, barItem.innerTextColor, "barValueText" + loopBar
         );
+    }
+
+
+    new RectUi(0, 0, 0, 0, "white", "box");
+    for (let index = 0; index < numOfElement; index = index + 1) {
+        new RectUi(0, 0, 0, 0, "white", "element" + index.toString());
+        new ImgUi(elementImage[index], 0, 0, 0, 0, "elementImg" + index.toString());
     }
 
     new RectUi(0, 0, 1, 1, 250, "indicator");
@@ -235,7 +237,7 @@ function manageBar() {
     }
 }
 
-function drawElement() {
+function manageElement() {
     // Draw Box
     let lengthOfBox = windowInnerWidth / 3;
     let heightOfBox = windowInnerHeight / 10;
@@ -256,76 +258,50 @@ function drawElement() {
         let xOfElementForLoop =
             xOfElement + lengthOfElement * index + index * widthBetweenElement;
 
-        new RectUi(xOfElementForLoop, yOfElement, lengthOfElement, heightOfElement, "white", "element" + index.toString());
-        new ImgUi(elementImage[index], xOfElementForLoop, yOfElement, lengthOfElement, heightOfElement, "elementImg" + index.toString());
+        allUi["element" + index].positionX = xOfElementForLoop;
+        allUi["element" + index].positionY = yOfElement;
+        allUi["element" + index].width = lengthOfElement;
+        allUi["element" + index].height = heightOfElement;
 
-        elementCoordinate.push({
-            xOfElementForLoop,
-            yOfElement,
-            lengthOfElement,
-            heightOfElement
-        });
-    }
-}
+        allUi["elementImg" + index].positionX = xOfElementForLoop;
+        allUi["elementImg" + index].positionY = yOfElement;
+        allUi["elementImg" + index].width = lengthOfElement;
+        allUi["elementImg" + index].height = heightOfElement;
 
-function mouseOverUi() {
-    // Element
-    for (let [index, element] of elementCoordinate.entries()) {
+        // When mouse over
         if (
             isMouseOver(
-                element.xOfElementForLoop,
-                element.yOfElement,
-                element.lengthOfElement,
-                element.heightOfElement
+                xOfElementForLoop,
+                yOfElement,
+                lengthOfElement,
+                heightOfElement
             )
         ) {
-            let elementUi = allUi["element" + index.toString()];
-            elementUi.positionX = element.xOfElementForLoop - 10;
-            elementUi.positionY = element.yOfElement - 10;
-            elementUi.width = element.lengthOfElement + 20;
-            elementUi.height = element.heightOfElement + 20;
+            allUi["element" + index].positionX = xOfElementForLoop - 10;
+            allUi["element" + index].positionY = yOfElement - 10;
+            allUi["element" + index].width = lengthOfElement + 20;
+            allUi["element" + index].height = heightOfElement + 20;
 
-            let elementImg = allUi["elementImg" + index.toString()];
-            elementImg.positionX = element.xOfElementForLoop - 10;
-            elementImg.positionY = element.yOfElement - 10;
-            elementImg.width = element.lengthOfElement + 20;
-            elementImg.height = element.heightOfElement + 20;
-        } else {
-            let elementUi = allUi["element" + index.toString()];
-            elementUi.positionX = element.xOfElementForLoop;
-            elementUi.positionY = element.yOfElement;
-            elementUi.width = element.lengthOfElement;
-            elementUi.height = element.heightOfElement;
-
-            let elementImg = allUi["elementImg" + index.toString()];
-            elementImg.positionX = element.xOfElementForLoop;
-            elementImg.positionY = element.yOfElement;
-            elementImg.width = element.lengthOfElement;
-            elementImg.height = element.heightOfElement;
+            allUi["elementImg" + index].positionX = xOfElementForLoop - 10;
+            allUi["elementImg" + index].positionY = yOfElement - 10;
+            allUi["elementImg" + index].width = lengthOfElement + 20;
+            allUi["elementImg" + index].height = heightOfElement + 20;
         }
-    }
-}
+
+        // When emphasied
+        if (hotkey != -1) {
+            xOfElementForLoop = xOfElement + lengthOfElement * hotkey + hotkey * widthBetweenElement;
+
+            allUi["element" + hotkey].positionX = xOfElementForLoop - 10;
+            allUi["element" + hotkey].positionY = yOfElement - 10;
+            allUi["element" + hotkey].width = lengthOfElement + 20;
+            allUi["element" + hotkey].height = heightOfElement + 20;
 
 
-function emphasizeSelectedElement() {
-    if (hotkey == -1) {
-        return;
-    } else {
-        const element = elementCoordinate[hotkey];
-
-        let elementUi = allUi["element" + (hotkey).toString()];
-
-        elementUi.positionX = element.xOfElementForLoop - 10;
-        elementUi.positionY = element.yOfElement - 10;
-        elementUi.width = element.lengthOfElement + 20;
-        elementUi.height = element.heightOfElement + 20;
-
-        let elementImg = allUi["elementImg" + (hotkey).toString()];
-
-        elementImg.positionX = element.xOfElementForLoop - 10;
-        elementImg.positionY = element.yOfElement - 10;
-        elementImg.width = element.lengthOfElement + 20;
-        elementImg.height = element.heightOfElement + 20;
-
+            allUi["elementImg" + hotkey].positionX = xOfElementForLoop - 10;
+            allUi["elementImg" + hotkey].positionY = yOfElement - 10;
+            allUi["elementImg" + hotkey].width = lengthOfElement + 20;
+            allUi["elementImg" + hotkey].height = heightOfElement + 20;
+        }
     }
 }

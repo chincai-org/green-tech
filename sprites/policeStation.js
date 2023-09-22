@@ -14,8 +14,6 @@ class PoliceStation extends BaseSprite {
         let now = Date.now();
 
         if (now - this.lastUpdate > this.spawnCoolDown) {
-            console.log("Police");
-            console.log(movables);
             movables.push(new Police(this.x, this.y));
             this.lastUpdate = now;
         }

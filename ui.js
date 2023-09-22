@@ -2,6 +2,8 @@ const allUi = {};
 const numOfElement = 5;
 const numOfElementAddOne = numOfElement + 1;
 
+let infoBoxOpen = false;
+
 let barValue = [
     {
         barName: "carbonEmissionBar",
@@ -158,6 +160,7 @@ function drawAllUi() {
 function updateUi() {
     manageBar();
     manageElement();
+    manageInfoBox();
 }
 
 function initUi() {
@@ -302,6 +305,71 @@ function manageElement() {
             allUi["elementImg" + hotkey].positionY = yOfElement - 10;
             allUi["elementImg" + hotkey].width = lengthOfElement + 20;
             allUi["elementImg" + hotkey].height = heightOfElement + 20;
+        }
+    }
+}
+
+function manageInfoBox() {
+    let wOfBox = windowInnerWidth / 5;
+    let hOfBox = windowInnerHeight / 1.25;
+    let xOfBox = windowInnerWidth - wOfBox;
+    let yOfBox = windowInnerHeight / 2 - hOfBox / 2;
+    let xOfBoxForLoop;
+    if (infoBoxOpen) {
+        xOfBoxForLoop = xOfBox;
+    } else {
+        xOfBoxForLoop = xOfBox + wOfBox;
+    }
+
+    allUi["infoBox"].positionX = xOfBoxForLoop;
+    allUi["infoBox"].positionY = yOfBox;
+    allUi["infoBox"].width = wOfBox;
+    allUi["infoBox"].height = hOfBox;
+
+    let xOfIndicator = xOfBoxForLoop - wOfBox / 10;
+    let yOfIndicator = windowInnerHeight / 2 - hOfBox / 10 / 2;
+    let wOfIndicator = wOfBox / 10;
+    let hOfIndicator = hOfBox / 10;
+
+    allUi["indicator"].positionX = xOfIndicator;
+    allUi["indicator"].positionY = yOfIndicator;
+    allUi["indicator"].width = wOfIndicator;
+    allUi["indicator"].height = hOfIndicator;
+
+    let wOfBoxElementBox = wOfBox / 1.5;
+    let hOfBoxElementBox = hOfBox / 4.5;
+    let xOfBoxElementBox = (xOfBoxForLoop + (wOfBox / 2)) - (wOfBoxElementBox / 2);
+    let yOfBoxElementBox = yOfBox + 20;
+
+    allUi["infoBoxElementBigImageBox"].positionX = xOfBoxElementBox;
+    allUi["infoBoxElementBigImageBox"].positionY = yOfBoxElementBox;
+    allUi["infoBoxElementBigImageBox"].width = wOfBoxElementBox;
+    allUi["infoBoxElementBigImageBox"].height = hOfBoxElementBox;
+
+    allUi["infoBoxElementBigImageBoxImg"].image = elementImage[5];
+    allUi["infoBoxElementBigImageBoxImg"].positionX = xOfBoxElementBox
+    allUi["infoBoxElementBigImageBoxImg"].positionY = yOfBoxElementBox;
+    allUi["infoBoxElementBigImageBoxImg"].width = wOfBoxElementBox;
+    allUi["infoBoxElementBigImageBoxImg"].height = hOfBoxElementBox;
+
+}
+
+function mousePressed() {
+    for (let index = 0; index < numOfElement; index = index + 1) {
+        if (isMouseOverUi(allUi["element" + index])) {
+            if (hotkey == index) {
+                hotkey = -1;
+            } else {
+                hotkey = index;
+            }
+        }
+    }
+
+    if (isMouseOverUi(allUi["indicator"])) {
+        if (infoBoxOpen) {
+            infoBoxOpen = false;
+        } else {
+            infoBoxOpen = true;
         }
     }
 }

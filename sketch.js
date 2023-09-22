@@ -27,8 +27,6 @@ let energy = 1000;
 
 let windowInnerWidth = window.innerWidth;
 let windowInnerHeight = window.innerHeight;
-let infoBoxOpen = false;
-let infoBoxIndicator = [];
 
 function windowResized() {
     tileSize = windowWidth / 30;
@@ -54,6 +52,7 @@ function setup() {
     canvas.mouseClicked(canvasClicked);
 
     initGrid();
+
     initUi();
 
     bgsong();
@@ -97,8 +96,6 @@ function draw() {
 
     updateUi();
     drawAllUi();
-
-    manageInfoBox();
 }
 
 function bgsong() {
@@ -250,33 +247,6 @@ function getTile(x, y) {
     return tileGrid[Math.floor(y / tileSize)][Math.floor(x / tileSize)];
 }
 
-function mousePressed() {
-    for (let index = 0; index < numOfElement; index = index + 1) {
-        if (isMouseOverUi(allUi["element" + index])) {
-            if (hotkey == index) {
-                hotkey = -1;
-            } else {
-                hotkey = index;
-            }
-        }
-    }
-
-    if (
-        isMouseOver(
-            infoBoxIndicator[0],
-            infoBoxIndicator[1],
-            infoBoxIndicator[2],
-            infoBoxIndicator[3]
-        )
-    ) {
-        if (infoBoxOpen) {
-            infoBoxOpen = false;
-        } else {
-            infoBoxOpen = true;
-        }
-    }
-}
-
 function openFullscreen() {
     if (fullScreenElement.requestFullscreen) {
         fullScreenElement.requestFullscreen();
@@ -295,58 +265,6 @@ function closeFullscreen() {
     } else if (document.msExitFullscreen) {
         document.msExitFullScreen();
     }
-}
-
-function manageInfoBox() {
-    let wOfBox = windowInnerWidth / 5;
-    let hOfBox = windowInnerHeight / 1.25;
-    let xOfBox = windowInnerWidth - wOfBox;
-    let yOfBox = windowInnerHeight / 2 - hOfBox / 2;
-    let xOfBoxForLoop;
-    if (infoBoxOpen) {
-        xOfBoxForLoop = xOfBox;
-    } else {
-        xOfBoxForLoop = xOfBox + wOfBox;
-    }
-
-    let infoBox = allUi["infoBox"];
-    infoBox.positionX = xOfBoxForLoop;
-    infoBox.positionY = yOfBox;
-    infoBox.width = wOfBox;
-    infoBox.height = hOfBox;
-    infoBox.color = 250;
-
-    let xOfIndicator = xOfBoxForLoop - wOfBox / 10;
-    let yOfIndicator = windowInnerHeight / 2 - hOfBox / 10 / 2;
-    let wOfIndicator = wOfBox / 10;
-    let hOfIndicator = hOfBox / 10;
-
-    let indicator = allUi["indicator"];
-    indicator.positionX = xOfIndicator;
-    indicator.positionY = yOfIndicator;
-    indicator.width = wOfIndicator;
-    indicator.height = hOfIndicator;
-    indicator.color = 250;
-    infoBoxIndicator = [xOfIndicator, yOfIndicator, wOfIndicator, hOfIndicator];
-
-    let wOfBoxElementBox = wOfBox / 1.5;
-    let hOfBoxElementBox = hOfBox / 4.5;
-    let xOfBoxElementBox = (xOfBoxForLoop + (wOfBox / 2)) - (wOfBoxElementBox / 2);
-    let yOfBoxElementBox = yOfBox + 20;
-
-    let infoBoxElementBox = allUi["infoBoxElementBigImageBox"];
-    infoBoxElementBox.positionX = xOfBoxElementBox;
-    infoBoxElementBox.positionY = yOfBoxElementBox;
-    infoBoxElementBox.width = wOfBoxElementBox;
-    infoBoxElementBox.height = hOfBoxElementBox;
-
-    let infoBoxElementBoxImg = allUi["infoBoxElementBigImageBoxImg"];
-    infoBoxElementBoxImg.image = elementImage[5];
-    infoBoxElementBoxImg.positionX = xOfBoxElementBox
-    infoBoxElementBoxImg.positionY = yOfBoxElementBox;
-    infoBoxElementBoxImg.width = wOfBoxElementBox;
-    infoBoxElementBoxImg.height = hOfBoxElementBox;
-
 }
 
 /**

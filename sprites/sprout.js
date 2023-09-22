@@ -52,24 +52,15 @@ class Sprout extends BaseSprite {
     }
 
     chopWood() {
-        let tileX = Math.floor(this.x / tileSize);
-        let tileY = Math.floor(this.y / tileSize);
-        const adjacentTiles = [
-            [tileX - 1, tileY], // Left
-            [tileX + 1, tileY], // Right
-            [tileX, tileY - 1], // Up
-            [tileX, tileY + 1] // Down
-        ];
+        const currentTile = getTile(this.x, this.y);
 
-        for (const [adjX, adjY] of adjacentTiles) {
-            if (inBoundOfGrid(adjX, adjY)) {
-                if (tileGrid[adjY][adjX].sprite instanceof Tree) {
-                    tileGrid[adjY][adjX].remove();
-                    // tree + 1
-                    resource += 1;
+        for (const neighbor of findNeighbour(currentTile)) {
+            if (tileGrid[neighbor.y][neighbor.x].sprite instanceof Tree && resource < barValue[0].max) {
+                tileGrid[neighbor.y][neighbor.x].remove();
 
-                    return true;
-                }
+                resource += 1;
+
+                return true;
             }
         }
         return false;

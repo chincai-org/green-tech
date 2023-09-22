@@ -6,19 +6,19 @@ let infoBoxOpen = false;
 
 let barValue = [
     {
-        barName: "carbonEmissionBar",
-        innerText: "Carbon Emission",
+        barName: "resourcesBar",
+        innerText: "Resources",
         display: true,
         min: 0,
         max: 1000,
         displayValueAndMax: true,
         displayInnerText: true,
-        value: 600,
+        value: 0,
         backgroundColor: "magenta",
         fillColor: "cyan",
         valueMaxColor: "black",
         innerTextColor: "black",
-        barTextSize: 10
+        barTextSize: 15
     },
     {
         barName: "carbonEmissionBar",
@@ -33,7 +33,7 @@ let barValue = [
         fillColor: "cyan",
         valueMaxColor: "black",
         innerTextColor: "black",
-        barTextSize: 10
+        barTextSize: 15
     },
     {
         barName: "carbonEmissionBar",
@@ -48,7 +48,7 @@ let barValue = [
         fillColor: "cyan",
         valueMaxColor: "black",
         innerTextColor: "black",
-        barTextSize: 10
+        barTextSize: 15
     }
 ];
 
@@ -177,8 +177,8 @@ function initUi() {
     for (let [loopBar, barItem] of barValue.entries()) {
         new RectUi(0, 0, 0, 0, barItem.backgroundColor, "bar" + loopBar + "1");
         new RectUi(0, 0, 0, 0, barItem.fillColor, "bar" + loopBar + "2");
-        new TextUi(barItem.value + "/" + barItem.max, 0, 0, barItem.barTextSize, barItem.valueMaxColor, "barInnerText" + loopBar);
-        new TextUi(barItem.innerText, 0, 0, barItem.barTextSize, barItem.innerTextColor, "barValueText" + loopBar
+        new TextUi(barItem.value + "/" + barItem.max, 0, 0, barItem.barTextSize, barItem.valueMaxColor, "barValueText" + loopBar);
+        new TextUi(barItem.innerText, 0, 0, barItem.barTextSize, barItem.innerTextColor, "barInnerText" + loopBar
         );
     }
 
@@ -201,11 +201,14 @@ function initUi() {
 
 
 function manageBar() {
+    // Resources change
+    barValue[0].value = resource;
+
     let xOfBar = windowInnerWidth / 50;
     let yOfBar = windowInnerHeight / 50;
     let heightBetweenBar = windowInnerHeight / 50;
     let lengthOfBar = windowInnerWidth / 3;
-    let heightOfBar = 10;
+    let heightOfBar = 15;
     let hideBar = 0;
     for (let [loopBar, barItem] of barValue.entries()) {
         if (!barItem.display) {
@@ -229,13 +232,14 @@ function manageBar() {
         allUi["bar" + loopBar + "2"].width = lengthOfBarForLoop;
         allUi["bar" + loopBar + "2"].height = heightOfBar;
 
-        let xOfInnerText = xOfBar + lengthOfBar / 2;
-        let yOfInnerText = yOfBarForLoop + 9;
-        if (barItem.displayValueAndMax) {
+        let xOfInnerText = xOfBar + lengthOfBar / 2 - 50;
+        let yOfInnerText = yOfBarForLoop + 12;
+        if (barItem.displayInnerText) {
             allUi["barInnerText" + loopBar].positionX = xOfInnerText + 11;
             allUi["barInnerText" + loopBar].positionY = yOfInnerText;
         }
-        if (barItem.displayInnerText) {
+        if (barItem.displayValueAndMax) {
+            allUi["barValueText" + loopBar].text = barItem.value + "/" + barItem.max;
             allUi["barValueText" + loopBar].positionX = xOfBar + 2;
             allUi["barValueText" + loopBar].positionY = yOfInnerText;
         }

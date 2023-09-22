@@ -1,4 +1,4 @@
-const allUi = [];
+const allUi = {};
 const numOfElement = 5;
 const numOfElementAddOne = numOfElement + 1;
 
@@ -53,22 +53,22 @@ let barValue = [
 ];
 
 class Ui {
-    constructor(positionX, positionY) {
+    constructor(positionX, positionY, tag) {
         this.positionX = positionX;
         this.positionY = positionY;
+        this.tag = tag;
 
-        allUi.push(this);
+        allUi[tag] = this;
     }
 }
 
 class RectUi extends Ui {
     constructor(positionX, positionY, width, height, color = "white", tag = "not set") {
-        super(positionX, positionY);
+        super(positionX, positionY, tag);
 
         this.width = width;
         this.height = height;
         this.color = color;
-        this.tag = tag;
     }
 
     draw() {
@@ -79,12 +79,11 @@ class RectUi extends Ui {
 
 class ImgUi extends Ui {
     constructor(image, positionX, positionY, width, height, tag = "not set") {
-        super(positionX, positionY);
+        super(positionX, positionY, tag);
 
         this.image = image;
         this.width = width;
         this.height = height;
-        this.tag = tag;
     }
 
     draw() {
@@ -93,11 +92,10 @@ class ImgUi extends Ui {
 }
 class TextUi extends Ui {
     constructor(text, positionX, positionY, textSize, textColor, tag = "not set") {
-        super(positionX, positionY);
+        super(positionX, positionY, tag);
         this.text = text;
         this.textSize = textSize;
         this.textColor = textColor;
-        this.tag = tag;
 
         this.textStroke = null;
     }
@@ -114,18 +112,19 @@ class TextUi extends Ui {
     }
 }
 
-function getUiByTag(tag) {
-    return allUi.find(ui => ui.tag === tag);
-}
-
 function isMouseOnAnyUi() {
-    return allUi.some(
-        ui =>
+    for (let tag in allUi) {
+        const ui = allUi[tag];
+        if (
             mouseX < ui.positionX + ui.width &&
             mouseX > ui.positionX &&
             mouseY > ui.positionY &&
             mouseY < ui.positionY + ui.height
-    );
+        ) {
+            return true;
+        }
+    }
+    return false;
 }
 
 /**
@@ -153,9 +152,9 @@ function isMouseOver(positionX, positionY, width, height) {
 }
 
 function drawAllUi() {
-    allUi.forEach(ui => {
-        ui.draw();
-    });
+    for (let tag in allUi) {
+        allUi[tag].draw();
+    }
 }
 
 function manageUi() {
@@ -276,25 +275,25 @@ function mouseOverUi() {
                 element.heightOfElement
             )
         ) {
-            let elementUi = getUiByTag("element" + index.toString());
+            let elementUi = allUi["element" + index.toString()];
             elementUi.positionX = element.xOfElementForLoop - 10;
             elementUi.positionY = element.yOfElement - 10;
             elementUi.width = element.lengthOfElement + 20;
             elementUi.height = element.heightOfElement + 20;
 
-            let elementImg = getUiByTag("elementImg" + index.toString());
+            let elementImg = allUi["elementImg" + index.toString()];
             elementImg.positionX = element.xOfElementForLoop - 10;
             elementImg.positionY = element.yOfElement - 10;
             elementImg.width = element.lengthOfElement + 20;
             elementImg.height = element.heightOfElement + 20;
         } else {
-            let elementUi = getUiByTag("element" + index.toString());
+            let elementUi = allUi["element" + index.toString()];
             elementUi.positionX = element.xOfElementForLoop;
             elementUi.positionY = element.yOfElement;
             elementUi.width = element.lengthOfElement;
             elementUi.height = element.heightOfElement;
 
-            let elementImg = getUiByTag("elementImg" + index.toString());
+            let elementImg = allUi["elementImg" + index.toString()];
             elementImg.positionX = element.xOfElementForLoop;
             elementImg.positionY = element.yOfElement;
             elementImg.width = element.lengthOfElement;
@@ -310,14 +309,14 @@ function emphasizeSelectedElement() {
     } else {
         const element = elementCoordinate[hotkey];
 
-        let elementUi = getUiByTag("element" + (hotkey).toString());
+        let elementUi = allUi["element" + (hotkey).toString()];
 
         elementUi.positionX = element.xOfElementForLoop - 10;
         elementUi.positionY = element.yOfElement - 10;
         elementUi.width = element.lengthOfElement + 20;
         elementUi.height = element.heightOfElement + 20;
 
-        let elementImg = getUiByTag("elementImg" + (hotkey).toString());
+        let elementImg = allUi["elementImg" + (hotkey).toString()];
 
         elementImg.positionX = element.xOfElementForLoop - 10;
         elementImg.positionY = element.yOfElement - 10;

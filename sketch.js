@@ -98,7 +98,6 @@ function draw() {
     manageUi();
     drawAllUi();
 
-    manageBox();
     manageInfoBox();
 }
 
@@ -227,7 +226,7 @@ function drawGridLine() {
 
 function drawText() {
     virtualEdit(() => {
-        let resourceUi = getUiByTag("resource");
+        let resourceUi = allUi["resource"];
         resourceUi.textColor = "white";
         resourceUi.textStroke = "#f5f5dc";
         resourceUi.textSize = 20;
@@ -249,10 +248,6 @@ function randint(min, max) {
  */
 function getTile(x, y) {
     return tileGrid[Math.floor(y / tileSize)][Math.floor(x / tileSize)];
-}
-
-function manageBox() {
-    emphasizeSelectedElement();
 }
 
 function mousePressed() {
@@ -321,7 +316,7 @@ function manageInfoBox() {
         xOfBoxForLoop = xOfBox + wOfBox;
     }
 
-    let infoBox = getUiByTag("infoBox");
+    let infoBox = allUi["infoBox"];
     infoBox.positionX = xOfBoxForLoop;
     infoBox.positionY = yOfBox;
     infoBox.width = wOfBox;
@@ -333,7 +328,7 @@ function manageInfoBox() {
     let wOfIndicator = wOfBox / 10;
     let hOfIndicator = hOfBox / 10;
 
-    let indicator = getUiByTag("indicator");
+    let indicator = allUi["indicator"];
     indicator.positionX = xOfIndicator;
     indicator.positionY = yOfIndicator;
     indicator.width = wOfIndicator;
@@ -346,19 +341,19 @@ function manageInfoBox() {
     let xOfBoxElementBox = (xOfBoxForLoop + (wOfBox / 2)) - (wOfBoxElementBox / 2);
     let yOfBoxElementBox = yOfBox + 20;
 
-    let infoBoxElementBox = getUiByTag("infoBoxElementBigImageBox");
+    let infoBoxElementBox = allUi["infoBoxElementBigImageBox"];
     infoBoxElementBox.positionX = xOfBoxElementBox;
     infoBoxElementBox.positionY = yOfBoxElementBox;
     infoBoxElementBox.width = wOfBoxElementBox;
     infoBoxElementBox.height = hOfBoxElementBox;
 
-    let infoBoxElementBoxImg = getUiByTag("infoBoxElementBigImageBoxImg");
+    let infoBoxElementBoxImg = allUi["infoBoxElementBigImageBoxImg"];
     infoBoxElementBoxImg.image = elementImage[5];
     infoBoxElementBoxImg.positionX = xOfBoxElementBox
     infoBoxElementBoxImg.positionY = yOfBoxElementBox;
     infoBoxElementBoxImg.width = wOfBoxElementBox;
     infoBoxElementBoxImg.height = hOfBoxElementBox;
-    
+
 }
 
 /**

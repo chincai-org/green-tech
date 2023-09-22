@@ -157,7 +157,8 @@ function drawAllUi() {
     }
 }
 
-function manageUi() {
+function updateUi() {
+    manageBar();
     mouseOverUi();
     emphasizeSelectedElement();
 }
@@ -174,7 +175,13 @@ function initUi() {
 
     drawElement();
 
-    drawBar();
+    for (let [loopBar, barItem] of barValue.entries()) {
+        new RectUi(0, 0, 0, 0, barItem.backgroundColor, "bar" + loopBar + "1");
+        new RectUi(0, 0, 0, 0, barItem.fillColor, "bar" + loopBar + "2");
+        new TextUi(barItem.value + "/" + barItem.max, 0, 0, barItem.barTextSize, barItem.valueMaxColor, "barInnerText" + loopBar);
+        new TextUi(barItem.innerText, 0, 0, barItem.barTextSize, barItem.innerTextColor, "barValueText" + loopBar
+        );
+    }
 
     new RectUi(0, 0, 1, 1, 250, "indicator");
     new RectUi(0, 0, 1, 1, 250, "infoBox");
@@ -186,7 +193,7 @@ function initUi() {
 }
 
 
-function drawBar() {
+function manageBar() {
     let xOfBar = windowInnerWidth / 50;
     let yOfBar = windowInnerHeight / 50;
     let heightBetweenBar = windowInnerHeight / 50;
@@ -205,28 +212,25 @@ function drawBar() {
             heightBetweenBar * (loopBar - hideBar);
         let lengthOfBarForLoop =
             (lengthOfBar / (barItem.max - barItem.min)) * barItem.value;
+        allUi["bar" + loopBar + "1"].positionX = xOfBar;
+        allUi["bar" + loopBar + "1"].positionY = yOfBarForLoop;
+        allUi["bar" + loopBar + "1"].width = lengthOfBar;
+        allUi["bar" + loopBar + "1"].height = heightOfBar;
 
-
-        new RectUi(xOfBar, yOfBarForLoop, lengthOfBar, heightOfBar, barItem.backgroundColor, "bar" + loopBar + "1");
-        new RectUi(xOfBar, yOfBarForLoop, lengthOfBarForLoop, heightOfBar, barItem.fillColor, "bar" + loopBar + "2");
+        allUi["bar" + loopBar + "2"].positionX = xOfBar;
+        allUi["bar" + loopBar + "2"].positionY = yOfBarForLoop;
+        allUi["bar" + loopBar + "2"].width = lengthOfBarForLoop;
+        allUi["bar" + loopBar + "2"].height = heightOfBar;
 
         let xOfInnerText = xOfBar + lengthOfBar / 2;
         let yOfInnerText = yOfBarForLoop + 9;
         if (barItem.displayValueAndMax) {
-            new TextUi(barItem.value + "/" + barItem.max,
-                xOfInnerText + 11, yOfInnerText,
-                barItem.barTextSize,
-                barItem.valueMaxColor,
-                "barInnerText" + loopBar
-            );
+            allUi["barInnerText" + loopBar].positionX = xOfInnerText + 11;
+            allUi["barInnerText" + loopBar].positionY = yOfInnerText;
         }
         if (barItem.displayInnerText) {
-            new TextUi(barItem.innerText,
-                xOfBar + 2, yOfInnerText,
-                barItem.barTextSize,
-                barItem.innerTextColor,
-                "barValueText" + loopBar
-            );
+            allUi["barValueText" + loopBar].positionX = xOfBar + 2;
+            allUi["barValueText" + loopBar].positionY = yOfInnerText;
         }
     }
 }

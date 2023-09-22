@@ -95,7 +95,7 @@ function draw() {
 
     lastUpdate = now;
 
-    manageUi();
+    updateUi();
     drawAllUi();
 
     manageInfoBox();

@@ -2,7 +2,7 @@ const allUi = {};
 const numOfElement = 5;
 const numOfElementAddOne = numOfElement + 1;
 
-let infoBoxOpen = false;
+let infoBoxOpen = true;
 
 let barValue = [
     {
@@ -242,6 +242,10 @@ function initUi() {
             new RectUi(0, 1, 1, 1, 250, "infoBoxElementLevel" + index0.toString() + "-" + index.toString());
         }
     } 
+    
+    for (let index = 0; index < 3; index = index + 1) {
+        new ImgUi(elementImage[0], 0, 1, 1, 1, `infoBoxElementBigLevel${index.toString()}`);
+    }
 
 }
 
@@ -421,7 +425,17 @@ function manageInfoBox() {
             allUi[infoBoxElementLevelName].height = allUi[infoBoxElementLevelName].width 
         }
         secondYPosition = allUi[`infoBoxElementLevel${index0.toString()}-2`].positionY + (wOfBox / 12) + 30;
+        let infoBoxElementBigLevel = `infoBoxElementBigLevel${index0.toString()}`; 
+        let infoBoxElementLevelName = allUi[`infoBoxElementLevel${index0.toString()}-2`];
+        allUi[infoBoxElementBigLevel].image = elementImage[5]; 
+        allUi[infoBoxElementBigLevel].positionX = infoBoxElementLevelName.positionX + ((wOfBoxElementBox - infoBoxElementLevelName.width) / 2); 
+        allUi[infoBoxElementBigLevel].width = (wOfBoxElementBox + xOfBoxElementBox) - allUi[infoBoxElementBigLevel].positionX; 
+        allUi[infoBoxElementBigLevel].positionY = allUi[`infoBoxElementLevel${index0.toString()}-0`].positionY; 
+        allUi[infoBoxElementBigLevel].height = infoBoxElementLevelName.positionY + infoBoxElementLevelName.height - allUi[`infoBoxElementLevel${index0.toString()}-0`].positionY; 
     } 
+
+
+
 }
 
 function manageResourceText() {

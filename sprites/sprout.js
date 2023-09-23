@@ -9,11 +9,12 @@ class Sprout extends BaseSprite {
             x,
             y,
             color: 256,
-            speed: window.innerWidth / 30 / (window.innerWidth / 15)
+            speed: widthRatio * 1
         });
     }
 
     move(deltaTime) {
+        console.log(this.speed);
         let right = keyIsDown(RIGHT_ARROW) || keyIsDown(68);
         let left = keyIsDown(LEFT_ARROW) || keyIsDown(65);
         let up = keyIsDown(UP_ARROW) || keyIsDown(87);
@@ -55,7 +56,10 @@ class Sprout extends BaseSprite {
         const currentTile = getTile(this.x, this.y);
 
         for (const neighbor of findNeighbour(currentTile)) {
-            if (tileGrid[neighbor.y][neighbor.x].sprite instanceof Tree && resource < barValue[0].max) {
+            if (
+                tileGrid[neighbor.y][neighbor.x].sprite instanceof Tree &&
+                resource < barValue[0].max
+            ) {
                 tileGrid[neighbor.y][neighbor.x].remove();
 
                 resource += 1;

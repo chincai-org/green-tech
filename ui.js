@@ -63,7 +63,14 @@ class Ui {
 }
 
 class RectUi extends Ui {
-    constructor(positionX, positionY, width, height, color = "white", tag = "not set") {
+    constructor(
+        positionX,
+        positionY,
+        width,
+        height,
+        color = "white",
+        tag = "not set"
+    ) {
         super(positionX, positionY, tag);
 
         this.width = width;
@@ -87,11 +94,24 @@ class ImgUi extends Ui {
     }
 
     draw() {
-        image(this.image, this.positionX, this.positionY, this.width, this.height);
+        image(
+            this.image,
+            this.positionX,
+            this.positionY,
+            this.width,
+            this.height
+        );
     }
 }
 class TextUi extends Ui {
-    constructor(text, positionX, positionY, textSize, textColor, tag = "not set") {
+    constructor(
+        text,
+        positionX,
+        positionY,
+        textSize,
+        textColor,
+        tag = "not set"
+    ) {
         super(positionX, positionY, tag);
         this.text = text;
         this.textSize = textSize;
@@ -177,16 +197,35 @@ function initUi() {
     for (let [loopBar, barItem] of barValue.entries()) {
         new RectUi(0, 0, 0, 0, barItem.backgroundColor, "bar" + loopBar + "1");
         new RectUi(0, 0, 0, 0, barItem.fillColor, "bar" + loopBar + "2");
-        new TextUi(barItem.value + "/" + barItem.max, 0, 0, barItem.barTextSize, barItem.valueMaxColor, "barValueText" + loopBar);
-        new TextUi(barItem.innerText, 0, 0, barItem.barTextSize, barItem.innerTextColor, "barInnerText" + loopBar
+        new TextUi(
+            barItem.value + "/" + barItem.max,
+            0,
+            0,
+            barItem.barTextSize,
+            barItem.valueMaxColor,
+            "barValueText" + loopBar
+        );
+        new TextUi(
+            barItem.innerText,
+            0,
+            0,
+            barItem.barTextSize,
+            barItem.innerTextColor,
+            "barInnerText" + loopBar
         );
     }
-
 
     new RectUi(0, 0, 0, 0, "white", "box");
     for (let index = 0; index < numOfElement; index = index + 1) {
         new RectUi(0, 0, 0, 0, "white", "element" + index.toString());
-        new ImgUi(elementImage[index], 0, 0, 0, 0, "elementImg" + index.toString());
+        new ImgUi(
+            elementImage[index],
+            0,
+            0,
+            0,
+            0,
+            "elementImg" + index.toString()
+        );
     }
 
     new RectUi(0, 0, 1, 1, 250, "indicator");
@@ -199,15 +238,14 @@ function initUi() {
     allUi["resource"].textStroke = "#f5f5dc";
 }
 
-
 function manageBar() {
     // Resources change
     barValue[0].value = resource;
 
-    let xOfBar = windowInnerWidth / 50;
-    let yOfBar = windowInnerHeight / 50;
-    let heightBetweenBar = windowInnerHeight / 50;
-    let lengthOfBar = windowInnerWidth / 3;
+    let xOfBar = windowWidth / 50;
+    let yOfBar = windowHeight / 50;
+    let heightBetweenBar = windowHeight / 50;
+    let lengthOfBar = windowWidth / 3;
     let heightOfBar = 15;
     let hideBar = 0;
     for (let [loopBar, barItem] of barValue.entries()) {
@@ -239,7 +277,8 @@ function manageBar() {
             allUi["barInnerText" + loopBar].positionY = yOfInnerText;
         }
         if (barItem.displayValueAndMax) {
-            allUi["barValueText" + loopBar].text = barItem.value + "/" + barItem.max;
+            allUi["barValueText" + loopBar].text =
+                barItem.value + "/" + barItem.max;
             allUi["barValueText" + loopBar].positionX = xOfBar + 2;
             allUi["barValueText" + loopBar].positionY = yOfInnerText;
         }
@@ -248,10 +287,10 @@ function manageBar() {
 
 function manageElement() {
     // Draw Box
-    let lengthOfBox = windowInnerWidth / 3;
-    let heightOfBox = windowInnerHeight / 10;
-    let xOfBox = windowInnerWidth / 2 - lengthOfBox / 2;
-    let yOfBox = windowInnerHeight - windowInnerHeight / 5.9;
+    let lengthOfBox = windowWidth / 3;
+    let heightOfBox = windowHeight / 10;
+    let xOfBox = windowWidth / 2 - lengthOfBox / 2;
+    let yOfBox = windowHeight - windowHeight / 5.9;
     new RectUi(xOfBox, yOfBox, lengthOfBox, heightOfBox, "white", "box");
 
     // Draw Element
@@ -299,13 +338,15 @@ function manageElement() {
 
         // When emphasied
         if (hotkey != -1) {
-            xOfElementForLoop = xOfElement + lengthOfElement * hotkey + hotkey * widthBetweenElement;
+            xOfElementForLoop =
+                xOfElement +
+                lengthOfElement * hotkey +
+                hotkey * widthBetweenElement;
 
             allUi["element" + hotkey].positionX = xOfElementForLoop - 10;
             allUi["element" + hotkey].positionY = yOfElement - 10;
             allUi["element" + hotkey].width = lengthOfElement + 20;
             allUi["element" + hotkey].height = heightOfElement + 20;
-
 
             allUi["elementImg" + hotkey].positionX = xOfElementForLoop - 10;
             allUi["elementImg" + hotkey].positionY = yOfElement - 10;
@@ -316,10 +357,10 @@ function manageElement() {
 }
 
 function manageInfoBox() {
-    let wOfBox = windowInnerWidth / 5;
-    let hOfBox = windowInnerHeight / 1.25;
-    let xOfBox = windowInnerWidth - wOfBox;
-    let yOfBox = windowInnerHeight / 2 - hOfBox / 2;
+    let wOfBox = windowWidth / 5;
+    let hOfBox = windowHeight / 1.25;
+    let xOfBox = windowWidth - wOfBox;
+    let yOfBox = windowHeight / 2 - hOfBox / 2;
     let xOfBoxForLoop;
     if (infoBoxOpen) {
         xOfBoxForLoop = xOfBox;
@@ -333,7 +374,7 @@ function manageInfoBox() {
     allUi["infoBox"].height = hOfBox;
 
     let xOfIndicator = xOfBoxForLoop - wOfBox / 10;
-    let yOfIndicator = windowInnerHeight / 2 - hOfBox / 10 / 2;
+    let yOfIndicator = windowHeight / 2 - hOfBox / 10 / 2;
     let wOfIndicator = wOfBox / 10;
     let hOfIndicator = hOfBox / 10;
 
@@ -344,7 +385,7 @@ function manageInfoBox() {
 
     let wOfBoxElementBox = wOfBox / 1.5;
     let hOfBoxElementBox = hOfBox / 4.5;
-    let xOfBoxElementBox = (xOfBoxForLoop + (wOfBox / 2)) - (wOfBoxElementBox / 2);
+    let xOfBoxElementBox = xOfBoxForLoop + wOfBox / 2 - wOfBoxElementBox / 2;
     let yOfBoxElementBox = yOfBox + 20;
 
     allUi["infoBoxElementBigImageBox"].positionX = xOfBoxElementBox;
@@ -353,11 +394,10 @@ function manageInfoBox() {
     allUi["infoBoxElementBigImageBox"].height = hOfBoxElementBox;
 
     allUi["infoBoxElementBigImageBoxImg"].image = elementImage[5];
-    allUi["infoBoxElementBigImageBoxImg"].positionX = xOfBoxElementBox
+    allUi["infoBoxElementBigImageBoxImg"].positionX = xOfBoxElementBox;
     allUi["infoBoxElementBigImageBoxImg"].positionY = yOfBoxElementBox;
     allUi["infoBoxElementBigImageBoxImg"].width = wOfBoxElementBox;
     allUi["infoBoxElementBigImageBoxImg"].height = hOfBoxElementBox;
-
 }
 
 function manageResourceText() {

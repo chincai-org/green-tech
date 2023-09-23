@@ -4,17 +4,21 @@
  * @property {Number} y
  */
 
-const initialWinWidth = window.innerWidth;
-const initialWinHeight = window.innerHeight;
+const constWinWidth = 1920;
+const constWinHeight = 1080;
+let winWidth = window.innerWidth;
+let winHeight = window.innerHeight;
+let widthRatio = winWidth / constWinWidth;
+let heightRatio = winHeight / constWinHeight;
+
 const fullScreenElement = document.documentElement;
 const movables = [];
 const sprout = new Sprout(50, 50);
 const gridWidth = 100;
 const gridHeight = 100;
 const tileGrid = [];
-const initialTileSize = initialWinWidth / 30;
-let tileSize = initialWinWidth / 30;
-let song;
+let tileSize = (constWinWidth * widthRatio) / 30;
+// let song;
 
 let lastUpdate = Date.now();
 let deltaTime;
@@ -25,21 +29,20 @@ let hotkey = -1;
 let resource = 0;
 let energy = 1000;
 
-let windowInnerWidth = window.innerWidth;
-let windowInnerHeight = window.innerHeight;
-
 function windowResized() {
-    tileSize = windowWidth / 30;
-    sprout.speed = window.innerWidth / 30 / (initialWinWidth / 15);
-    resizeCanvas(windowWidth, windowHeight);
-
-    windowInnerWidth = window.innerWidth;
-    windowInnerHeight = window.innerHeight;
+    console.log("resized");
+    winWidth = window.innerWidth;
+    winHeight = window.innerHeight;
+    widthRatio = winWidth / constWinWidth;
+    heightRatio = winHeight / constWinHeight;
+    tileSize = (constWinWidth * widthRatio) / 30;
+    sprout.speed = widthRatio * 1;
+    resizeCanvas(winWidth, winHeight);
 }
 
 function preload() {
     soundFormats("ogg", "wav");
-    song = loadSound("bestmusic.wav");
+    // song = loadSound("bestmusic.wav");
 }
 
 function setup() {
@@ -55,7 +58,7 @@ function setup() {
 
     initUi();
 
-    bgsong();
+    // bgsong();
 }
 
 function draw() {
@@ -97,9 +100,9 @@ function draw() {
     drawAllUi();
 }
 
-function bgsong() {
-    song.loop();
-}
+// function bgsong() {
+//     song.loop();
+// }
 
 function keyPressed() {
     // Check if key code is CTRL

@@ -5,7 +5,12 @@
  */
 class Tree extends BaseSprite {
     constructor(x, y) {
-        super({ x, y, color: "#00ff00" })
+        super({
+            x,
+            y,
+            color: "#00ff00",
+            collision_layers: ['tree']
+        })
         this.hasGrown = false;
         this.lastUpdate = Date.now();
         this.timeToGrow = 6000;

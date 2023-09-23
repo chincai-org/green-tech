@@ -123,4 +123,18 @@ class BaseSprite {
 
         return false;
     }
+
+    collideHypothetically(other, x, y) {
+        for (let mask of this.collision_masks) {
+            if (other.collision_layers.includes(mask)) {
+                let dist = createVector(x - other.x, y - other.y);
+                if (dist.mag() < this.collide_range) {
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        return false;
+    }
 }

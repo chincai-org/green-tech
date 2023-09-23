@@ -9,7 +9,8 @@ class Sprout extends BaseSprite {
             x,
             y,
             color: 256,
-            speed: widthRatio * 1
+            speed: widthRatio * 1,
+            collision_layers: ['sprout']
         });
     }
 

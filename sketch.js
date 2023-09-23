@@ -275,6 +275,9 @@ function pathFind(sprite, ...targetClasses) {
     const tileX = startTile.x;
     const tileY = startTile.y;
 
+    // Stop lag
+    if (anyInstance(startTile.sprite, targetClasses)) return [];
+
     // implement BFS
     const queue = [[createVector(tileX, tileY)]];
     const visited = new Set();
@@ -289,14 +292,12 @@ function pathFind(sprite, ...targetClasses) {
             const neighborTile = tileGrid[neighbor.y][neighbor.x];
 
             if (visited.has(`${neighbor.x},${neighbor.y}`)) continue; // Ignore visited tile
-            if (neighborTile.sprite != null) {
-                if (anyInstance(neighborTile.sprite, targetClasses)) {
-                    const newPath = currentPath.concat([neighborTile]);
-                    return newPath;
-                }
-                continue; // Ignore collision tile
-                // TODO: collision for non tile
-            }
+
+            // Check for hypothetical collision
+            if (neighborTile.sprite != null &&
+                !anyInstance(neighborTile.sprite, targetClasses) &&
+                sprite.collideHypothetically(neighborTile.sprite, neighborTile.x * tileSize, neighborTile.y * tileSize))
+                continue;
 
             visited.add(`${neighbor.x},${neighbor.y}`);
 

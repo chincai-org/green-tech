@@ -13,7 +13,7 @@ let barValue = [
         max: 1000,
         displayValueAndMax: true,
         displayInnerText: true,
-        value: 0,
+        value: resource,
         backgroundColor: "magenta",
         fillColor: "cyan",
         valueMaxColor: "black",

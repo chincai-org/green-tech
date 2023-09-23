@@ -26,7 +26,7 @@ let displayCoord = false;
 let camX, camY;
 let hotkey = -1;
 
-let resource = 0;
+let resource = 50;
 let energy = 1000;
 
 function windowResized() {
@@ -137,15 +137,20 @@ function canvasClicked() {
 
     let tile = getTile(realX, realY);
 
-    if (isMouseOnAnyUi()) {
+    if (isMouseOnAnyUi() || tile === getTile(sprout.x, sprout.y) || tile.sprite != null) {
         return;
-    } else if (getTile(sprout.x, sprout.y) === tile) {
-        return; // Prevent place sprite in yourselve
+        // Preven placing when:
+        // 1. sprout is in the same tile 
+        // 2. tile already have a sprite
+        // 3. is on any ui
     }
 
     switch (hotkey) {
         case 0:
-            tile.add(new Tree(0, 0));
+            if (resource >= 1) {
+                tile.add(new Tree(0, 0));
+                resource -= 1;
+            }
             break;
         case 1:
             tile.add(new PoliceStation(0, 0));

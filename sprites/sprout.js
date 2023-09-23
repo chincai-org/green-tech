@@ -58,11 +58,12 @@ class Sprout extends BaseSprite {
         for (const neighbor of findNeighbour(currentTile)) {
             if (
                 tileGrid[neighbor.y][neighbor.x].sprite instanceof Tree &&
+                tileGrid[neighbor.y][neighbor.x].sprite.hasGrown === true &&
                 resource < barValue[0].max
             ) {
                 tileGrid[neighbor.y][neighbor.x].remove();
 
-                resource += 1;
+                resource += 2;
 
                 return true;
             }

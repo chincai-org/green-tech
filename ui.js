@@ -236,6 +236,13 @@ function initUi() {
 
     new TextUi("", 0, 0, 20, 250, "resource");
     allUi["resource"].textStroke = "#f5f5dc";
+
+    for (let index0 = 0; index0 < 3; index0 = index0 + 1) {
+        for (let index = 0; index < 3; index = index + 1) {
+            new RectUi(0, 1, 1, 1, 250, "infoBoxElementLevel" + index0.toString() + "-" + index.toString());
+        }
+    } 
+
 }
 
 function manageBar() {
@@ -398,6 +405,23 @@ function manageInfoBox() {
     allUi["infoBoxElementBigImageBoxImg"].positionY = yOfBoxElementBox;
     allUi["infoBoxElementBigImageBoxImg"].width = wOfBoxElementBox;
     allUi["infoBoxElementBigImageBoxImg"].height = hOfBoxElementBox;
+
+
+    
+
+
+
+    let secondYPosition = yOfBoxElementBox + hOfBoxElementBox;
+    for (let index0 = 0; index0 < 3; index0 = index0 + 1) {
+        for (let index = 0; index < 3; index = index + 1) {
+            let infoBoxElementLevelName = `infoBoxElementLevel${index0.toString()}-${index.toString()}`; 
+            allUi[infoBoxElementLevelName].positionX = xOfBoxForLoop + (wOfBox / 6.5)
+            allUi[infoBoxElementLevelName].positionY = (wOfBox / 12 * index) + 20 + (index * 10) + secondYPosition
+            allUi[infoBoxElementLevelName].width = wOfBox / 12
+            allUi[infoBoxElementLevelName].height = allUi[infoBoxElementLevelName].width 
+        }
+        secondYPosition = allUi[`infoBoxElementLevel${index0.toString()}-2`].positionY + (wOfBox / 12) + 30;
+    } 
 }
 
 function manageResourceText() {

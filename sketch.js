@@ -285,11 +285,18 @@ function pathFind(sprite, ...targetClasses) {
         const currentPath = queue.shift();
         const lastTile = currentPath.at(-1);
 
-        for (const neighbor of findNeighbour(lastTile)) {
+        for (const neighbor of findNeighbour(lastTile)) { //temporary fix because sprite may move diagonally which may cross a obstical
             const neighborTile = tileGrid[neighbor.y][neighbor.x];
 
             if (visited.has(`${neighbor.x},${neighbor.y}`)) continue; // Ignore visited tile
-            if (neighborTile.sprite?.collide(sprite)) continue; // Ignore collision tile
+            if (neighborTile.sprite != null) {
+                if (anyInstance(neighborTile.sprite, targetClasses)) {
+                    const newPath = currentPath.concat([neighborTile]);
+                    return newPath;
+                }
+                continue; // Ignore collision tile
+                // TODO: collision for non tile
+            }
 
             visited.add(`${neighbor.x},${neighbor.y}`);
 
@@ -314,13 +321,39 @@ function findNeighbour(vector) {
 
     let result = [];
 
-    // returns neighbour to all 6 directions, and x and y cannot be lower than 0 and higher than the map size
+    // returns neighbour to all 8 directions, and x and y cannot be lower than 0 and higher than the map size
     for (let dx = -1; dx <= 1; dx++) {
         for (let dy = -1; dy <= 1; dy++) {
             if (dx === 0 && dy === 0) continue;
             const neighbour = createVector(x + dx, y + dy);
             if (inBoundOfGrid(neighbour.x, neighbour.y)) result.push(neighbour);
         }
+    }
+
+    return result;
+}
+
+/**
+ *
+ * @param {Vector} vector - coordinate of the tile
+ * @returns {Array<Vector>} - all the neighbour of the tile
+ */
+function findNeighbourNoDiagonal(vector) {
+    const { x, y } = vector;
+
+    let result = [];
+
+    const directions = [
+        { dx: 0, dy: -1 }, // Up
+        { dx: 0, dy: 1 },  // Down
+        { dx: -1, dy: 0 }, // Left
+        { dx: 1, dy: 0 },  // Right
+    ];
+
+    // returns neighbour to all 4 directions, and x and y cannot be lower than 0 and higher than the map size
+    for (const direction of directions) {
+        const neighbour = createVector(x + direction.dx, y + direction.dy);
+        if (inBoundOfGrid(neighbour.x, neighbour.y)) result.push(neighbour);
     }
 
     return result;

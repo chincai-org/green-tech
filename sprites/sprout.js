@@ -14,7 +14,6 @@ class Sprout extends BaseSprite {
     }
 
     move(deltaTime) {
-        console.log(this.speed);
         let right = keyIsDown(RIGHT_ARROW) || keyIsDown(68);
         let left = keyIsDown(LEFT_ARROW) || keyIsDown(65);
         let up = keyIsDown(UP_ARROW) || keyIsDown(87);

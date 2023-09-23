@@ -285,7 +285,7 @@ function pathFind(sprite, ...targetClasses) {
         const currentPath = queue.shift();
         const lastTile = currentPath.at(-1);
 
-        for (const neighbor of findNeighbour(lastTile)) { //temporary fix because sprite may move diagonally which may cross a obstical
+        for (const neighbor of findNeighbour(lastTile)) {
             const neighborTile = tileGrid[neighbor.y][neighbor.x];
 
             if (visited.has(`${neighbor.x},${neighbor.y}`)) continue; // Ignore visited tile

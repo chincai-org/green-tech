@@ -147,7 +147,7 @@ function canvasClicked() {
 
     switch (hotkey) {
         case 0:
-            if (resource > 1) {
+            if (resource >= 1) {
                 tile.add(new Tree(0, 0));
                 resource -= 1;
             }

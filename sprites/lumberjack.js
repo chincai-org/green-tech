@@ -9,16 +9,26 @@ class Lumberjack extends BaseSprite {
             x,
             y,
             color: "#808080",
-            speed: window.innerWidth / 30 / (window.innerWidth / 7.5)
+            speed: window.innerWidth / 30 / (window.innerWidth / 7.5),
+            collision_layers: ['lumberjack'],
+            collision_masks: ['policeStation', 'sprout'],
+            collide_range: tileSize
         });
+        this.path = [];
     }
 
     _update(deltaTime) {
-        let path = pathFind(this, Tree, Sprout);
-        if (path.length > 0) {
+        // Cheak if reach next path within certain range
+        // BUG: path finder get stuck if withinRangeOf is too low
+        const withinRangeOf = tileSize / 1.5;
+        if (this.path.length === 0 || (Math.abs(this.x - (this.path[1].x * tileSize)) < withinRangeOf && Math.abs(this.y - (this.path[1].y * tileSize)) < withinRangeOf)) {
+            this.path = pathFind(this, Tree, Sprout);
+        }
+        if (this.path.length > 0) {
             this.move(
                 deltaTime,
-                createVector(path[1].x - path[0].x, path[1].y - path[0].y)
+                // Move to center of next path
+                createVector(((this.path[1].x * tileSize) + (tileSize / 2)) - this.x, ((this.path[1].y * tileSize) + (tileSize / 2)) - this.y)
             );
         } else {
             this.move(

@@ -14,10 +14,11 @@ class BaseSprite {
         this.speed = config.speed;
         this.cost = config.cost;
         this.tile = null;
+        this.img = config.image || null;
 
-        // console.log(config);
-
-        // console.log(this.id);
+        this.collision_masks = config.collision_masks || []; // Who I can detect
+        this.collision_layers = config.collision_layers || []; // Who can detect me
+        this.collide_range = config.collide_range || 10;
     }
 
     /**
@@ -42,11 +43,11 @@ class BaseSprite {
         let drawX = windowWidth / 2 + distance.x;
         let drawY = windowHeight / 2 + distance.y;
 
-        if (this.config.color) {
+        if (this.img === null) {
             fill(this.config.color);
             circle(drawX, drawY, 10);
         } else {
-            // TODO: draw image
+            image(img, drawX, drawY);
         }
 
         if (displayCoord) {
@@ -86,6 +87,11 @@ class BaseSprite {
             (vectDist > vector.y ? vector.y / vectDist : vector.y);
     }
 
+    /**
+     *
+     * @param {BaseSprite} other
+     * @returns {Vector}
+     */
     distance(other) {
         return createVector(this.x - other.x, this.y - other.y);
     }
@@ -105,7 +111,30 @@ class BaseSprite {
      * @returns {Boolean}
      */
     _collide(other) {
-        // TODO: collide detecting
+        for (let mask of this.collision_masks) {
+            if (other.collision_layers.includes(mask)) {
+                let dist = this.distance(other);
+                if (dist.mag() < this.collide_range) {
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        return false;
+    }
+
+    collideHypothetically(other, x, y) {
+        for (let mask of this.collision_masks) {
+            if (other.collision_layers.includes(mask)) {
+                let dist = createVector(x - other.x, y - other.y);
+                if (dist.mag() < this.collide_range) {
+                    return true;
+                }
+                return false;
+            }
+        }
+
         return false;
     }
 }

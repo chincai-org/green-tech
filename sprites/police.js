@@ -5,7 +5,13 @@
  */
 class Police extends BaseSprite {
     constructor(x, y) {
-        super({ x, y, color: "#40E0D0", speed: 0.3 });
+        super({
+            x,
+            y,
+            color: "#40E0D0",
+            speed: 0.3,
+            collision_masks: ['lumberjack']
+        });
     }
 
     _update(deltaTime) {

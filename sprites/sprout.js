@@ -9,12 +9,12 @@ class Sprout extends BaseSprite {
             x,
             y,
             color: 256,
-            speed: widthRatio * 1
+            speed: widthRatio * 1,
+            collision_layers: ['sprout']
         });
     }
 
     move(deltaTime) {
-        console.log(this.speed);
         let right = keyIsDown(RIGHT_ARROW) || keyIsDown(68);
         let left = keyIsDown(LEFT_ARROW) || keyIsDown(65);
         let up = keyIsDown(UP_ARROW) || keyIsDown(87);

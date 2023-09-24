@@ -1,5 +1,5 @@
 /**
- * Sprite for cutting treesss
+ * Sprite for cutting trees
  * @class
  * @extends {BaseSprite}
  */

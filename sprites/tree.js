@@ -1,5 +1,5 @@
 /**
- * Sprite for decreasing pollution levellll
+ * Sprite for decreasing pollution level
  * @class
  * @extends {BaseSprite}
  */
@@ -9,8 +9,8 @@ class Tree extends BaseSprite {
             x,
             y,
             color: "#00ff00",
-            collision_layers: ['tree']
-        })
+            collision_layers: ["tree"]
+        });
         this.hasGrown = false;
         this.lastUpdate = Date.now();
         this.timeToGrow = 6000;
@@ -26,20 +26,19 @@ class Tree extends BaseSprite {
         if (now - this.lastUpdate > this.timeToGrow) {
             this.config.color = "#8B4513";
             this.hasGrown = true;
-        }
-        else {
+        } else {
             // Display time left to grow
             push();
-            fill(this.config.color)
+            fill(this.config.color);
             stroke(this.config.color);
             text(
-                `${Math.round((this.timeToGrow - (now - this.lastUpdate)) / 100)}`,
+                `${Math.round(
+                    (this.timeToGrow - (now - this.lastUpdate)) / 100
+                )}`,
                 drawX - 8,
                 drawY + 20
             );
             pop();
         }
-
-
     }
 }

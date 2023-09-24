@@ -1,5 +1,5 @@
 /**
- * Sprite for catching enemiessss
+ * Sprite for catching enemies
  * @class
  * @extends {BaseSprite}
  */
@@ -10,7 +10,7 @@ class Police extends BaseSprite {
             y,
             color: "#40E0D0",
             speed: 0.3,
-            collision_masks: ['lumberjack']
+            collision_masks: ["lumberjack"]
         });
     }
 

@@ -16,7 +16,9 @@ class BaseSprite {
         this.tile = null;
         this.img = config.image || null;
 
-        this.collision_masks = config.collision_masks || []; // Who I can detect
+        this.collision_masks = config.collision_masks?.concat(["all"]) || [
+            "all"
+        ]; // Who I can detect
         this.collision_layers = config.collision_layers || []; // Who can detect me
         this.collide_range = config.collide_range || 10;
     }

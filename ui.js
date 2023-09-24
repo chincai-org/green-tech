@@ -214,7 +214,6 @@ function initUi() {
             "barInnerText" + loopBar
         );
     }
-
     new RectUi(0, 0, 0, 0, "white", "box");
     for (let index = 0; index < numOfElement; index = index + 1) {
         new RectUi(0, 0, 0, 0, "white", "element" + index.toString());
@@ -237,8 +236,8 @@ function initUi() {
     new TextUi("", 0, 0, 20, 250, "resource");
     allUi["resource"].textStroke = "#f5f5dc";
 
-    for (let index0 = 0; index0 < 3; index0 = index0 + 1) {
-        for (let index = 0; index < 3; index = index + 1) {
+    for (let index0 = 0; index0 < 3; index0++) {
+        for (let index = 0; index < 3; index++) {
             new RectUi(
                 0,
                 1,

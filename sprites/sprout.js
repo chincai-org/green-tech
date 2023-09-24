@@ -1,5 +1,5 @@
 /**
- * The class for the playerrrr
+ * The class for the player
  * @class
  * @extends {BaseSprite}
  */
@@ -10,7 +10,7 @@ class Sprout extends BaseSprite {
             y,
             color: 256,
             speed: widthRatio * 1,
-            collision_layers: ['sprout']
+            collision_layers: ["sprout"]
         });
     }
 

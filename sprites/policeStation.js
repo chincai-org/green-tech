@@ -1,5 +1,5 @@
 /**
- * Sprite for spawning policeeee
+ * Sprite for spawning police
  * @class
  * @extends {BaseSprite}
  */
@@ -9,7 +9,7 @@ class PoliceStation extends BaseSprite {
             x,
             y,
             color: "#ff0000",
-            collision_layers: ['policeStation'],
+            collision_layers: ["policeStation"]
         });
         this.lastUpdate = Date.now();
         this.spawnCoolDown = 3000;

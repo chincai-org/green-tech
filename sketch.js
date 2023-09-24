@@ -343,7 +343,14 @@ function findNeighbour(vector) {
         for (let dy = -1; dy <= 1; dy++) {
             if (dx === 0 && dy === 0) continue;
             const neighbour = createVector(x + dx, y + dy);
-            if (inBoundOfGrid(neighbour.x, neighbour.y)) result.push(neighbour);
+            if (inBoundOfGrid(neighbour.x, neighbour.y)) {
+                // Priotize horizontal or vertical movement
+                if (Math.abs(dx) + Math.abs(dy) == 2) {
+                    result.push(neighbour);
+                } else {
+                    result.unshift(neighbour);
+                }
+            }
         }
     }
 

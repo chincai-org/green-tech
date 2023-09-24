@@ -137,10 +137,14 @@ function canvasClicked() {
 
     let tile = getTile(realX, realY);
 
-    if (isMouseOnAnyUi() || tile === getTile(sprout.x, sprout.y) || tile.sprite != null) {
+    if (
+        isMouseOnAnyUi() ||
+        tile === getTile(sprout.x, sprout.y) ||
+        tile.sprite != null
+    ) {
         return;
         // Preven placing when:
-        // 1. sprout is in the same tile 
+        // 1. sprout is in the same tile
         // 2. tile already have a sprite
         // 3. is on any ui
     }
@@ -294,9 +298,15 @@ function pathFind(sprite, ...targetClasses) {
             if (visited.has(`${neighbor.x},${neighbor.y}`)) continue; // Ignore visited tile
 
             // Check for hypothetical collision
-            if (neighborTile.sprite != null &&
+            if (
+                neighborTile.sprite != null &&
                 !anyInstance(neighborTile.sprite, targetClasses) &&
-                sprite.collideHypothetically(neighborTile.sprite, neighborTile.x * tileSize, neighborTile.y * tileSize))
+                sprite.collideHypothetically(
+                    neighborTile.sprite,
+                    neighborTile.x * tileSize,
+                    neighborTile.y * tileSize
+                )
+            )
                 continue;
 
             visited.add(`${neighbor.x},${neighbor.y}`);
@@ -346,9 +356,9 @@ function findNeighbourNoDiagonal(vector) {
 
     const directions = [
         { dx: 0, dy: -1 }, // Up
-        { dx: 0, dy: 1 },  // Down
+        { dx: 0, dy: 1 }, // Down
         { dx: -1, dy: 0 }, // Left
-        { dx: 1, dy: 0 },  // Right
+        { dx: 1, dy: 0 } // Right
     ];
 
     // returns neighbour to all 4 directions, and x and y cannot be lower than 0 and higher than the map size

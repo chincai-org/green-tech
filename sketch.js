@@ -101,7 +101,6 @@ function draw() {
     // Check if last pollute is a minute ago
     if (now - lastPollute > 60000) {
         pollution += polluteRate;
-        barValue[1].value = pollution; // TODO: change hardcoded value
 
         // Reset last pollute
         lastPollute = now;

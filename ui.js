@@ -245,9 +245,9 @@ function initUi() {
                 1,
                 250,
                 "infoBoxElementLevel" +
-                    index0.toString() +
-                    "-" +
-                    index.toString()
+                index0.toString() +
+                "-" +
+                index.toString()
             );
         }
     }
@@ -265,8 +265,9 @@ function initUi() {
 }
 
 function manageBar() {
-    // Resources change
+    // value change
     barValue[0].value = resource;
+    barValue[1].value = pollution;
 
     let xOfBar = windowWidth / 50;
     let yOfBar = windowHeight / 50;

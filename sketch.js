@@ -105,7 +105,7 @@ function draw() {
 // }
 function keyReleased() {
     if (keyCode !== 16) {
-        return;
+        return false;
     }
     sprout.speed = widthRatio * 0.5;
     return false;

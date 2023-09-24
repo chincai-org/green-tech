@@ -9,7 +9,7 @@ class Sprout extends BaseSprite {
             x,
             y,
             color: 256,
-            speed: widthRatio * 1,
+            speed: widthRatio * 0.5,
             collision_layers: ["sprout"]
         });
     }
@@ -74,8 +74,8 @@ class Sprout extends BaseSprite {
     draw() {
         fill(this.config.color);
         circle(
-            windowWidth / 2 + this.x - camX * widthRatio,
-            windowHeight / 2 + this.y - camY * widthRatio,
+            windowWidth / 2 + this.x - camX,
+            windowHeight / 2 + this.y - camY,
             13 * widthRatio
         );
 

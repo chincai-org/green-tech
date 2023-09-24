@@ -36,7 +36,7 @@ function windowResized() {
     widthRatio = winWidth / constWinWidth;
     heightRatio = winHeight / constWinHeight;
     tileSize = (constWinWidth * widthRatio) / 30;
-    sprout.speed = widthRatio * 1;
+    sprout.speed = widthRatio * 0.5;
     resizeCanvas(winWidth, winHeight);
 }
 
@@ -103,11 +103,23 @@ function draw() {
 // function bgsong() {
 //     song.loop();
 // }
+function keyReleased() {
+    if (keyCode !== 16) {
+        return;
+    }
+    sprout.speed = widthRatio * 0.5;
+    return false;
+}
 
 function keyPressed() {
     // Check if key code is CTRL
     if (keyCode === 17) {
         displayCoord = !displayCoord;
+        return false;
+    }
+    if (keyCode === 16) {
+        sprout.speed = widthRatio * 1;
+        return false;
     }
 
     switch (keyCode) {
@@ -126,6 +138,7 @@ function keyPressed() {
         case 107:
             resource += 100;
     }
+    return false;
 }
 
 function canvasClicked() {

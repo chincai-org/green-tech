@@ -222,20 +222,20 @@ function inBoundOfMap(x, y) {
 function drawGridLine() {
     let sx = sprout.x;
     let sy = sprout.y;
-    let cx = sx;
-    let cy = sy;
-    if (sx < windowWidth / 2) {
-        cx = windowWidth / 2;
-    } else if (sx > gridWidth * tileSize - windowWidth / 2) {
-        cx = (gridWidth * tileSize - windowWidth / 2) % tileSize;
-    }
-    if (sy < windowHeight / 2) {
-        cy = windowHeight / 2;
-    } else if (sy > gridHeight * tileSize - windowHeight / 2) {
-        cy = (gridHeight * tileSize - windowHeight / 2) % tileSize;
-    }
-    let gx = (cx - windowWidth / 2) % tileSize;
-    let gy = (cy - windowHeight / 2) % tileSize;
+    let halfWindowWidth = windowWidth / 2;
+    let halfWindowHeight = windowHeight / 2;
+
+    let cx = max(
+        min(sx, gridWidth * tileSize - halfWindowWidth),
+        halfWindowWidth
+    );
+    let cy = max(
+        min(sy, gridHeight * tileSize - halfWindowHeight),
+        halfWindowHeight
+    );
+
+    let gx = (cx - halfWindowWidth) % tileSize;
+    let gy = (cy - halfWindowHeight) % tileSize;
 
     push();
     stroke(0xffffff);
@@ -266,12 +266,12 @@ function getTile(x, y) {
 }
 
 function openFullscreen() {
-    if (fullScreenElement.requestFullscreen) {
-        fullScreenElement.requestFullscreen();
-    } else if (fullScreenElement.webkitRequestFullScreen) {
-        fullScreenElement.webkitRequestFullScreen();
-    } else if (fullScreenElement.msRequestFullScreen) {
-        fullScreenElement.msRequestFullScreen();
+    if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen();
+    } else if (document.documentElement.webkitRequestFullscreen) {
+        document.documentElement.webkitRequestFullscreen();
+    } else if (document.documentElement.msRequestFullscreen) {
+        document.documentElement.msRequestFullscreen();
     }
 }
 
@@ -279,9 +279,9 @@ function closeFullscreen() {
     if (document.exitFullscreen) {
         document.exitFullscreen();
     } else if (document.webkitExitFullscreen) {
-        document.webkitExitFullScreen();
+        document.webkitExitFullscreen();
     } else if (document.msExitFullscreen) {
-        document.msExitFullScreen();
+        document.msExitFullscreen();
     }
 }
 

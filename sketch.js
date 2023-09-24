@@ -28,6 +28,9 @@ let hotkey = -1;
 
 let resource = 50;
 let energy = 1000;
+let pollution = 1000;
+let polluteRate = 10;
+let lastPollute;
 
 function windowResized() {
     console.log("resized");
@@ -55,10 +58,11 @@ function setup() {
     canvas.mouseClicked(canvasClicked);
 
     initGrid();
-
     initUi();
 
     // bgsong();
+
+    lastPollute = Date.now();
 }
 
 function draw() {
@@ -92,6 +96,15 @@ function draw() {
             tile.update(deltaTime);
             tile.draw();
         }
+    }
+
+    // Check if last pollute is a minute ago
+    if (now - lastPollute > 60000) {
+        pollution += polluteRate;
+        barValue[1].value = pollution; // TODO: change hardcoded value
+
+        // Reset last pollute
+        lastPollute = now;
     }
 
     lastUpdate = now;

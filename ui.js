@@ -25,10 +25,10 @@ let barValue = [
         innerText: "Carbon Emission",
         display: true,
         min: 0,
-        max: 1000,
+        max: 1500,
         displayValueAndMax: true,
         displayInnerText: true,
-        value: 600,
+        value: pollution,
         backgroundColor: "magenta",
         fillColor: "cyan",
         valueMaxColor: "black",
@@ -239,14 +239,30 @@ function initUi() {
 
     for (let index0 = 0; index0 < 3; index0 = index0 + 1) {
         for (let index = 0; index < 3; index = index + 1) {
-            new RectUi(0, 1, 1, 1, 250, "infoBoxElementLevel" + index0.toString() + "-" + index.toString());
+            new RectUi(
+                0,
+                1,
+                1,
+                1,
+                250,
+                "infoBoxElementLevel" +
+                    index0.toString() +
+                    "-" +
+                    index.toString()
+            );
         }
-    } 
-    
-    for (let index = 0; index < 3; index = index + 1) {
-        new ImgUi(elementImage[0], 0, 1, 1, 1, `infoBoxElementBigLevel${index.toString()}`);
     }
 
+    for (let index = 0; index < 3; index = index + 1) {
+        new ImgUi(
+            elementImage[0],
+            0,
+            1,
+            1,
+            1,
+            `infoBoxElementBigLevel${index.toString()}`
+        );
+    }
 }
 
 function manageBar() {
@@ -410,32 +426,40 @@ function manageInfoBox() {
     allUi["infoBoxElementBigImageBoxImg"].width = wOfBoxElementBox;
     allUi["infoBoxElementBigImageBoxImg"].height = hOfBoxElementBox;
 
-
-    
-
-
-
     let secondYPosition = yOfBoxElementBox + hOfBoxElementBox;
     for (let index0 = 0; index0 < 3; index0 = index0 + 1) {
         for (let index = 0; index < 3; index = index + 1) {
-            let infoBoxElementLevelName = `infoBoxElementLevel${index0.toString()}-${index.toString()}`; 
-            allUi[infoBoxElementLevelName].positionX = xOfBoxForLoop + (wOfBox / 6.5)
-            allUi[infoBoxElementLevelName].positionY = (wOfBox / 12 * index) + 20 + (index * 10) + secondYPosition
-            allUi[infoBoxElementLevelName].width = wOfBox / 12
-            allUi[infoBoxElementLevelName].height = allUi[infoBoxElementLevelName].width 
+            let infoBoxElementLevelName = `infoBoxElementLevel${index0.toString()}-${index.toString()}`;
+            allUi[infoBoxElementLevelName].positionX =
+                xOfBoxForLoop + wOfBox / 6.5;
+            allUi[infoBoxElementLevelName].positionY =
+                (wOfBox / 12) * index + 20 + index * 10 + secondYPosition;
+            allUi[infoBoxElementLevelName].width = wOfBox / 12;
+            allUi[infoBoxElementLevelName].height =
+                allUi[infoBoxElementLevelName].width;
         }
-        secondYPosition = allUi[`infoBoxElementLevel${index0.toString()}-2`].positionY + (wOfBox / 12) + 30;
-        let infoBoxElementBigLevel = `infoBoxElementBigLevel${index0.toString()}`; 
-        let infoBoxElementLevelName = allUi[`infoBoxElementLevel${index0.toString()}-2`];
-        allUi[infoBoxElementBigLevel].image = elementImage[5]; 
-        allUi[infoBoxElementBigLevel].positionX = infoBoxElementLevelName.positionX + ((wOfBoxElementBox - infoBoxElementLevelName.width) / 2); 
-        allUi[infoBoxElementBigLevel].width = (wOfBoxElementBox + xOfBoxElementBox) - allUi[infoBoxElementBigLevel].positionX; 
-        allUi[infoBoxElementBigLevel].positionY = allUi[`infoBoxElementLevel${index0.toString()}-0`].positionY; 
-        allUi[infoBoxElementBigLevel].height = infoBoxElementLevelName.positionY + infoBoxElementLevelName.height - allUi[`infoBoxElementLevel${index0.toString()}-0`].positionY; 
-    } 
-
-
-
+        secondYPosition =
+            allUi[`infoBoxElementLevel${index0.toString()}-2`].positionY +
+            wOfBox / 12 +
+            30;
+        let infoBoxElementBigLevel = `infoBoxElementBigLevel${index0.toString()}`;
+        let infoBoxElementLevelName =
+            allUi[`infoBoxElementLevel${index0.toString()}-2`];
+        allUi[infoBoxElementBigLevel].image = elementImage[5];
+        allUi[infoBoxElementBigLevel].positionX =
+            infoBoxElementLevelName.positionX +
+            (wOfBoxElementBox - infoBoxElementLevelName.width) / 2;
+        allUi[infoBoxElementBigLevel].width =
+            wOfBoxElementBox +
+            xOfBoxElementBox -
+            allUi[infoBoxElementBigLevel].positionX;
+        allUi[infoBoxElementBigLevel].positionY =
+            allUi[`infoBoxElementLevel${index0.toString()}-0`].positionY;
+        allUi[infoBoxElementBigLevel].height =
+            infoBoxElementLevelName.positionY +
+            infoBoxElementLevelName.height -
+            allUi[`infoBoxElementLevel${index0.toString()}-0`].positionY;
+    }
 }
 
 function manageResourceText() {

@@ -79,7 +79,7 @@ class Sprout extends BaseSprite {
             13 * widthRatio
         );
 
-        if (displayCoord) {
+        if (debugMode) {
             text(
                 `(${Math.round(this.x)}, ${Math.round(this.y)})`,
                 windowWidth / 2 + this.x - camX,

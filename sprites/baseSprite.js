@@ -20,7 +20,7 @@ class BaseSprite {
             "all"
         ]; // Who I can detect
         this.collision_layers = config.collision_layers || []; // Who can detect me
-        this.collide_range = config.collide_range || 10;
+        this.collide_range = config.collide_range || 0;
     }
 
     /**
@@ -52,7 +52,7 @@ class BaseSprite {
             image(img, drawX, drawY);
         }
 
-        if (displayCoord) {
+        if (debugMode) {
             push();
             stroke(this.config.color);
             text(
@@ -60,6 +60,9 @@ class BaseSprite {
                 drawX,
                 drawY - 20
             );
+
+            fill(0, 153, 255, 150);
+            circle(drawX, drawY, this.collide_range * 2);
             pop();
         }
     }

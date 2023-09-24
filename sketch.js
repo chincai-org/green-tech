@@ -22,7 +22,7 @@ let tileSize = (constWinWidth * widthRatio) / 30;
 
 let lastUpdate = Date.now();
 let deltaTime;
-let displayCoord = false;
+let debugMode = false;
 let camX, camY;
 let hotkey = -1;
 
@@ -127,7 +127,7 @@ function keyReleased() {
 function keyPressed() {
     // Check if key code is CTRL
     if (keyCode === 17) {
-        displayCoord = !displayCoord;
+        debugMode = !debugMode;
         return false;
     }
     if (keyCode === 16) {

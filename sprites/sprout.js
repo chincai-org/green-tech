@@ -10,10 +10,10 @@ class Sprout extends BaseSprite {
             y,
             color: 256,
             speed: widthRatio * 0.5,
-            collision_layers: ["sprout"]
+            collision_layers: ["sprout"],
+            img: "assets/sproutfront.png"
         });
     }
-
     move(deltaTime) {
         let right = keyIsDown(RIGHT_ARROW) || keyIsDown(68);
         let left = keyIsDown(LEFT_ARROW) || keyIsDown(65);
@@ -78,6 +78,21 @@ class Sprout extends BaseSprite {
             windowHeight / 2 + this.y - camY,
             13 * widthRatio
         );
+        console.log(this.config.img);
+        if (this.config.img === null) {
+            fill(this.config.color);
+            circle(
+                windowWidth / 2 + this.x - camX,
+                windowHeight / 2 + this.y - camY,
+                13 * widthRatio
+            );
+        } else {
+            image(
+                this.config.img,
+                windowWidth / 2 + this.x - camX,
+                windowHeight / 2 + this.y - camY
+            );
+        }
 
         if (debugMode) {
             text(

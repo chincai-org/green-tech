@@ -129,34 +129,38 @@ function keyReleased() {
 }
 
 function keyPressed() {
-    // Check if key code is CTRL
-    if (keyCode === 17) {
+    const CTRL_KEY_CODE = 17;
+    const SHIFT_KEY_CODE = 16;
+    const hotkeys = {
+        84: 0, // tree
+        80: 1, // police station
+        76: 2, // lumberjack
+        82: 3 // rock
+    };
+
+    if (keyCode === CTRL_KEY_CODE) {
         debugMode = !debugMode;
         return false;
     }
-    if (keyCode === 16) {
+
+    if (keyCode === SHIFT_KEY_CODE) {
         sprout.speed = widthRatio * 1;
         return false;
     }
 
     switch (keyCode) {
         case 84:
-            hotkey = 0; // tree
-            break;
         case 80:
-            hotkey = 1; // police station
-            break;
         case 76:
-            hotkey = 2; // lumberjack
-            break;
         case 82:
-            hotkey = 3; // rock
+            hotkey = hotkeys[keyCode];
             break;
         case 69:
-            sprout.chopWood(); //chop wood
+            sprout.chopWood(); // chop wood
             break;
         case 107:
             resource += 100;
+            break;
     }
     return false;
 }
@@ -308,9 +312,7 @@ function closeFullscreen() {
  * @param {...Class} targetClasses  - The class that you wish to find, example: Tree
  * @returns {Array<Vector>}
  */
-function pathFind(sprite, ...targetClasses) {
-    const startX = sprite.x;
-    const startY = sprite.y;
+function pathFind({ x: startX, y: startY }, ...targetClasses) {
     const startTile = getTile(startX, startY);
     const tileX = startTile.x;
     const tileY = startTile.y;

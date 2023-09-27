@@ -72,14 +72,7 @@ class Sprout extends BaseSprite {
     }
 
     draw() {
-        fill(this.config.color);
-        circle(
-            windowWidth / 2 + this.x - camX,
-            windowHeight / 2 + this.y - camY,
-            13 * widthRatio
-        );
-        console.log(this.config.img);
-        if (this.config.img === null) {
+        if (sproutFrontImg === null) {
             fill(this.config.color);
             circle(
                 windowWidth / 2 + this.x - camX,
@@ -88,7 +81,7 @@ class Sprout extends BaseSprite {
             );
         } else {
             image(
-                this.config.img,
+                sproutFrontImg,
                 windowWidth / 2 + this.x - camX,
                 windowHeight / 2 + this.y - camY
             );

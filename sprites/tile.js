@@ -30,8 +30,8 @@ class Tile extends BaseSprite {
 
         if (sprite) {
             this.sprite.tile = this;
-            this.sprite.x = (this.x + 0.5) * tileSize;
-            this.sprite.y = (this.y + 0.5) * tileSize;
+            this.sprite.x = this.x * tileSize;
+            this.sprite.y = this.y * tileSize;
         }
     }
 

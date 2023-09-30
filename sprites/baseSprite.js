@@ -44,7 +44,7 @@ class BaseSprite {
         let distance = this.distance({ x: camX, y: camY });
         let drawX = windowWidth / 2 + distance.x;
         let drawY = windowHeight / 2 + distance.y;
-        if (this.config.img === null) {
+        if (this.config.img === null || this.config.img === undefined) {
             fill(this.config.color);
             circle(drawX, drawY, 13 * widthRatio);
         } else {

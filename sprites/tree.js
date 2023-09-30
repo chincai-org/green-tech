@@ -10,7 +10,7 @@ class Tree extends BaseSprite {
             y,
             color: "#00ff00",
             collision_layers: ["tree"],
-            img: "assets/tree.png"
+            img: loadImage("assets/tree.png")
         });
         this.hasGrown = false;
         this.lastUpdate = Date.now();
@@ -47,12 +47,11 @@ class Tree extends BaseSprite {
         let distance = this.distance({ x: camX, y: camY });
         let drawX = windowWidth / 2 + distance.x;
         let drawY = windowHeight / 2 + distance.y;
-        console.log(this.img);
-        if (treeImg === null) {
+        if (this.config.img === null) {
             fill(this.config.color);
             circle(drawX, drawY, 13 * widthRatio);
         } else {
-            image(treeImg, drawX, drawY);
+            image(this.config.img, drawX, drawY);
         }
     }
 }

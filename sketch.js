@@ -5,7 +5,6 @@
  */
 
 let sproutFrontImg;
-let treeImg;
 
 const constWinWidth = 1920;
 const constWinHeight = 1080;
@@ -49,7 +48,6 @@ function windowResized() {
 function preload() {
     soundFormats("ogg", "wav");
     sproutFrontImg = loadImage(sprout.config.img);
-    treeImg = loadImage("assets/tree.png");
     // song = loadSound("bestmusic.wav");
 }
 

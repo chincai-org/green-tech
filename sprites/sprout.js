@@ -82,8 +82,8 @@ class Sprout extends BaseSprite {
         } else {
             image(
                 sproutFrontImg,
-                windowWidth / 2 + this.x - camX,
-                windowHeight / 2 + this.y - camY
+                windowWidth / 2 + this.x - camX - sproutFrontImg.width / 2,
+                windowHeight / 2 + this.y - camY - sproutFrontImg.height / 2
             );
         }
 

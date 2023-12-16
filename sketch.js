@@ -118,17 +118,9 @@ function draw() {
 // function bgsong() {
 //     song.loop();
 // }
-function keyReleased() {
-    if (keyCode !== 16) {
-        return false;
-    }
-    sprout.speed = widthRatio * 0.5;
-    return false;
-}
 
 function keyPressed() {
     const CTRL_KEY_CODE = 17;
-    const SHIFT_KEY_CODE = 16;
     const hotkeys = {
         84: 0, // tree
         80: 1, // police station
@@ -138,11 +130,6 @@ function keyPressed() {
 
     if (keyCode === CTRL_KEY_CODE) {
         debugMode = !debugMode;
-        return false;
-    }
-
-    if (keyCode === SHIFT_KEY_CODE) {
-        sprout.speed = widthRatio * 1;
         return false;
     }
 

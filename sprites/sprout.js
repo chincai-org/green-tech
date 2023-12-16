@@ -21,6 +21,12 @@ class Sprout extends BaseSprite {
         let down = keyIsDown(DOWN_ARROW) || keyIsDown(83);
         let joyX = right - left;
         let joyY = down - up;
+        let run = keyIsDown(SHIFT);
+        if (run) {
+            this.speed = widthRatio * 1;
+        } else {
+            this.speed = widthRatio * 0.5;
+        }
         if (
             this.checkNextStep(this.x + this.speed * joyX * deltaTime, this.y)
         ) {

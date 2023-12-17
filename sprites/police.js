@@ -9,12 +9,25 @@ class Police extends BaseSprite {
             x,
             y,
             color: "#40E0D0",
-            speed: 0.3,
+            speed: 0.1,
             collision_masks: ["lumberjack"]
         });
+        this.target = p5.Vector.random2D()
+        this.timeIdle = 0
+        this.timeNewDirection = randint(15, 50)
     }
 
     _update(deltaTime) {
-        this.move(deltaTime, createVector(randint(-1, 1), randint(-1, 1)));
+        if (this.timeIdle > 0) {
+            this.timeIdle--
+            return
+        }
+        this.move(deltaTime, this.target);
+        this.timeNewDirection--
+        if (this.timeNewDirection < 1) {
+            this.target = p5.Vector.random2D()
+            this.timeNewDirection = randint(15, 50)
+            this.timeIdle = randint(250, 500);
+        }
     }
 }

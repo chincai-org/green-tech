@@ -297,8 +297,8 @@ function closeFullscreen() {
  * @param {...Class} targetClasses  - The class that you wish to find, example: Tree
  * @returns {Array<Vector>}
  */
-function pathFind({ x: startX, y: startY }, ...targetClasses) {
-    const startTile = getTile(startX, startY);
+function pathFind(sprite, ...targetClasses) {
+    const startTile = getTile(sprite.x, sprite.y);
     const tileX = startTile.x;
     const tileY = startTile.y;
 
@@ -326,8 +326,8 @@ function pathFind({ x: startX, y: startY }, ...targetClasses) {
                 !anyInstance(neighborTile.sprite, targetClasses) &&
                 sprite.collideHypothetically(
                     neighborTile.sprite,
-                    neighborTile.x * tileSize,
-                    neighborTile.y * tileSize
+                    (neighborTile.x + 0.5) * tileSize,
+                    (neighborTile.y + 0.5) * tileSize
                 )
             )
                 continue;

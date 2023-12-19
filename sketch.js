@@ -151,6 +151,29 @@ function keyPressed() {
 }
 
 function canvasClicked() {
+    // Ui control
+    for (let index = 0; index < numOfElement; index = index + 1) {
+        if (isMouseOverUi(allUi["element" + index])) {
+            if (hotkey == index) {
+                hotkey = -1;
+                return;
+            } else {
+                hotkey = index;
+                return;
+            }
+        }
+    }
+
+    if (isMouseOverUi(allUi["indicator"])) {
+        if (infoBoxOpen) {
+            infoBoxOpen = false;
+            return;
+        } else {
+            infoBoxOpen = true;
+            return;
+        }
+    }
+
     let disX = windowWidth / 2 - mouseX;
     let disY = windowHeight / 2 - mouseY;
 

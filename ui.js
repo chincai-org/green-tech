@@ -468,22 +468,3 @@ function manageResourceText() {
     allUi["resource"].positionY = 20;
 }
 
-function mousePressed() {
-    for (let index = 0; index < numOfElement; index = index + 1) {
-        if (isMouseOverUi(allUi["element" + index])) {
-            if (hotkey == index) {
-                hotkey = -1;
-            } else {
-                hotkey = index;
-            }
-        }
-    }
-
-    if (isMouseOverUi(allUi["indicator"])) {
-        if (infoBoxOpen) {
-            infoBoxOpen = false;
-        } else {
-            infoBoxOpen = true;
-        }
-    }
-}

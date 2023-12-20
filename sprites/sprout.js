@@ -65,7 +65,7 @@ class Sprout extends BaseSprite {
             if (
                 tileGrid[neighbor.y][neighbor.x].sprite instanceof Tree &&
                 tileGrid[neighbor.y][neighbor.x].sprite.hasGrown === true &&
-                resource < barValue[0].max
+                resource < parseInt(document.getElementsByClassName('bar')[0].getElementsByClassName('text')[0].innerText.split('/')[1])
             ) {
                 tileGrid[neighbor.y][neighbor.x].remove();
 

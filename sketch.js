@@ -61,7 +61,7 @@ function setup() {
     canvas.mouseClicked(canvasClicked);
 
     initGrid();
-    initUi();
+    //initUi();
 
     // bgsong();
 
@@ -111,8 +111,7 @@ function draw() {
 
     lastUpdate = now;
 
-    updateUi();
-    drawAllUi();
+    uiUpdate();
 }
 
 // function bgsong() {
@@ -138,7 +137,7 @@ function keyPressed() {
         case 80:
         case 76:
         case 82:
-            hotkey = hotkeys[keyCode];
+            setHotkey(hotkeys[keyCode]);
             break;
         case 69:
             sprout.chopWood(); // chop wood
@@ -151,29 +150,6 @@ function keyPressed() {
 }
 
 function canvasClicked() {
-    // Ui control
-    for (let index = 0; index < numOfElement; index = index + 1) {
-        if (isMouseOverUi(allUi["element" + index])) {
-            if (hotkey == index) {
-                hotkey = -1;
-                return;
-            } else {
-                hotkey = index;
-                return;
-            }
-        }
-    }
-
-    if (isMouseOverUi(allUi["indicator"])) {
-        if (infoBoxOpen) {
-            infoBoxOpen = false;
-            return;
-        } else {
-            infoBoxOpen = true;
-            return;
-        }
-    }
-
     let disX = windowWidth / 2 - mouseX;
     let disY = windowHeight / 2 - mouseY;
 
@@ -183,7 +159,7 @@ function canvasClicked() {
     let tile = getTile(realX, realY);
 
     if (
-        isMouseOnAnyUi() ||
+        // isMouseOnAnyUi() ||
         tile === getTile(sprout.x, sprout.y) ||
         tile.sprite != null
     ) {

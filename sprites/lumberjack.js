@@ -15,18 +15,20 @@ class Lumberjack extends BaseSprite {
             collide_range: tileSize / 2
         });
         this.path = [];
+        this.lastPathfind = 0;
     }
 
     _update(deltaTime) {
-        // Cheak if reach next path within certain range
-        // BUG: path finder get stuck if withinRangeOf is too low
-        const withinRangeOf = tileSize / 1.5;
+        this.lastPathfind -= deltaTime;
+        console.log(this.lastPathfind)
         if (
-            this.path.length === 0 ||
-            (Math.abs(this.x - this.path[1].x * tileSize) < withinRangeOf &&
-                Math.abs(this.y - this.path[1].y * tileSize) < withinRangeOf)
+            this.path.length === 0 || this.lastPathfind < 0
         ) {
             this.path = pathFind(this, Tree, Sprout);
+            if (this.path.length !== 0) {
+                this.lastPathfind = Math.sqrt((this.path[1].x * tileSize + tileSize / 2 - this.x) ** 2 +
+                    (this.path[1].y * tileSize + tileSize / 2 - this.y) ** 2) / this.speed
+            }
         }
         if (this.path.length > 0) {
             this.move(

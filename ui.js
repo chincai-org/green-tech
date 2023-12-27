@@ -15,7 +15,6 @@ document.addEventListener("DOMContentLoaded", function () {
     for (let index = 0; index < document.getElementsByClassName("inventory-box").length; index++) {
         const inventoryElement = document.getElementsByClassName("inventory-box")[index];
         inventoryElement.addEventListener("click", () => {
-            console.log("click inv");
             if (hotkey === index) {
                 setHotkey(-1);
             } else {
@@ -30,7 +29,6 @@ for (let index = 0; index < document.getElementsByClassName("inventory-box").len
     const inventoryElement = document.getElementsByClassName("inventory-box")[index];
     alert("run");
     inventoryElement.addEventListener("click", () => {
-        console.log("click inv");
         if (hotkey === index) {
             setHotkey(-1);
         } else {

@@ -296,7 +296,7 @@ function closeFullscreen() {
  * @param {...Class} targetClasses  - The class that you wish to find, example: Tree
  * @returns {Array<Vector>}
  */
-function pathFind(sprite, ...targetClasses) {
+function pathFind(maxIterations, sprite, ...targetClasses) {
     const startTile = getTile(sprite.x, sprite.y);
     const tileX = startTile.x;
     const tileY = startTile.y;
@@ -309,7 +309,11 @@ function pathFind(sprite, ...targetClasses) {
     const visited = new Set();
     visited.add(`${tileX},${tileY}`);
 
-    while (queue.length > 0) {
+    let iterations = 0;
+
+    while (queue.length > 0 && iterations < maxIterations) {
+        iterations++;
+
         // Check if the queue is empty
         const currentPath = queue.shift();
         const lastTile = currentPath.at(-1);

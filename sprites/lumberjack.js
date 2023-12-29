@@ -20,7 +20,6 @@ class Lumberjack extends BaseSprite {
 
     _update(deltaTime) {
         this.lastPathfind -= deltaTime;
-        console.log(this.lastPathfind)
         if (
             this.path.length === 0 || this.lastPathfind < 0
         ) {

@@ -36,6 +36,7 @@ let lastPollute;
 
 function windowResized() {
     console.log("resized");
+    let changeInWidth = window.innerWidth / winWidth;
     winWidth = window.innerWidth;
     winHeight = window.innerHeight;
     widthRatio = winWidth / constWinWidth;
@@ -43,6 +44,22 @@ function windowResized() {
     tileSize = (constWinWidth * widthRatio) / 30;
     sprout.speed = widthRatio * 0.5;
     resizeCanvas(winWidth, winHeight);
+
+    // Resize movables
+    sprout.x *= changeInWidth;
+    sprout.y *= changeInWidth;
+    movables.forEach(sprite => {
+        sprite.x *= changeInWidth;
+        sprite.y *= changeInWidth;
+    });
+
+    // Resize tiles
+    for (let i = 0; i < tileGrid.length; i++) {
+        for (let j = 0; j < tileGrid[i].length; j++) {
+            tileGrid[j][i].onResize();
+        }
+
+    }
 }
 
 function preload() {
@@ -258,16 +275,6 @@ function drawGridLine() {
 
 function randint(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-/**
- *
- * @param {number} x
- * @param {number} y
- * @returns {Tile}
- */
-function getTile(x, y) {
-    return tileGrid[Math.floor(y / tileSize)][Math.floor(x / tileSize)];
 }
 
 function openFullscreen() {

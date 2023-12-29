@@ -41,4 +41,21 @@ class Tile extends BaseSprite {
             this.sprite = null;
         }
     }
+
+    onResize() {
+        if (this.sprite) {
+            this.sprite.x = (this.x + 0.5) * tileSize;
+            this.sprite.y = (this.y + 0.5) * tileSize;
+        }
+    }
+}
+
+/**
+ *
+ * @param {number} x
+ * @param {number} y
+ * @returns {Tile}
+ */
+function getTile(x, y) {
+    return tileGrid[Math.floor(y / tileSize)][Math.floor(x / tileSize)];
 }

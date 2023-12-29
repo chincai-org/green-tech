@@ -19,14 +19,18 @@ class Lumberjack extends BaseSprite {
     }
 
     _update(deltaTime) {
+        console.log(this.lastPathfind);
         this.lastPathfind -= deltaTime;
         if (
-            this.path.length === 0 || this.lastPathfind < 0
+            this.lastPathfind < 0
         ) {
             this.path = pathFind(200, this, Tree, Sprout);
             if (this.path.length !== 0) {
                 this.lastPathfind = Math.sqrt((this.path[1].x * tileSize + tileSize / 2 - this.x) ** 2 +
                     (this.path[1].y * tileSize + tileSize / 2 - this.y) ** 2) / this.speed
+            } else {
+                // Reduce lag
+                this.lastPathfind = 2000;
             }
         }
         if (this.path.length > 0) {

@@ -227,17 +227,17 @@ function initGrid() {
 function inBoundOfGrid(tileX, tileY) {
     return (
         tileX >= 0 &&
-        tileX < tileGrid[0].length &&
+        tileX < gridWidth &&
         tileY >= 0 &&
-        tileY < tileGrid.length
+        tileY < gridHeight
     );
 }
 function inBoundOfMap(x, y) {
     return (
         x >= 0 &&
-        x < tileGrid[0].length * gridWidth &&
+        x < tileSize * gridWidth &&
         y >= 0 &&
-        y < tileGrid.length * gridHeight
+        y < tileSize * gridHeight
     );
 }
 

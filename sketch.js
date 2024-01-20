@@ -91,6 +91,11 @@ function draw() {
     let now = Date.now();
     deltaTime = now - lastUpdate;
 
+    // possible fix for when screen not focus which will cause sprite to have large deltaTime suddenly
+    (deltaTime > 500) ? deltaTime = 0 : deltaTime;
+
+    console.log(deltaTime);
+
     sprout.update(deltaTime);
     sprout.draw();
 

@@ -48,7 +48,7 @@ class BaseSprite {
             fill(this.config.color);
             circle(drawX, drawY, 13 * widthRatio);
         } else {
-            image(this.config.img, drawX - this.config.img.width / 2, drawY - this.config.img.height / 2);
+            image(this.config.img, drawX - tileSize / 2, drawY - tileSize / 2, tileSize, tileSize);
         }
 
         if (debugMode) {

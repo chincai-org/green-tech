@@ -32,12 +32,11 @@ class Tree extends BaseSprite {
             push();
             fill(this.config.color);
             stroke(this.config.color);
+            let timeLeft = Math.round((this.timeToGrow - (now - this.lastUpdate)) / 100);
             text(
-                `${Math.round(
-                    (this.timeToGrow - (now - this.lastUpdate)) / 100
-                )}`,
-                drawX - 8,
-                drawY + 28
+                `${timeLeft}`,
+                drawX - textWidth(`${timeLeft}`) / 2,
+                drawY + tileSize * 0.8
             );
             pop();
         }

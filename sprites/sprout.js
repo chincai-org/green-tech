@@ -88,8 +88,10 @@ class Sprout extends BaseSprite {
         } else {
             image(
                 sproutFrontImg,
-                windowWidth / 2 + this.x - camX - sproutFrontImg.width / 2,
-                windowHeight / 2 + this.y - camY - sproutFrontImg.height / 2
+                windowWidth / 2 + this.x - camX - tileSize / 2,
+                windowHeight / 2 + this.y - camY - tileSize / 2,
+                tileSize,
+                tileSize
             );
         }
 

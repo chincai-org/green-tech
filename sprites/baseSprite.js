@@ -128,11 +128,19 @@ class BaseSprite {
         return false;
     }
 
+    /**
+     * Find hypothetical collision with another sprite
+     * @param {BaseSprite} other - Another sprite to detect collision
+     * @param {number} x - Hypothetical x-coordinate
+     * @param {number} y - Hypothetical y-coordinate
+     * @returns {Boolean}
+     */
     collideHypothetically(other, x, y) {
         for (let mask of this.collision_masks) {
             if (other.collision_layers.includes(mask)) {
                 let dist = createVector(x - other.x, y - other.y);
                 if (dist.mag() < this.collide_range) {
+                    console.log("reach");
                     return true;
                 }
                 return false;
@@ -140,5 +148,21 @@ class BaseSprite {
         }
 
         return false;
+    }
+
+    /**
+     * Find hypothetical collision with any movables
+     * @param {number} x - Hypothetical x-coordinate
+     * @param {number} y - Hypothetical y-coordinate
+     * @returns {Boolean}
+     */
+    collideHypotheticallyMovables(x, y) {
+        let isCollide = false;
+        movables.forEach(movable => {
+            if (movable != this) {
+                isCollide = this.collideHypothetically(movable, x, y);
+            }
+        });
+        return isCollide;
     }
 }

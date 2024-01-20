@@ -48,9 +48,11 @@ function windowResized() {
     // Resize movables
     sprout.x *= changeInWidth;
     sprout.y *= changeInWidth;
+    sprout.collide_range *= changeInWidth;
     movables.forEach(sprite => {
         sprite.x *= changeInWidth;
         sprite.y *= changeInWidth;
+        sprite.collide_range *= changeInWidth;
     });
 
     // Resize tiles
@@ -83,6 +85,9 @@ function setup() {
     // bgsong();
 
     lastPollute = Date.now();
+
+    // Init sprite
+    sprout.collide_range = tileSize / 2;
 }
 
 function draw() {
@@ -93,8 +98,6 @@ function draw() {
 
     // possible fix for when screen not focus which will cause sprite to have large deltaTime suddenly
     (deltaTime > 500) ? deltaTime = 0 : deltaTime;
-
-    console.log(deltaTime);
 
     sprout.update(deltaTime);
     sprout.draw();

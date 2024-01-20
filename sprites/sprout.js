@@ -11,7 +11,8 @@ class Sprout extends BaseSprite {
             color: 256,
             speed: widthRatio * 0.5,
             collision_layers: ["sprout"],
-            img: "assets/sproutfront.png"
+            collision_masks: ["lumberjack"],
+            img: "assets/sproutfront.png",
         });
     }
     move(deltaTime) {
@@ -28,12 +29,12 @@ class Sprout extends BaseSprite {
             this.speed = widthRatio * 0.5;
         }
         if (
-            this.checkNextStep(this.x + this.speed * joyX * deltaTime, this.y)
+            !this.isNextStepValid(this.x + this.speed * joyX * deltaTime, this.y)
         ) {
             joyX = 0;
         }
         if (
-            this.checkNextStep(this.x, this.y + this.speed * joyY * deltaTime)
+            !this.isNextStepValid(this.x, this.y + this.speed * joyY * deltaTime)
         ) {
             joyY = 0;
         }
@@ -48,14 +49,16 @@ class Sprout extends BaseSprite {
         );
     }
 
-    checkNextStep(x, y) {
+    isNextStepValid(x, y) {
         // Cheak if next step has sprite or is out of map
         if (!inBoundOfMap(x, y)) {
-            return true;
+            return false;
         } else if (getTile(x, y).sprite) {
-            return true;
+            return false;
+        } else if (this.collideHypotheticallyMovables(x, y)) {
+            return false;
         }
-        return false;
+        return true;
     }
 
     chopWood() {
@@ -96,11 +99,20 @@ class Sprout extends BaseSprite {
         }
 
         if (debugMode) {
+            push();
             text(
                 `(${Math.round(this.x)}, ${Math.round(this.y)})`,
                 windowWidth / 2 + this.x - camX,
                 windowHeight / 2 + this.y - camY - 20
             );
+
+            fill(0, 153, 255, 150);
+            circle(
+                windowWidth / 2 + this.x - camX,
+                windowHeight / 2 + this.y - camY,
+                this.collide_range * 2
+            );
+            pop();
         }
     }
 }

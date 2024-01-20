@@ -118,13 +118,11 @@ class BaseSprite {
         for (let mask of this.collision_masks) {
             if (other.collision_layers.includes(mask)) {
                 let dist = this.distance(other);
-                if (dist.mag() < this.collide_range) {
+                if (dist.mag() < this.collide_range + other.collide_range) {
                     return true;
                 }
-                return false;
             }
         }
-
         return false;
     }
 
@@ -135,18 +133,15 @@ class BaseSprite {
      * @param {number} y - Hypothetical y-coordinate
      * @returns {Boolean}
      */
-    collideHypothetically(other, x, y) {
+    isColliding(other, x, y) {
         for (let mask of this.collision_masks) {
             if (other.collision_layers.includes(mask)) {
                 let dist = createVector(x - other.x, y - other.y);
-                if (dist.mag() < this.collide_range) {
-                    console.log("reach");
+                if (dist.mag() < this.collide_range + other.collide_range) {
                     return true;
                 }
-                return false;
             }
         }
-
         return false;
     }
 
@@ -154,15 +149,46 @@ class BaseSprite {
      * Find hypothetical collision with any movables
      * @param {number} x - Hypothetical x-coordinate
      * @param {number} y - Hypothetical y-coordinate
-     * @returns {Boolean}
+     * @returns {BaseSprite} Sprite that is colliding otherwise null
      */
-    collideHypotheticallyMovables(x, y) {
-        let isCollide = false;
-        movables.forEach(movable => {
-            if (movable != this) {
-                isCollide = this.collideHypothetically(movable, x, y);
+    isCollidingMovables(x, y) {
+        for (let movable of movables) {
+            if (movable != this && this.isColliding(movable, x, y)) {
+                return movable;
             }
-        });
-        return isCollide;
+        }
+        return null;
+    }
+
+    /**
+     * Find hypothetical collision with any sprite in a tile
+     * @param {number} x - Hypothetical x-coordinate
+     * @param {number} y - Hypothetical y-coordinate
+     * @returns {BaseSprite} Sprite in a tile that is colliding otherwise null
+     */
+    isCollidingTileSprite(x, y) {
+        for (let row of tileGrid) {
+            for (let tile of row) {
+                if (tile.sprite && tile.sprite != this && this.isColliding(tile.sprite, x, y)) {
+                    return tile.sprite;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Find hypothetical collision with any sprite either movables or tiled sprite
+     * @param {number} x - Hypothetical x-coordinate
+     * @param {number} y - Hypothetical y-coordinate
+     * @returns {BaseSprite} Sprite in a tile that is colliding
+     */
+    isCollidingAnySprite(x, y) {
+        let collidingSprite = this.isCollidingMovables(x, y) ||
+            this.isCollidingTileSprite(x, y) ||
+            // Including sprout
+            (this !== sprout && this.isColliding(sprout, x, y));
+        return collidingSprite;
     }
 }

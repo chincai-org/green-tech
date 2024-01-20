@@ -9,9 +9,11 @@ class Rock extends BaseSprite {
             x,
             y,
             color: "#91a8cf",
-            collision_layers: ["all"]
+            collision_layers: ["all"],
+            collision_masks: ["sprout"],
+            collide_range: tileSize / 1.5
         });
     }
 
-    _update() {}
+    _update() { }
 }

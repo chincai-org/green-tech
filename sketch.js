@@ -58,7 +58,7 @@ function windowResized() {
     // Resize tiles
     for (let i = 0; i < tileGrid.length; i++) {
         for (let j = 0; j < tileGrid[i].length; j++) {
-            tileGrid[j][i].onResize();
+            tileGrid[j][i].onResize(changeInWidth);
         }
 
     }
@@ -80,7 +80,6 @@ function setup() {
     canvas.mouseClicked(canvasClicked);
 
     initGrid();
-    //initUi();
 
     // bgsong();
 
@@ -183,16 +182,8 @@ function canvasClicked() {
 
     let tile = getTile(realX, realY);
 
-    if (
-        // isMouseOnAnyUi() ||
-        tile === getTile(sprout.x, sprout.y) ||
-        tile.sprite != null
-    ) {
+    if (tile.sprite != null) {
         return;
-        // Preven placing when:
-        // 1. sprout is in the same tile
-        // 2. tile already have a sprite
-        // 3. is on any ui
     }
 
     switch (hotkey) {
@@ -206,16 +197,23 @@ function canvasClicked() {
             tile.add(new PoliceStation(0, 0));
             break;
         case 2:
-            movables.push(
-                new Lumberjack(
-                    mouseX + camX - windowWidth / 2,
-                    mouseY + camY - windowHeight / 2
-                )
-            );
+            movables.push(new Lumberjack(realX, realY));
             break;
         case 3:
             tile.add(new Rock(0, 0));
             break;
+        default:
+            return;
+    }
+
+    // Remove if colliding with any sprite
+    if (tile.sprite) {
+        if (tile.sprite.isCollidingAnySprite(tile.sprite.x, tile.sprite.y)) {
+            tile.remove();
+        }
+    }
+    else if (movables[movables.length - 1].isCollidingAnySprite(movables[movables.length - 1].x, movables[movables.length - 1].y)) {
+        movables.pop();
     }
 }
 
@@ -327,28 +325,20 @@ function pathFind(maxIterations, sprite, ...targetClasses) {
     let iterations = 0;
 
     while (queue.length > 0 && iterations < maxIterations) {
-        iterations++;
-
         // Check if the queue is empty
         const currentPath = queue.shift();
         const lastTile = currentPath.at(-1);
 
         for (const neighbor of findNeighbour(lastTile)) {
             const neighborTile = tileGrid[neighbor.y][neighbor.x];
+            const tileCenterX = (neighborTile.x + 0.5) * tileSize;
+            const tileCenterY = (neighborTile.y + 0.5) * tileSize;
 
             if (visited.has(`${neighbor.x},${neighbor.y}`)) continue; // Ignore visited tile
 
-            // Check for hypothetical collision
-            if (
-                neighborTile.sprite != null &&
-                !anyInstance(neighborTile.sprite, targetClasses) &&
-                sprite.collideHypothetically(
-                    neighborTile.sprite,
-                    (neighborTile.x + 0.5) * tileSize,
-                    (neighborTile.y + 0.5) * tileSize
-                )
-            )
+            if (sprite.isCollidingAnySprite(tileCenterX, tileCenterY)) {
                 continue;
+            }
 
             visited.add(`${neighbor.x},${neighbor.y}`);
 
@@ -358,6 +348,8 @@ function pathFind(maxIterations, sprite, ...targetClasses) {
 
             queue.push(newPath); // Add the newPath to the queue
         }
+
+        iterations++;
     }
 
     return []; // No path found

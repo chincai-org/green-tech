@@ -11,7 +11,7 @@ class Sprout extends BaseSprite {
             color: 256,
             speed: widthRatio * 0.5,
             collision_layers: ["sprout"],
-            collision_masks: ["lumberjack"],
+            collision_masks: ["lumberjack", "tree"],
             img: "assets/sproutfront.png",
         });
     }
@@ -28,6 +28,7 @@ class Sprout extends BaseSprite {
         } else {
             this.speed = widthRatio * 0.5;
         }
+
         if (
             !this.isNextStepValid(this.x + this.speed * joyX * deltaTime, this.y)
         ) {
@@ -50,12 +51,10 @@ class Sprout extends BaseSprite {
     }
 
     isNextStepValid(x, y) {
-        // Cheak if next step has sprite or is out of map
         if (!inBoundOfMap(x, y)) {
             return false;
-        } else if (getTile(x, y).sprite) {
-            return false;
-        } else if (this.collideHypotheticallyMovables(x, y)) {
+            // check collide at real coord to prevent getting stuck
+        } else if (this.isCollidingAnySprite(x, y) && !this.isCollidingAnySprite(this.x, this.y)) {
             return false;
         }
         return true;

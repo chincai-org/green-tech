@@ -10,6 +10,8 @@ class Tree extends BaseSprite {
             y,
             color: "#00ff00",
             collision_layers: ["tree"],
+            collision_masks: ["sprout"],
+            collide_range: tileSize / 2,
             img: loadImage("assets/tree.png")
         });
         this.hasGrown = false;

@@ -42,10 +42,11 @@ class Tile extends BaseSprite {
         }
     }
 
-    onResize() {
+    onResize(changeInWidth) {
         if (this.sprite) {
             this.sprite.x = (this.x + 0.5) * tileSize;
             this.sprite.y = (this.y + 0.5) * tileSize;
+            this.sprite.collide_range *= changeInWidth;
         }
     }
 }

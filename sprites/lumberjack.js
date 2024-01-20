@@ -11,9 +11,10 @@ class Lumberjack extends BaseSprite {
             color: "#808080",
             speed: widthRatio * 0.25,
             collision_layers: ["lumberjack"],
-            collision_masks: ["policeStation", "sprout"],
-            collide_range: tileSize / 2
+            collision_masks: ["policeStation", "sprout", "police"],
+            collide_range: tileSize / 2.5
         });
+        this.pathFindMaxIteration = 400;
         this.path = [];
         this.pathfindCooldown = 0;
     }
@@ -23,7 +24,7 @@ class Lumberjack extends BaseSprite {
         if (
             this.pathfindCooldown < 0
         ) {
-            this.path = pathFind(200, this, Tree, Sprout);
+            this.path = pathFind(this.pathFindMaxIteration, this, Tree, Sprout);
             if (this.path.length !== 0) {
                 this.pathfindCooldown = Math.sqrt((this.path[1].x * tileSize + tileSize / 2 - this.x) ** 2 +
                     (this.path[1].y * tileSize + tileSize / 2 - this.y) ** 2) / this.speed

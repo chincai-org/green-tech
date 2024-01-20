@@ -428,3 +428,11 @@ function virtualEdit(callable) {
     callable();
     pop();
 }
+
+// Prevent Ctrl + W
+window.addEventListener('beforeunload', function (e) {
+    // Display a confirmation messagea
+    var confirmationMessage = 'Really want to quit the game?';
+    e.returnValue = confirmationMessage; // Standard for most browsers
+    return confirmationMessage; // For some older browsers
+});

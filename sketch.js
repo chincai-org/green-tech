@@ -66,7 +66,7 @@ function windowResized() {
 
 function preload() {
     soundFormats("ogg", "wav");
-    sproutFrontImg = loadImage(sprout.config.img);
+    sproutFrontImg = loadImage(sprout.img);
     // song = loadSound("bestmusic.wav");
 }
 
@@ -212,8 +212,11 @@ function canvasClicked() {
             tile.remove();
         }
     }
-    else if (movables[movables.length - 1].isCollidingAnySprite(movables[movables.length - 1].x, movables[movables.length - 1].y)) {
-        movables.pop();
+    else {
+        let lastMovable = movables[movables.length - 1];
+        if (lastMovable.isCollidingAnySprite(lastMovable.x, lastMovable.y)) {
+            movables.pop();
+        }
     }
 }
 
@@ -429,6 +432,8 @@ function virtualEdit(callable) {
     pop();
 }
 
+// Remove because live server
+/*
 // Prevent Ctrl + W
 window.addEventListener('beforeunload', function (e) {
     // Display a confirmation messagea
@@ -436,3 +441,4 @@ window.addEventListener('beforeunload', function (e) {
     e.returnValue = confirmationMessage; // Standard for most browsers
     return confirmationMessage; // For some older browsers
 });
+*/

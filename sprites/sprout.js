@@ -12,7 +12,7 @@ class Sprout extends BaseSprite {
             speed: widthRatio * 0.5,
             collision_layers: ["sprout"],
             collision_masks: ["lumberjack", "tree"],
-            img: "assets/sproutfront.png",
+            image: "assets/sproutfront.png",
         });
     }
     move(deltaTime) {

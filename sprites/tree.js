@@ -12,7 +12,7 @@ class Tree extends BaseSprite {
             collision_layers: ["tree"],
             collision_masks: ["sprout"],
             collide_range: tileSize / 2,
-            img: loadImage("assets/tree.png")
+            image: loadImage("assets/tree.png")
         });
         this.hasGrown = false;
         this.lastUpdate = Date.now();

@@ -112,8 +112,8 @@ class BaseSprite {
      * @returns {Boolean}
      */
     _collide(other) {
-        for (let mask of this.collision_masks) {
-            if (other.collision_layers.has(mask)) {
+        for (let layer of other.collision_layers) {
+            if (this.collision_masks.has(layer)) {
                 let dist = this.distance(other);
                 if (dist.mag() < this.collide_range + other.collide_range) {
                     return true;
@@ -131,8 +131,8 @@ class BaseSprite {
      * @returns {Boolean}
      */
     isColliding(other, x, y) {
-        for (let mask of this.collision_masks) {
-            if (other.collision_layers.has(mask)) {
+        for (let layer of other.collision_layers) {
+            if (this.collision_masks.has(layer)) {
                 let dist = createVector(x - other.x, y - other.y);
                 if (dist.mag() < this.collide_range + other.collide_range) {
                     return true;
@@ -164,14 +164,12 @@ class BaseSprite {
      * @returns {BaseSprite} Sprite in a tile that is colliding otherwise null
      */
     isCollidingTileSprite(x, y) {
-        for (let row of tileGrid) {
-            for (let tile of row) {
-                if (tile.sprite && tile.sprite != this && this.isColliding(tile.sprite, x, y)) {
-                    return tile.sprite;
-                }
+        for (let tileCoord of Tile.tileWithSprite) {
+            const tile = tileGrid[tileCoord.y][tileCoord.x];
+            if (tile.sprite && tile.sprite != this && this.isColliding(tile.sprite, x, y)) {
+                return tile.sprite;
             }
         }
-
         return null;
     }
 

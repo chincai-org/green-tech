@@ -114,7 +114,7 @@ class BaseSprite {
     _collide(other) {
         for (let layer of other.collision_layers) {
             if (this.collision_masks.has(layer)) {
-                let dist = this.distance(other);
+                const dist = this.distance(other);
                 if (dist.mag() < this.collide_range + other.collide_range) {
                     return true;
                 }
@@ -131,9 +131,9 @@ class BaseSprite {
      * @returns {Boolean}
      */
     isColliding(other, x, y) {
-        for (let layer of other.collision_layers) {
+        for (const layer of other.collision_layers) {
             if (this.collision_masks.has(layer)) {
-                let dist = createVector(x - other.x, y - other.y);
+                const dist = createVector(x - other.x, y - other.y);
                 if (dist.mag() < this.collide_range + other.collide_range) {
                     return true;
                 }
@@ -149,10 +149,9 @@ class BaseSprite {
      * @returns {BaseSprite} Sprite that is colliding otherwise null
      */
     isCollidingMovables(x, y) {
-        for (let movable of movables) {
-            if (movable != this && this.isColliding(movable, x, y)) {
-                return movable;
-            }
+        const closestSprite = this.closestSprite(movables);
+        if (closestSprite != null && closestSprite != this && this.isColliding(closestSprite, x, y)) {
+            return closestSprite;
         }
         return null;
     }
@@ -164,8 +163,7 @@ class BaseSprite {
      * @returns {BaseSprite} Sprite in a tile that is colliding otherwise null
      */
     isCollidingTileSprite(x, y) {
-        for (let tileCoord of Tile.tileWithSprite) {
-            const tile = tileGrid[tileCoord.y][tileCoord.x];
+        for (const tile of Tile.tileWithSprite) {
             if (tile.sprite && tile.sprite != this && this.isColliding(tile.sprite, x, y)) {
                 return tile.sprite;
             }
@@ -185,5 +183,27 @@ class BaseSprite {
             // Including sprout
             (this !== sprout && this.isColliding(sprout, x, y));
         return collidingSprite;
+    }
+
+    closestSprite(sprites) {
+        if (sprites.length === 0) {
+            return null;
+        }
+
+        let closestSprite = sprites[0];
+        let closestDistanceSquared = (this.x - closestSprite.x) ** 2 + (this.y - closestSprite.y) ** 2;
+
+        for (let i = 1; i < sprites.length; i++) {
+            const sprite = sprites[i];
+
+            const distanceSquared = (this.x - sprite.x) ** 2 + (this.y - sprite.y) ** 2;
+
+            if (distanceSquared < closestDistanceSquared) {
+                closestDistanceSquared = distanceSquared;
+                closestSprite = sprite;
+            }
+        }
+
+        return closestSprite;
     }
 }

@@ -34,13 +34,13 @@ class Tile extends BaseSprite {
             this.sprite.tile = this;
             this.sprite.x = (this.x + 0.5) * tileSize;
             this.sprite.y = (this.y + 0.5) * tileSize;
-            Tile.tileWithSprite.push(createVector(this.x, this.y));
+            Tile.tileWithSprite.push(this);
         }
     }
 
     remove() {
         if (this.sprite) {
-            Tile.tileWithSprite.pop(createVector(this.x, this.y));
+            Tile.tileWithSprite.pop(this);
             this.sprite.tile = null;
             this.sprite = null;
         }

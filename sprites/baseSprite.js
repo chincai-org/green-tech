@@ -15,11 +15,8 @@ class BaseSprite {
         this.cost = config.cost;
         this.tile = null;
         this.img = config.image || null;
-
-        this.collision_masks = config.collision_masks?.concat(["all"]) || [
-            "all"
-        ]; // Who I can detect
-        this.collision_layers = config.collision_layers || []; // Who can detect me
+        this.collision_masks = new Set(config.collision_masks?.add("all") || ["all"]);
+        this.collision_layers = new Set(config.collision_layers || []);
         this.collide_range = config.collide_range || 0;
     }
 
@@ -116,7 +113,7 @@ class BaseSprite {
      */
     _collide(other) {
         for (let mask of this.collision_masks) {
-            if (other.collision_layers.includes(mask)) {
+            if (other.collision_layers.has(mask)) {
                 let dist = this.distance(other);
                 if (dist.mag() < this.collide_range + other.collide_range) {
                     return true;
@@ -135,7 +132,7 @@ class BaseSprite {
      */
     isColliding(other, x, y) {
         for (let mask of this.collision_masks) {
-            if (other.collision_layers.includes(mask)) {
+            if (other.collision_layers.has(mask)) {
                 let dist = createVector(x - other.x, y - other.y);
                 if (dist.mag() < this.collide_range + other.collide_range) {
                     return true;
@@ -179,7 +176,7 @@ class BaseSprite {
     }
 
     /**
-     * Find hypothetical collision with any sprite either movables or tiled sprite
+     * Find hypothetical collision with any sprite either movables, tiled sprite and sprout
      * @param {number} x - Hypothetical x-coordinate
      * @param {number} y - Hypothetical y-coordinate
      * @returns {BaseSprite} Sprite in a tile that is colliding

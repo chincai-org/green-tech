@@ -10,8 +10,8 @@ class Sprout extends BaseSprite {
             y,
             color: 256,
             speed: widthRatio * 0.5,
-            collision_layers: ["sprout"],
-            collision_masks: ["lumberjack", "tree"],
+            collision_layers: new Set(["sprout"]),
+            collision_masks: new Set(["lumberjack", "tree"]),
             image: "assets/sproutfront.png",
         });
     }

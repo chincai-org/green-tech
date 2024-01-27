@@ -63,3 +63,7 @@ function uiUpdate() {
     pollutionBar.getElementsByClassName('text')[0].innerText = pollution + "/" + pollutionBarText.split('/')[1];
     pollutionBar.getElementsByClassName('fill')[0].style.width = parseInt(pollution) / parseInt(pollutionBarText.split('/')[1]) * 100 + '%';
 }
+
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('img').forEach(image => image.setAttribute('draggable', false));
+});

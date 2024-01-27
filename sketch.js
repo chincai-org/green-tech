@@ -103,7 +103,7 @@ function draw() {
     background(0);
 
     const now = Date.now();
-    let deltaTime = Date.now() - lastUpdate;
+    let deltaTime = now - lastUpdate;
 
     // possible fix for when screen not focus which will cause sprite to have large deltaTime suddenly
     deltaTime = (deltaTime > 500) ? 0 : deltaTime;

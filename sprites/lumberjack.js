@@ -14,7 +14,7 @@ class Lumberjack extends BaseSprite {
             collision_masks: new Set(["policeStation", "sprout", "police"]),
             collide_range: tileSize / 2.5
         });
-        this.pathFindMaxIteration = 400;
+        this.pathFindMaxIteration = 200;
         this.path = [];
         this.pathfindCooldown = 0;
     }

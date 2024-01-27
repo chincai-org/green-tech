@@ -58,7 +58,7 @@ class BaseSprite {
             );
 
             fill(0, 153, 255, 150);
-            circle(drawX, drawY, this.collide_range * 2);
+            square(drawX - this.collide_range, drawY - this.collide_range, this.collide_range * 2);
             pop();
         }
     }
@@ -114,8 +114,11 @@ class BaseSprite {
     _collide(other) {
         for (let layer of other.collision_layers) {
             if (this.collision_masks.has(layer)) {
-                const dist = this.distance(other);
-                if (dist.mag() < this.collide_range + other.collide_range) {
+                if (this.x - this.collide_range < other.x + other.collide_range &&
+                    this.x + this.collide_range > other.x - other.collide_range &&
+                    this.y - this.collide_range < other.y + other.collide_range &&
+                    this.y + this.collide_range > other.y - other.collide_range
+                ) {
                     return true;
                 }
             }
@@ -133,8 +136,11 @@ class BaseSprite {
     isColliding(other, x, y) {
         for (const layer of other.collision_layers) {
             if (this.collision_masks.has(layer)) {
-                const dist = createVector(x - other.x, y - other.y);
-                if (dist.mag() < this.collide_range + other.collide_range) {
+                if (x - this.collide_range < other.x + other.collide_range &&
+                    x + this.collide_range > other.x - other.collide_range &&
+                    y - this.collide_range < other.y + other.collide_range &&
+                    y + this.collide_range > other.y - other.collide_range
+                ) {
                     return true;
                 }
             }

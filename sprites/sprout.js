@@ -106,11 +106,10 @@ class Sprout extends BaseSprite {
             );
 
             fill(0, 153, 255, 150);
-            circle(
-                windowWidth / 2 + this.x - camX,
-                windowHeight / 2 + this.y - camY,
-                this.collide_range * 2
-            );
+
+            square(windowWidth / 2 + this.x - camX - this.collide_range,
+                windowHeight / 2 + this.y - camY - this.collide_range,
+                this.collide_range * 2);
             pop();
         }
     }

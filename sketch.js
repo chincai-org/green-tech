@@ -321,7 +321,7 @@ function pathFind(maxIterations, sprite, ...targetClasses) {
     if (anyInstance(startTile.sprite, targetClasses)) return [];
 
     // implement BFS
-    const queue = [[createVector(tileX, tileY)]];
+    const queue = [[{ x: tileX, y: tileY }]];
     const visited = new Set();
     visited.add(`${tileX},${tileY}`);
 
@@ -345,7 +345,7 @@ function pathFind(maxIterations, sprite, ...targetClasses) {
 
             visited.add(`${neighbor.x},${neighbor.y}`);
 
-            const newPath = currentPath.concat([neighborTile]);
+            const newPath = currentPath.concat([{ x: neighborTile.x, y: neighborTile.y }]);
 
             if (anyInstance(neighborTile.sprite, targetClasses)) return newPath;
 
@@ -372,7 +372,7 @@ function findNeighbour(vector) {
     for (let dx = -1; dx <= 1; dx++) {
         for (let dy = -1; dy <= 1; dy++) {
             if (dx === 0 && dy === 0) continue;
-            const neighbour = createVector(x + dx, y + dy);
+            const neighbour = { x: x + dx, y: y + dy };
             if (inBoundOfGrid(neighbour.x, neighbour.y)) {
                 // Priotize horizontal or vertical movement
                 if (Math.abs(dx) + Math.abs(dy) == 2) {
@@ -406,7 +406,7 @@ function findNeighbourNoDiagonal(vector) {
 
     // returns neighbour to all 4 directions, and x and y cannot be lower than 0 and higher than the map size
     for (const direction of directions) {
-        const neighbour = createVector(x + direction.dx, y + direction.dy);
+        const neighbour = { x: x + direction.dx, y: y + direction.dy };
         if (inBoundOfGrid(neighbour.x, neighbour.y)) result.push(neighbour);
     }
 

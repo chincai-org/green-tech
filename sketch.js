@@ -23,10 +23,16 @@ let tileSize = (constWinWidth * widthRatio) / 30;
 // let song;
 
 let lastUpdate = Date.now();
-let deltaTime;
 let debugMode = false;
 let camX, camY;
 let hotkey = -1;
+
+// tile draw
+let startTileX;
+let startTileY;
+let endTileX;
+let endTileY;
+let tileBuffer = 2;
 
 let resource = 50;
 let energy = 1000;
@@ -34,8 +40,12 @@ let pollution = 1000;
 let polluteRate = 10;
 let lastPollute;
 
+// Game tick
+let delta = 0;
+const tickSpeed = 60;
+const msBetweenTicks = 1000 / tickSpeed;
+
 function windowResized() {
-    console.log("resized");
     let changeInWidth = window.innerWidth / winWidth;
     winWidth = window.innerWidth;
     winHeight = window.innerHeight;
@@ -92,35 +102,46 @@ function setup() {
 function draw() {
     background(0);
 
-    let now = Date.now();
-    deltaTime = now - lastUpdate;
+    const now = Date.now();
+    let deltaTime = Date.now() - lastUpdate;
 
     // possible fix for when screen not focus which will cause sprite to have large deltaTime suddenly
-    (deltaTime > 500) ? deltaTime = 0 : deltaTime;
+    deltaTime = (deltaTime > 500) ? 0 : deltaTime;
 
-    sprout.update(deltaTime);
+
+    // Game tick
+    delta += deltaTime / msBetweenTicks;
+    while (delta >= 1) {
+        gameTick();
+        delta--;
+    }
+
     sprout.draw();
 
     drawGridLine();
 
     for (let movable of movables) {
-        movable.update(deltaTime);
         movable.draw();
     }
 
     let startX = camX - windowWidth / 2;
     let startY = camY - windowHeight / 2;
-    let startTileX = Math.ceil(startX / tileSize);
-    let startTileY = Math.ceil(startY / tileSize);
+    startTileX = Math.ceil(startX / tileSize);
+    startTileY = Math.ceil(startY / tileSize);
 
     let endX = startX + windowWidth;
     let endY = startY + windowHeight;
-    let endTileX = Math.ceil(endX / tileSize);
-    let endTileY = Math.ceil(endY / tileSize);
+    endTileX = Math.ceil(endX / tileSize);
+    endTileY = Math.ceil(endY / tileSize);
+
+    startTileX = (startTileX - tileBuffer < 0) ? startTileX : startTileX - tileBuffer;
+    endTileX = (endTileX + tileBuffer > gridWidth) ? endTileX : endTileX + tileBuffer;
+    startTileY = (startTileY - tileBuffer < 0) ? startTileY : startTileY - tileBuffer;
+    endTileY = (endTileY + tileBuffer < gridHeight) ? endTileY : endTileY + tileBuffer;
+
 
     for (let row of tileGrid.slice(startTileY, endTileY)) {
         for (let tile of row.slice(startTileX, endTileX)) {
-            tile.update(deltaTime);
             tile.draw();
         }
     }
@@ -136,6 +157,16 @@ function draw() {
     lastUpdate = now;
 
     uiUpdate();
+}
+
+function gameTick() {
+    sprout.tick();
+    for (let movable of movables) {
+        movable.tick();
+    }
+    for (let tile of Tile.tileWithSprite) {
+        tile.tick();
+    }
 }
 
 // function bgsong() {

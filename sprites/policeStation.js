@@ -12,18 +12,16 @@ class PoliceStation extends BaseSprite {
             collision_layers: new Set(["policeStation"]),
             collide_range: tileSize / 2
         });
-        this.lastUpdate = Date.now();
+        this.timeSpawned = Date.now();
         this.spawnCoolDown = 3000;
         this.maxSpawn = 3;
         this.spawned = 0;
     }
 
-    _update() {
-        let now = Date.now();
-
-        if (now - this.lastUpdate > this.spawnCoolDown && this.spawned < this.maxSpawn) {
+    _tick() {
+        if (Date.now() - this.timeSpawned > this.spawnCoolDown && this.spawned < this.maxSpawn) {
             movables.push(new Police(this.x, this.y));
-            this.lastUpdate = now;
+            this.timeSpawned = Date.now();
             this.spawned++;
         }
     }

@@ -15,7 +15,7 @@ class Sprout extends BaseSprite {
             image: "assets/sproutfront.png",
         });
     }
-    move(deltaTime) {
+    move() {
         let right = keyIsDown(RIGHT_ARROW) || keyIsDown(68);
         let left = keyIsDown(LEFT_ARROW) || keyIsDown(65);
         let up = keyIsDown(UP_ARROW) || keyIsDown(87);
@@ -30,16 +30,16 @@ class Sprout extends BaseSprite {
         }
 
         if (
-            !this.isNextStepValid(this.x + this.speed * joyX * deltaTime, this.y)
+            !this.isNextStepValid(this.x + this.speed * joyX * this.deltaTime(), this.y)
         ) {
             joyX = 0;
         }
         if (
-            !this.isNextStepValid(this.x, this.y + this.speed * joyY * deltaTime)
+            !this.isNextStepValid(this.x, this.y + this.speed * joyY * this.deltaTime())
         ) {
             joyY = 0;
         }
-        this._move(deltaTime, createVector(joyX, joyY));
+        this._move(createVector(joyX, joyY));
         camX = Math.max(
             Math.min(this.x, gridWidth * tileSize - windowWidth / 2),
             windowWidth / 2

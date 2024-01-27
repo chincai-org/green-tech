@@ -18,23 +18,36 @@ class BaseSprite {
         this.collision_masks = new Set(config.collision_masks?.add("all") || ["all"]);
         this.collision_layers = new Set(config.collision_layers || []);
         this.collide_range = config.collide_range || 0;
+        this.lastUpdate = Date.now();
+        this.tickPerUpdate = 1;
+        this.tickPassed = 0;
     }
 
     /**
      * Update the sprite
-     * @param {Number} deltaTime - Time in milliseconds since last update
+     * @returns {Number} Time in milliseconds since last update
      */
-    update(deltaTime) {
-        // console.log("update");
-        this._update(deltaTime);
+    deltaTime() {
+        return Date.now() - this.lastUpdate;
     }
 
     /**
-     * @param {Number} deltaTime - Time in milliseconds since last update
+     * Update the sprite
+     */
+    tick() {
+        this.tickPassed++;
+        if (this.tickPassed >= this.tickPerUpdate) {
+            this.tickPassed = 0;
+            this._tick();
+            this.lastUpdate = Date.now();
+        }
+    }
+
+    /**
      * @param {Vector} vector - The direction to move to
      */
-    move(deltaTime, vector) {
-        this._move(deltaTime, vector);
+    move(vector) {
+        this._move(vector);
     }
 
     draw() {
@@ -61,30 +74,32 @@ class BaseSprite {
             square(drawX - this.collide_range, drawY - this.collide_range, this.collide_range * 2);
             pop();
         }
+        this._draw(drawX, drawY);
+    }
+
+    _draw(drawX, drawY) {
+        // Abstract function;
     }
 
     /**
      * Update the sprite
-     * @param {Number} deltaTime - Time in milliseconds since last update
      */
-    _update(deltaTime) {
-        this.move(deltaTime);
+    _tick() {
+        this.move();
     }
 
     /**
-     * @param {Number} deltaTime - Time in milliseconds since last update
      * @param {Vector} [vector] - The direction to move to
      */
-    _move(deltaTime, vector = createVector(0, 0)) {
-        if (this.color == "#40E0D0") console.log(vector);
+    _move(vector = createVector(0, 0)) {
         let vectDist = Math.hypot(vector.x, vector.y);
         this.x +=
             this.speed *
-            deltaTime *
+            this.deltaTime() *
             (vectDist > vector.x ? vector.x / vectDist : vector.x);
         this.y +=
             this.speed *
-            deltaTime *
+            this.deltaTime() *
             (vectDist > vector.y ? vector.y / vectDist : vector.y);
     }
 

@@ -14,33 +14,34 @@ class Tree extends BaseSprite {
             collide_range: tileSize / 2,
             image: loadImage("assets/tree.png")
         });
+        this.timePlaced = Date.now();
         this.hasGrown = false;
-        this.lastUpdate = Date.now();
         this.timeToGrow = 6000;
+        this.tickPerUpdate = 4;
     }
 
-    _update() {
-        let now = Date.now();
-
-        let distance = this.distance({ x: camX, y: camY });
-        let drawX = windowWidth / 2 + distance.x;
-        let drawY = windowHeight / 2 + distance.y;
-
-        if (now - this.lastUpdate > this.timeToGrow) {
+    _tick() {
+        if (Date.now() - this.timePlaced > this.timeToGrow) {
             this.config.color = "#8B4513";
             this.hasGrown = true;
-        } else {
-            // Display time left to grow
-            push();
-            fill(this.config.color);
-            stroke(this.config.color);
-            let timeLeft = Math.round((this.timeToGrow - (now - this.lastUpdate)) / 100);
-            text(
-                `${timeLeft}`,
-                drawX - textWidth(`${timeLeft}`) / 2,
-                drawY + tileSize * 0.8
-            );
-            pop();
+        }
+    }
+
+    _draw(drawX, drawY) {
+        if (this.hasGrown == false) {
+            virtualEdit(
+                () => {
+                    // Display time left to grow
+                    fill(this.config.color);
+                    stroke(this.config.color);
+                    let timeLeft = Math.round((this.timeToGrow - (Date.now() - this.timePlaced)) / 100);
+                    text(
+                        `${timeLeft}`,
+                        drawX - textWidth(`${timeLeft}`) / 2,
+                        drawY + tileSize * 0.8
+                    );
+                }
+            )
         }
     }
 }

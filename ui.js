@@ -44,7 +44,6 @@ function setHotkey(value) {
 }
 
 function handleHotkeyChange(oldHotkey) {
-    console.log("New hotkey:", hotkey);
     if (oldHotkey != -1) {
         document.getElementsByClassName("inventory-box")[oldHotkey].classList.toggle('selected');
     }

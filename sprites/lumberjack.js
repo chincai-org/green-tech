@@ -17,10 +17,11 @@ class Lumberjack extends BaseSprite {
         this.pathFindMaxIteration = 200;
         this.path = [];
         this.pathfindCooldown = 0;
+        this.tickPerUpdate = 2;
     }
 
-    _update(deltaTime) {
-        this.pathfindCooldown -= deltaTime;
+    _tick() {
+        this.pathfindCooldown -= this.deltaTime();
         if (
             this.pathfindCooldown < 0
         ) {
@@ -35,7 +36,6 @@ class Lumberjack extends BaseSprite {
         }
         if (this.path.length > 0) {
             this.move(
-                deltaTime,
                 // Move to center of next path
                 createVector(
                     this.path[1].x * tileSize + tileSize / 2 - this.x,
@@ -44,7 +44,6 @@ class Lumberjack extends BaseSprite {
             );
         } else {
             this.move(
-                deltaTime,
                 // createVector(sprout.x - this.x, sprout.y - this.y)
                 createVector(0, 0)
             );

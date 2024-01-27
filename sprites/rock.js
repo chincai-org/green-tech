@@ -15,5 +15,5 @@ class Rock extends BaseSprite {
         });
     }
 
-    _update() { }
+    _tick() { }
 }

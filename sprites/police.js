@@ -17,14 +17,15 @@ class Police extends BaseSprite {
         this.target = p5.Vector.random2D()
         this.timeIdle = 0
         this.timeNewDirection = randint(15, 50)
+        this.tickPerUpdate = 2;
     }
 
-    _update(deltaTime) {
+    _tick() {
         if (this.timeIdle > 0) {
             this.timeIdle--
             return
         }
-        this.move(deltaTime, this.target);
+        this.move(this.target);
         this.timeNewDirection--
         if (this.timeNewDirection < 1) {
             this.target = p5.Vector.random2D();

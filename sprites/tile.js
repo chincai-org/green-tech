@@ -19,8 +19,8 @@ class Tile extends BaseSprite {
         this.sprite?.draw();
     }
 
-    _update(deltaTime) {
-        this.sprite?.update(deltaTime);
+    _tick() {
+        this.sprite?.tick();
     }
 
     /**

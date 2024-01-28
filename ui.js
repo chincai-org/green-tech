@@ -38,6 +38,10 @@ for (let index = 0; index < document.getElementsByClassName("inventory-box").len
 }
 
 function setHotkey(value) {
+    if (hotkey == value) {
+        setHotkey(-1);
+        return;
+    }
     let oldHotkey = hotkey;
     hotkey = value;
     handleHotkeyChange(oldHotkey);

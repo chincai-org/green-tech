@@ -31,7 +31,7 @@ class Lumberjack extends BaseSprite {
                     (this.path[1].y * tileSize + tileSize / 2 - this.y) ** 2) / this.speed
             } else {
                 // Reduce lag
-                this.pathfindCooldown = 2000;
+                this.pathfindCooldown = 0;
             }
         }
         if (this.path.length > 0) {
@@ -44,8 +44,7 @@ class Lumberjack extends BaseSprite {
             );
         } else {
             this.move(
-                // createVector(sprout.x - this.x, sprout.y - this.y)
-                createVector(0, 0)
+                createVector(sprout.x - this.x, sprout.y - this.y)
             );
         }
     }

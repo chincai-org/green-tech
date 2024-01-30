@@ -11,25 +11,22 @@ img{
 }
 
 .inventory-container {
-    background-color: #f0f0f0;
+    background-color: grey;
     position: absolute;
-    bottom: 20px;
+    bottom: 1.5rem;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
     align-items: center;
-    padding: .5%;
-    width: 33vw;
+    padding-block: 0.5rem;
     height: 5vw;
     justify-content: space-between;
 }
 
 .inventory-box {
-    height: 5vw;
-    width: 5vw;
-    margin: 0 .2%;
+    padding: 0.5rem;
+    height: 100%;
     border: none;
-    border: 2px solid #ccc;
     transition: transform 0.1s ease;
 }
 
@@ -39,11 +36,10 @@ img{
 
 .side-box {
     background-color: #f0f0f0;
-    width: 15vh;
-    height: 60vh;
     display: flex;
     flex-direction: column;
-    padding: 4vh;
+    padding-block: min(3vh, 5rem);
+    padding-inline: min(1.5vw, 5rem);
     justify-content: space-between;
 }
 

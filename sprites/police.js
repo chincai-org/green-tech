@@ -25,15 +25,12 @@ class Police extends BaseSprite {
             this.timeIdle--
             return
         }
-        this.move(this.target);
+        this.move(this.target, true);
         this.timeNewDirection--
         if (this.timeNewDirection < 1) {
             this.target = p5.Vector.random2D();
             this.timeNewDirection = randint(15, 50)
             this.timeIdle = randint(250, 500);
-        }
-        if (this.timeNewDirection < 200 && this.isCollidingAnySprite(this.x, this.y)) {
-            this.target.mult(-1);
         }
     }
 }

@@ -99,12 +99,16 @@ class BaseSprite {
         const newX = this.x +
             this.speed *
             this.deltaTime() *
-            (vectDist > vector.x ? vector.x / vectDist : vector.x);
+            (vectDist == 0 ? vector.x : vector.x / vectDist);
         const newY = this.y +
             this.speed *
             this.deltaTime() *
-            (vectDist > vector.y ? vector.y / vectDist : vector.y);
-
+            (vectDist == 0 ? vector.y : vector.y / vectDist);
+        if (this instanceof Lumberjack) {
+            console.log(vectDist > vector.x);
+            if (newX - this.x > 10)
+                console.log(vectDist > vector.x + " bad");
+        }
         if (!checkCollision || !this.isCollidingAnySprite(newX, newY)) {
             this.x = newX;
             this.y = newY;

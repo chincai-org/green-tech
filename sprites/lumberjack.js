@@ -21,6 +21,7 @@ class Lumberjack extends BaseSprite {
     }
 
     _tick() {
+        const old = this.x;
         this.pathfindCooldown -= this.deltaTime();
 
         if (

@@ -59,14 +59,12 @@ function handleHotkeyChange(oldHotkey) {
 function uiUpdate() {
     let resourceBar = document.getElementsByClassName('progress-bar')[0];
     let resourceBarText = resourceBar.dataset.number;
-    const computedStyle = getComputedStyle(resourceBar)
     const width = (resource / parseInt(resourceBarText.split('/')[1]) * 100) || 0;
     resourceBar.dataset.number = resource + "/" + resourceBarText.split('/')[1];
     resourceBar.style.setProperty("--width", width)
 
     let pollutionBar = document.getElementsByClassName('progress-bar')[1];
     let pollutionBarText = pollutionBar.dataset.number
-    const computedStyle2 = getComputedStyle(pollutionBar)
     const width2 = (pollution / parseInt(pollutionBarText.split('/')[1]) * 100);
     pollutionBar.dataset.number = pollution + "/" + pollutionBarText.split('/')[1];
     pollutionBar.style.setProperty("--width", width2)

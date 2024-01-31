@@ -175,11 +175,13 @@ class BaseSprite {
      * Find hypothetical collision with any movables
      * @param {number} x - Hypothetical x-coordinate
      * @param {number} y - Hypothetical y-coordinate
-     * @returns {BaseSprite} Sprite that is colliding otherwise null
+     * @param {...BaseSprite} excluding - Sprites to exclude from collision check
+     * @returns {BaseSprite | null} Sprite that is colliding otherwise null
      */
-    isCollidingMovables(x, y) {
+    isCollidingMovables(x, y, ...excluding) {
         for (let movable of movables) {
-            if (movable != this && this.isColliding(movable, x, y)) {
+            if (anyInstance(movable, excluding)) continue;
+            if (movable !== this && this.isColliding(movable, x, y)) {
                 return movable;
             }
         }
@@ -190,12 +192,16 @@ class BaseSprite {
      * Find hypothetical collision with any sprite in a tile
      * @param {number} x - Hypothetical x-coordinate
      * @param {number} y - Hypothetical y-coordinate
-     * @returns {BaseSprite} Sprite in a tile that is colliding otherwise null
+     * @param {...BaseSprite} excluding - Sprites to exclude from collision check
+     * @returns {BaseSprite | null} Sprite in a tile that is colliding otherwise null
      */
-    isCollidingTileSprite(x, y) {
+    isCollidingTileSprite(x, y, ...excluding) {
         for (const tile of Tile.tileWithSprite) {
-            if (tile.sprite && tile.sprite != this && this.isColliding(tile.sprite, x, y)) {
-                return tile.sprite;
+            if (tile.sprite && tile.sprite !== this) {
+                if (anyInstance(tile.sprite, excluding)) continue;
+                if (this.isColliding(tile.sprite, x, y)) {
+                    return tile.sprite;
+                }
             }
         }
         return null;
@@ -205,13 +211,14 @@ class BaseSprite {
      * Find hypothetical collision with any sprite either movables, tiled sprite and sprout
      * @param {number} x - Hypothetical x-coordinate
      * @param {number} y - Hypothetical y-coordinate
-     * @returns {BaseSprite} Sprite in a tile that is colliding
+     * @param {...BaseSprite} excluding - Sprites to exclude from collision check
+     * @returns {BaseSprite | null} Sprite in a tile that is colliding
      */
-    isCollidingAnySprite(x, y) {
-        let collidingSprite = this.isCollidingMovables(x, y) ||
-            this.isCollidingTileSprite(x, y) ||
+    isCollidingAnySprite(x, y, ...excluding) {
+        let collidingSprite = this.isCollidingMovables(x, y, ...excluding) ||
+            this.isCollidingTileSprite(x, y, ...excluding) ||
             // Including sprout
-            (this !== sprout && this.isColliding(sprout, x, y));
+            (!anyInstance(sprout, excluding) && this !== sprout && this.isColliding(sprout, x, y));
         return collidingSprite;
     }
 }

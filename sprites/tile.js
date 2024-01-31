@@ -40,7 +40,7 @@ class Tile extends BaseSprite {
 
     remove() {
         if (this.sprite) {
-            Tile.tileWithSprite.pop(this);
+            Tile.tileWithSprite.splice(Tile.tileWithSprite.indexOf(this), 1);
             this.sprite.tile = null;
             this.sprite = null;
         }

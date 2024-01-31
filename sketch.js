@@ -343,12 +343,11 @@ function closeFullscreen() {
  * @returns {Array<Vector>}
  */
 function pathFind(maxIterations, sprite, ...targetClasses) {
+    // Target of movable
+    const movableTargetTile = getTilesOfTargetMovable(...targetClasses);
     const startTile = getTile(sprite.x, sprite.y);
     const tileX = startTile.x;
     const tileY = startTile.y;
-
-    // Stop lag
-    if (anyInstance(startTile.sprite, targetClasses)) return [];
 
     // implement BFS
     const queue = [[{ x: tileX, y: tileY }]];
@@ -369,7 +368,7 @@ function pathFind(maxIterations, sprite, ...targetClasses) {
 
             if (visited.has(`${neighbor.x},${neighbor.y}`)) continue; // Ignore visited tile
 
-            if (sprite.isCollidingAnySprite(tileCenterX, tileCenterY)) {
+            if (sprite.isCollidingAnySprite(tileCenterX, tileCenterY, ...targetClasses)) {
                 continue;
             }
 
@@ -378,6 +377,7 @@ function pathFind(maxIterations, sprite, ...targetClasses) {
             const newPath = currentPath.concat([{ x: neighborTile.x, y: neighborTile.y }]);
 
             if (anyInstance(neighborTile.sprite, targetClasses)) return newPath;
+            if (movableTargetTile.has(neighborTile)) return newPath;
 
             queue.push(newPath); // Add the newPath to the queue
         }
@@ -386,6 +386,21 @@ function pathFind(maxIterations, sprite, ...targetClasses) {
     }
 
     return []; // No path found
+}
+
+/**
+ * Find tiles of all movable including sprout
+ * @param {...Class} targetClasses  - The class that you wish to find, example: Tree
+ * @returns {Set} - Set of tiles corresponding to the target classes
+ */
+function getTilesOfTargetMovable(...targetClasses) {
+    const targetTiles = new Set();
+    for (const movable of [movables, sprout]) {
+        if (anyInstance(movable, targetClasses)) {
+            targetTiles.add(getTile(movable.x, movable.y));
+        }
+    }
+    return targetTiles;
 }
 
 /**

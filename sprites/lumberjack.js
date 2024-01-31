@@ -44,7 +44,8 @@ class Lumberjack extends BaseSprite {
             );
         } else {
             this.move(
-                createVector(sprout.x - this.x, sprout.y - this.y)
+                createVector(sprout.x - this.x, sprout.y - this.y),
+                true
             );
         }
     }

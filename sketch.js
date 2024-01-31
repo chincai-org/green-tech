@@ -41,6 +41,7 @@ let polluteRate = 10;
 let lastPollute;
 
 // Game tick
+const maxDeltaTime = 500;
 let delta = 0;
 const tickSpeed = 60;
 const msBetweenTicks = 1000 / tickSpeed;
@@ -105,9 +106,7 @@ function draw() {
     const now = Date.now();
     let deltaTime = now - lastUpdate;
 
-    // possible fix for when screen not focus which will cause sprite to have large deltaTime suddenly
-    deltaTime = (deltaTime > 500) ? 0 : deltaTime;
-
+    deltaTime = (deltaTime > maxDeltaTime) ? 0 : deltaTime;
 
     // Game tick
     delta += deltaTime / msBetweenTicks;

@@ -28,7 +28,8 @@ class BaseSprite {
      * @returns {Number} Time in milliseconds since last update
      */
     deltaTime() {
-        return Date.now() - this.lastUpdate;
+        const deltaTime = Date.now() - this.lastUpdate;
+        return (deltaTime > maxDeltaTime) ? 0 : deltaTime;
     }
 
     /**
@@ -45,9 +46,10 @@ class BaseSprite {
 
     /**
      * @param {Vector} vector - The direction to move to
+     * @param {Boolean} checkCollision - Check for collision when moving if then stop
      */
-    move(vector) {
-        this._move(vector);
+    move(vector, checkCollision = false) {
+        this._move(vector, checkCollision);
     }
 
     draw() {
@@ -90,17 +92,23 @@ class BaseSprite {
 
     /**
      * @param {Vector} [vector] - The direction to move to
+     * @param {Boolean} checkCollision - Check for collision when moving if then stop
      */
-    _move(vector = createVector(0, 0)) {
+    _move(vector = createVector(0, 0), checkCollision = false) {
         let vectDist = Math.hypot(vector.x, vector.y);
-        this.x +=
+        const newX = this.x +
             this.speed *
             this.deltaTime() *
             (vectDist > vector.x ? vector.x / vectDist : vector.x);
-        this.y +=
+        const newY = this.y +
             this.speed *
             this.deltaTime() *
             (vectDist > vector.y ? vector.y / vectDist : vector.y);
+
+        if (!checkCollision || !this.isCollidingAnySprite(newX, newY)) {
+            this.x = newX;
+            this.y = newY;
+        }
     }
 
     /**

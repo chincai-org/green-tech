@@ -220,4 +220,47 @@ class BaseSprite {
             (!anyInstance(sprout, excluding) && this !== sprout && this.isColliding(sprout, x, y));
         return collidingSprite;
     }
+
+    findNeighbourTargetTile(range, ...targetClasses) {
+        const targets = new Set([
+            ...getTilesOfTargetMovable(...targetClasses),
+            ...getTilesOfTargetTiles(...targetClasses)
+        ]);
+
+        let result = [];
+        const currentTile = getTile(this.x, this.y);
+
+        // Loops spirally
+        let x = currentTile.x;
+        let y = currentTile.y;
+        let nMove = 1;
+        let dx = 1;
+        let dy = 0;
+
+        for (let i = 1; i < range * 4 + 2; i++) {
+            // Move
+            for (let j = 0; j < nMove; j++) {
+                x += dx;
+                y += dy;
+                if (inBoundOfGrid(x, y)) {
+                    const neighbor = tileGrid[y][x];
+                    if (targets.has(neighbor)) {
+                        result.push(neighbor);
+                    }
+                }
+            }
+
+            // Change direction
+            const temp = dx;
+            dx = -dy;
+            dy = temp;
+
+            // Increase move per 2 incriment
+            if (i % 2 == 0) {
+                nMove++;
+            }
+        }
+        return result;
+    }
+
 }

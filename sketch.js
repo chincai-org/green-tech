@@ -395,9 +395,24 @@ function pathFind(maxIterations, sprite, ...targetClasses) {
  */
 function getTilesOfTargetMovable(...targetClasses) {
     const targetTiles = new Set();
-    for (const movable of [movables, sprout]) {
+    for (const movable of [].concat(movables, sprout)) {
         if (anyInstance(movable, targetClasses)) {
             targetTiles.add(getTile(movable.x, movable.y));
+        }
+    }
+    return targetTiles;
+}
+
+/**
+ * Find tiles with sprite that is in the targetClasses
+ * @param {...Class} targetClasses  - The class that you wish to find, example: Tree
+ * @returns {Set} - Set of tiles corresponding to the target classes
+ */
+function getTilesOfTargetTiles(...targetClasses) {
+    const targetTiles = new Set();
+    for (const tile of Tile.tileWithSprite) {
+        if (anyInstance(tile.sprite, targetClasses)) {
+            targetTiles.add(movable.x, movable.y);
         }
     }
     return targetTiles;

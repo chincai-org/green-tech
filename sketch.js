@@ -388,6 +388,74 @@ function pathFind(maxIterations, sprite, ...targetClasses) {
     return []; // No path found
 }
 
+function astar(start, end, grid) {
+    let openSet = [start];
+    let closedSet = [];
+
+    while (openSet.length > 0) {
+        let current = openSet[0];
+        for (let i = 1; i < openSet.length; i++) {
+            if (openSet[i].f < current.f || (openSet[i].f === current.f && openSet[i].h < current.h)) {
+                current = openSet[i];
+            }
+        }
+
+        openSet = openSet.filter(node => node !== current);
+        closedSet.push(current);
+
+        if (current === end) {
+            // Path found, reconstruct and return path
+            const path = [];
+            let temp = current;
+            while (temp) {
+                path.unshift({ x: temp.x, y: temp.y });
+                temp = temp.parent;
+            }
+            return path;
+        }
+
+        const neighbors = getNeighbors(current, grid);
+        for (const neighbor of neighbors) {
+            if (closedSet.includes(neighbor) || neighbor.obstacle) {
+                continue;
+            }
+
+            const tentativeG = current.g + 1; // Assuming each step costs 1
+
+            if (!openSet.includes(neighbor) || tentativeG < neighbor.g) {
+                neighbor.g = tentativeG;
+                neighbor.h = heuristic(neighbor, end);
+                neighbor.f = neighbor.g + neighbor.h;
+                neighbor.parent = current;
+
+                if (!openSet.includes(neighbor)) {
+                    openSet.push(neighbor);
+                }
+            }
+        }
+    }
+
+    // No path found
+    return null;
+}
+
+function getNeighbors(node, grid) {
+    const neighbors = [];
+    const { x, y } = node;
+
+    if (x > 0) neighbors.push(grid[x - 1][y]);
+    if (x < grid.length - 1) neighbors.push(grid[x + 1][y]);
+    if (y > 0) neighbors.push(grid[x][y - 1]);
+    if (y < grid[0].length - 1) neighbors.push(grid[x][y + 1]);
+
+    return neighbors;
+}
+
+function heuristic(node, end) {
+    // Manhattan distance heuristic
+    return Math.abs(node.x - end.x) + Math.abs(node.y - end.y);
+}
+
 /**
  * Find tiles of all movable including sprout
  * @param {...Class} targetClasses  - The class that you wish to find, example: Tree

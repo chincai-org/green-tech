@@ -26,10 +26,13 @@ class Lumberjack extends BaseSprite {
         if (
             this.pathfindCooldown < 0
         ) {
-            this.path = pathFind(this.pathFindMaxIteration, 3, this, Tree, Sprout);
+            this.path = pathFind(this.pathFindMaxIteration, 3, 10, this, Tree, Sprout);
             if (this.path.length !== 0) {
                 this.pathfindCooldown = Math.sqrt((this.path[1].x * tileSize + tileSize / 2 - this.x) ** 2 +
                     (this.path[1].y * tileSize + tileSize / 2 - this.y) ** 2) / this.speed
+            }
+            else {
+                this.pathfindCooldown = 200;
             }
         }
 

@@ -342,31 +342,18 @@ function closeFullscreen() {
  * @param {...Class} targetClasses  - The class that you wish to find, example: Tree
  * @returns {Array<Vector>}
  */
-function pathFind(maxIterations, maxTarget, sprite, ...targetClasses) {
-    // Target of movable
-    const targetTiles = sprite.findNeighbourTargetTile(10, ...targetClasses);
+function pathFind(maxIterations, maxTarget, range, sprite, ...targetClasses) {
+    const targetTiles = sprite.findNeighbourTargetTile(range, ...targetClasses);
     const startTile = getTile(sprite.x, sprite.y);
     let path = [];
 
-    if (targetTiles.length <= maxTarget) {
-        for (const targetTile of targetTiles) {
-            const maxIterationsPerTarget = maxIterations / targetTiles.length;
-            path = astar(maxIterationsPerTarget, startTile, targetTile, sprite, ...targetClasses);
-            if (path != 0) {
-                return path;
-            }
+    for (const targetTile of targetTiles.slice(0, maxTarget)) {
+        const maxIterationsPerTarget = maxIterations / targetTiles.slice(0, maxTarget).length;
+        path = astar(maxIterationsPerTarget, startTile, targetTile, sprite, ...targetClasses);
+        if (path != 0) {
+            return path;
         }
     }
-    else {
-        for (const targetTile of targetTiles.slice(0, maxTarget)) {
-            const maxIterationsPerTarget = maxIterations / maxTarget;
-            path = astar(maxIterationsPerTarget, startTile, targetTile, sprite, ...targetClasses);
-            if (path != 0) {
-                return path;
-            }
-        }
-    }
-
 
     return path;
 }
@@ -401,7 +388,11 @@ function astar(maxIterations, start, end, sprite, ...targetClasses) {
 
         const neighbors = findNeighbour(current);
         for (const neighbor of neighbors) {
-            if (closedSet.includes(neighbor) || sprite.isCollidingAnySprite((neighbor.x + 0.5) * tileSize, (neighbor.y + 0.5) * tileSize, ...targetClasses)) {
+            if (closedSet.includes(neighbor) ||
+                checkCollisionAlongPath(sprite,
+                    { x: (current.x + 0.5) * tileSize, y: (current.y + 0.5) * tileSize },
+                    { x: (neighbor.x + 0.5) * tileSize, y: (neighbor.y + 0.5) * tileSize },
+                    ...targetClasses)) {
                 continue;
             }
 
@@ -428,6 +419,32 @@ function astar(maxIterations, start, end, sprite, ...targetClasses) {
 
     // No path found
     return [];
+}
+
+function checkCollisionAlongPath(sprite, startPoint, endPoint, ...exclude) {
+    const intermediatePoints = generatePointsOnLine(startPoint, endPoint, 3);
+    for (points of intermediatePoints) {
+        if (sprite.isCollidingAnySprite(points.x, points.y, ...exclude)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+function generatePointsOnLine(startPoint, endPoint, numberOfPoints) {
+    const points = [];
+    const dx = endPoint.x - startPoint.x;
+    const dy = endPoint.y - startPoint.y;
+
+    for (let i = 0; i < numberOfPoints; i++) {
+        const ratio = i / (numberOfPoints);
+        const x = startPoint.x + dx * ratio;
+        const y = startPoint.y + dy * ratio;
+        points.push({ x: x, y: y });
+    }
+
+    return points;
 }
 
 

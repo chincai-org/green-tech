@@ -33,6 +33,7 @@ class Lumberjack extends BaseSprite {
             }
         }
 
+
         if (this.path.length > 0) {
             if (this.path.length == 2) {
                 // target found do logic here

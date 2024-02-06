@@ -344,54 +344,27 @@ function closeFullscreen() {
  */
 function pathFind(maxIterations, sprite, ...targetClasses) {
     // Target of movable
-    const movableTargetTile = getTilesOfTargetMovable(...targetClasses);
+    const targetTiles = sprite.findNeighbourTargetTile(10, ...targetClasses);
     const startTile = getTile(sprite.x, sprite.y);
-    const tileX = startTile.x;
-    const tileY = startTile.y;
+    let path = [];
 
-    // implement BFS
-    const queue = [[{ x: tileX, y: tileY }]];
-    const visited = new Set();
-    visited.add(`${tileX},${tileY}`);
-
-    let iterations = 0;
-
-    while (queue.length > 0 && iterations < maxIterations) {
-        // Check if the queue is empty
-        const currentPath = queue.shift();
-        const lastTile = currentPath.at(-1);
-
-        for (const neighbor of findNeighbour(lastTile)) {
-            const neighborTile = tileGrid[neighbor.y][neighbor.x];
-            const tileCenterX = (neighborTile.x + 0.5) * tileSize;
-            const tileCenterY = (neighborTile.y + 0.5) * tileSize;
-
-            if (visited.has(`${neighbor.x},${neighbor.y}`)) continue; // Ignore visited tile
-
-            if (sprite.isCollidingAnySprite(tileCenterX, tileCenterY, ...targetClasses)) {
-                continue;
-            }
-
-            visited.add(`${neighbor.x},${neighbor.y}`);
-
-            const newPath = currentPath.concat([{ x: neighborTile.x, y: neighborTile.y }]);
-
-            if (anyInstance(neighborTile.sprite, targetClasses)) return newPath;
-            if (movableTargetTile.has(neighborTile)) return newPath;
-
-            queue.push(newPath); // Add the newPath to the queue
+    // Try one
+    for (const targetTile of targetTiles) {
+        path = astar(startTile, targetTile, sprite, ...targetClasses);
+        if (path != 0) {
+            return path;
         }
-
-        iterations++;
     }
 
-    return []; // No path found
+    return path;
 }
 
-function astar(start, end, grid) {
+function astar(start, end, sprite, ...targetClasses) {
+    start.g = 0;
     let openSet = [start];
     let closedSet = [];
 
+    let incriment = 0;
     while (openSet.length > 0) {
         let current = openSet[0];
         for (let i = 1; i < openSet.length; i++) {
@@ -403,7 +376,7 @@ function astar(start, end, grid) {
         openSet = openSet.filter(node => node !== current);
         closedSet.push(current);
 
-        if (current === end) {
+        if (current.x == end.x && current.y == end.y) {
             // Path found, reconstruct and return path
             const path = [];
             let temp = current;
@@ -414,42 +387,35 @@ function astar(start, end, grid) {
             return path;
         }
 
-        const neighbors = getNeighbors(current, grid);
+        const neighbors = findNeighbour(current);
         for (const neighbor of neighbors) {
-            if (closedSet.includes(neighbor) || neighbor.obstacle) {
+            if (closedSet.includes(neighbor) || sprite.isCollidingAnySprite((neighbor.x + 0.5) * tileSize, (neighbor.y + 0.5) * tileSize, ...targetClasses)) {
                 continue;
             }
 
             const tentativeG = current.g + 1; // Assuming each step costs 1
 
-            if (!openSet.includes(neighbor) || tentativeG < neighbor.g) {
+            if (!openSet.includes(neighbor)) {
+                neighbor.g = tentativeG;
+                neighbor.h = heuristic(neighbor, end);
+                neighbor.f = neighbor.g + neighbor.h;
+                neighbor.parent = current;
+                openSet.push(neighbor);
+            }
+            else if (tentativeG < neighbor.g) {
                 neighbor.g = tentativeG;
                 neighbor.h = heuristic(neighbor, end);
                 neighbor.f = neighbor.g + neighbor.h;
                 neighbor.parent = current;
 
-                if (!openSet.includes(neighbor)) {
-                    openSet.push(neighbor);
-                }
             }
         }
     }
 
     // No path found
-    return null;
+    return [];
 }
 
-function getNeighbors(node, grid) {
-    const neighbors = [];
-    const { x, y } = node;
-
-    if (x > 0) neighbors.push(grid[x - 1][y]);
-    if (x < grid.length - 1) neighbors.push(grid[x + 1][y]);
-    if (y > 0) neighbors.push(grid[x][y - 1]);
-    if (y < grid[0].length - 1) neighbors.push(grid[x][y + 1]);
-
-    return neighbors;
-}
 
 function heuristic(node, end) {
     // Manhattan distance heuristic
@@ -480,7 +446,7 @@ function getTilesOfTargetTiles(...targetClasses) {
     const targetTiles = new Set();
     for (const tile of Tile.tileWithSprite) {
         if (anyInstance(tile.sprite, targetClasses)) {
-            targetTiles.add(movable.x, movable.y);
+            targetTiles.add(tileGrid[tile.y][tile.x]);
         }
     }
     return targetTiles;

@@ -19,12 +19,6 @@ class PoliceStation extends BaseSprite {
     }
 
     _tick() {
-        // Debug test
-        let lumberjacksTiles = this.findNeighbourTargetTile(5, Lumberjack);
-        if (lumberjacksTiles.length != 0) {
-            console.log(lumberjacksTiles);
-        }
-        
         if (Date.now() - this.timeSpawned > this.spawnCoolDown && this.spawned < this.maxSpawn) {
             movables.push(new Police(this.x, this.y));
             this.timeSpawned = Date.now();

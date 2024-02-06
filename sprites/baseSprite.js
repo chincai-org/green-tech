@@ -223,8 +223,8 @@ class BaseSprite {
 
     findNeighbourTargetTile(range, ...targetClasses) {
         const targets = new Set([
+            ...getTilesOfTargetTiles(...targetClasses),
             ...getTilesOfTargetMovable(...targetClasses),
-            ...getTilesOfTargetTiles(...targetClasses)
         ]);
 
         let result = [];

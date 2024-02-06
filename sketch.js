@@ -342,30 +342,42 @@ function closeFullscreen() {
  * @param {...Class} targetClasses  - The class that you wish to find, example: Tree
  * @returns {Array<Vector>}
  */
-function pathFind(maxIterations, sprite, ...targetClasses) {
+function pathFind(maxIterations, maxTarget, sprite, ...targetClasses) {
     // Target of movable
     const targetTiles = sprite.findNeighbourTargetTile(10, ...targetClasses);
     const startTile = getTile(sprite.x, sprite.y);
     let path = [];
 
-    // Try one
-    for (const targetTile of targetTiles) {
-        path = astar(startTile, targetTile, sprite, ...targetClasses);
-        if (path != 0) {
-            return path;
+    if (targetTiles.length <= maxTarget) {
+        for (const targetTile of targetTiles) {
+            const maxIterationsPerTarget = maxIterations / targetTiles.length;
+            path = astar(maxIterationsPerTarget, startTile, targetTile, sprite, ...targetClasses);
+            if (path != 0) {
+                return path;
+            }
         }
     }
+    else {
+        for (const targetTile of targetTiles.slice(0, maxTarget)) {
+            const maxIterationsPerTarget = maxIterations / maxTarget;
+            path = astar(maxIterationsPerTarget, startTile, targetTile, sprite, ...targetClasses);
+            if (path != 0) {
+                return path;
+            }
+        }
+    }
+
 
     return path;
 }
 
-function astar(start, end, sprite, ...targetClasses) {
+function astar(maxIterations, start, end, sprite, ...targetClasses) {
     start.g = 0;
     let openSet = [start];
     let closedSet = [];
 
-    let incriment = 0;
-    while (openSet.length > 0) {
+    let iteration = 0;
+    while (openSet.length > 0 && iteration < maxIterations) {
         let current = openSet[0];
         for (let i = 1; i < openSet.length; i++) {
             if (openSet[i].f < current.f || (openSet[i].f === current.f && openSet[i].h < current.h)) {
@@ -410,6 +422,8 @@ function astar(start, end, sprite, ...targetClasses) {
 
             }
         }
+
+        iteration++;
     }
 
     // No path found

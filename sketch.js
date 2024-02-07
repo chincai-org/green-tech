@@ -220,7 +220,7 @@ function canvasClicked() {
         case 0:
             if (resource >= 1) {
                 tile.add(new Tree(0, 0));
-                resource -= 1;
+                resource -= 1
             }
             break;
         case 1:
@@ -238,9 +238,9 @@ function canvasClicked() {
 
     // Remove if colliding with any sprite
     if (tile.sprite) {
-        if (tile.sprite.isCollidingAnySprite(tile.sprite.x, tile.sprite.y)) {
-            tile.remove();
-        }
+        if (!tile.sprite.isCollidingAnySprite(tile.sprite.x, tile.sprite.y)) return
+        if (tile.sprite.name == "Tree") resource += 1
+        tile.remove();
     }
     else {
         let lastMovable = movables[movables.length - 1];

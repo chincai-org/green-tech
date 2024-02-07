@@ -21,6 +21,7 @@ class BaseSprite {
         this.lastUpdate = Date.now();
         this.tickPerUpdate = 1;
         this.tickPassed = 0;
+        this.name = config.name;
     }
 
     /**

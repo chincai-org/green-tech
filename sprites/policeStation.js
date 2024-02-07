@@ -10,7 +10,8 @@ class PoliceStation extends BaseSprite {
             y,
             color: "#ff0000",
             collision_layers: new Set(["policeStation"]),
-            collide_range: tileSize / 2
+            collide_range: tileSize / 2,
+            name: "PoliceStation"
         });
         this.timeSpawned = Date.now();
         this.spawnCoolDown = 3000;

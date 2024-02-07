@@ -53,7 +53,7 @@ class BaseSprite {
         this._move(vector, checkCollision);
 
         //Update tile
-        this.tile = getTile(this.x, this.y)
+        this.tile = getTile(this.x, this.y);
     }
 
     draw() {
@@ -234,7 +234,7 @@ class BaseSprite {
      * @returns {BaseSprite | null} Sprite in a tile that is colliding
      */
     isCollidingAnySpriteUsingTile(x, y, ...excluding) {
-        const targets = this.findClosestNeighbourUsingTile(2, "All");
+        const targets = this.findClosestNeighbourUsingTile(x, y, 2, "All");
         for (const target of targets) {
             if (this.isColliding(target, x, y, ...excluding)) {
                 return target;
@@ -245,15 +245,17 @@ class BaseSprite {
 
     /**
      * Find closest neighbour tile by searching spirarly
+     * @param {number} x - Hypothetical x-coordinate
+     * @param {number} y - Hypothetical y-coordinate
      * @param {number} range - Radius for search
      * @param {...BaseSprite} targetClasses - Classes to target, all if empty
      * @returns {Array<BaseSprite>} Sprite sorted from distance
      */
-    findClosestNeighbourUsingTile(range, ...targetClasses) {
+    findClosestNeighbourUsingTile(hypotheticalX, hypotheticalY, range, ...targetClasses) {
         const targets = findTargets(...targetClasses);
 
         let result = [];
-        const currentTile = getTile(this.x, this.y);
+        const currentTile = getTile(hypotheticalX, hypotheticalY);
 
         // Loops spirally
         let x = currentTile.x;
@@ -269,7 +271,9 @@ class BaseSprite {
                 y += dy;
                 if (inBoundOfGrid(x, y)) {
                     for (const target of targets) {
-                        if (!target.tile) return [];
+                        if (!target.tile) {
+                            continue;
+                        };
 
                         if (target.tile.x == x && target.tile.y == y) {
                             result.push(target);

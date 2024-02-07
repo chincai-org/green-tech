@@ -485,7 +485,7 @@ function findTargets(...targetClasses) {
 function findNeighbour(vector) {
     const { x, y } = vector;
 
-    let result = [];
+    const result = [];
 
     // returns neighbour to all 8 directions, and x and y cannot be lower than 0 and higher than the map size
     for (let dx = -1; dx <= 1; dx++) {
@@ -493,15 +493,12 @@ function findNeighbour(vector) {
             if (dx === 0 && dy === 0) continue;
             const neighbour = { x: x + dx, y: y + dy };
             if (inBoundOfGrid(neighbour.x, neighbour.y)) {
-                // Priotize horizontal or vertical movement
-                if (Math.abs(dx) + Math.abs(dy) == 2) {
-                    result.push(neighbour);
-                } else {
-                    result.unshift(neighbour);
-                }
+                result.push(neighbour);
             }
         }
     }
+    // Reverse the order if needed (to prioritize horizontal or vertical movement)
+    result.sort((a, b) => Math.abs(a.x - x) + Math.abs(a.y - y) - Math.abs(b.x - x) + Math.abs(b.y - y));
 
     return result;
 }
@@ -514,20 +511,33 @@ function findNeighbour(vector) {
 function findNeighbourNoDiagonal(vector) {
     const { x, y } = vector;
 
-    let result = [];
+    // Preallocate result array with fixed size
+    const result = new Array(4);
 
     const directions = [
         { dx: 0, dy: -1 }, // Up
-        { dx: 0, dy: 1 }, // Down
+        { dx: 0, dy: 1 },  // Down
         { dx: -1, dy: 0 }, // Left
-        { dx: 1, dy: 0 } // Right
+        { dx: 1, dy: 0 }   // Right
     ];
 
-    // returns neighbour to all 4 directions, and x and y cannot be lower than 0 and higher than the map size
+    // Reuse neighbour object
+    const neighbour = { x: 0, y: 0 };
+
+    let index = 0;
     for (const direction of directions) {
-        const neighbour = { x: x + direction.dx, y: y + direction.dy };
-        if (inBoundOfGrid(neighbour.x, neighbour.y)) result.push(neighbour);
+        // Update neighbour properties
+        neighbour.x = x + direction.dx;
+        neighbour.y = y + direction.dy;
+
+        // Check if neighbour is within grid bounds
+        if (inBoundOfGrid(neighbour.x, neighbour.y)) {
+            result[index++] = { ...neighbour }; // Clone neighbour object
+        }
     }
+
+    // Trim result array if necessary
+    result.length = index;
 
     return result;
 }

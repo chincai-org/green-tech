@@ -343,13 +343,13 @@ function closeFullscreen() {
  * @returns {Array<Vector>}
  */
 function pathFind(maxIterations, maxTarget, range, sprite, ...targetClasses) {
-    const targetTiles = sprite.findClosestNeighbourTargetTile(range, ...targetClasses);
+    const targets = sprite.findClosestNeighbourUsingTile(range, ...targetClasses);
     const startTile = getTile(sprite.x, sprite.y);
     let path = [];
 
-    for (const targetTile of targetTiles.slice(0, maxTarget)) {
-        const maxIterationsPerTarget = maxIterations / targetTiles.slice(0, maxTarget).length;
-        path = astar(maxIterationsPerTarget, startTile, targetTile, sprite, ...targetClasses);
+    for (const target of targets.slice(0, maxTarget)) {
+        const maxIterationsPerTarget = maxIterations / targets.slice(0, maxTarget).length;
+        path = astar(maxIterationsPerTarget, startTile, target.tile, sprite, ...targetClasses);
         if (path != 0) {
             return path;
         }
@@ -453,40 +453,25 @@ function heuristic(node, end) {
     return Math.abs(node.x - end.x) + Math.abs(node.y - end.y);
 }
 
-/**
- * Find tiles of all movable including sprout
- * @param {...Class} targetClasses  - The class that you wish to find, example: Tree
- * @returns {Set} - Set of tiles corresponding to the target classes
- */
-function getTilesOfTargetMovable(...targetClasses) {
-    const targetTiles = new Set();
-    for (const movable of [].concat(movables, sprout)) {
-        if (anyInstance(movable, targetClasses)) {
-            movableTile = getTile(movable.x, movable.y);
-            movableTile.isTileWithMovable = true;
-            if (!movableTile.refrenceSprite) {
-                movableTile.refrenceSprites = [];
-            }
-            movableTile.refrenceSprites.push(movable);
-            targetTiles.add(getTile(movable.x, movable.y));
-        }
-    }
-    return targetTiles;
-}
 
 /**
- * Find tiles with sprite that is in the targetClasses
+ * Find sprite that is in the targetClasses
  * @param {...Class} targetClasses  - The class that you wish to find, example: Tree
- * @returns {Set} - Set of tiles corresponding to the target classes
+ * @returns {Array<BaseSprite>} - array of sprites corresponding to the target classes
  */
-function getTilesOfTargetTiles(...targetClasses) {
-    const targetTiles = new Set();
+function findTargets(...targetClasses) {
+    const targetSprite = [];
     for (const tile of Tile.tileWithSprite) {
         if (anyInstance(tile.sprite, targetClasses)) {
-            targetTiles.add(tileGrid[tile.y][tile.x]);
+            targetSprite.push(tile.sprite);
         }
     }
-    return targetTiles;
+    for (const movable of [].concat(movables, sprout)) {
+        if (anyInstance(movable, targetClasses)) {
+            targetSprite.push(movable);
+        }
+    }
+    return targetSprite;
 }
 
 /**

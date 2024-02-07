@@ -343,7 +343,7 @@ function closeFullscreen() {
  * @returns {Array<Vector>}
  */
 function pathFind(maxIterations, maxTarget, range, sprite, ...targetClasses) {
-    const targets = sprite.findClosestNeighbourUsingTile(range, ...targetClasses);
+    const targets = sprite.findClosestNeighbourUsingTile(sprite.x, sprite.y, range, ...targetClasses);
     const startTile = getTile(sprite.x, sprite.y);
     let path = [];
 
@@ -360,19 +360,13 @@ function pathFind(maxIterations, maxTarget, range, sprite, ...targetClasses) {
 
 function astar(maxIterations, start, end, sprite, ...targetClasses) {
     start.g = 0;
-    let openSet = [start];
     let closedSet = [];
+    let heap = new MinHeap();
+    heap.add(start);
 
     let iteration = 0;
-    while (openSet.length > 0 && iteration < maxIterations) {
-        let current = openSet[0];
-        for (let i = 1; i < openSet.length; i++) {
-            if (openSet[i].f < current.f || (openSet[i].f === current.f && openSet[i].h < current.h)) {
-                current = openSet[i];
-            }
-        }
-
-        openSet = openSet.filter(node => node !== current);
+    while (!heap.isEmpty() && iteration < maxIterations) {
+        let current = heap.remove();
         closedSet.push(current);
 
         if (current.x == end.x && current.y == end.y) {
@@ -398,12 +392,13 @@ function astar(maxIterations, start, end, sprite, ...targetClasses) {
 
             const tentativeG = current.g + 1; // Assuming each step costs 1
 
-            if (!openSet.includes(neighbor)) {
+            if (!heap.heap.includes(neighbor)) {
                 neighbor.g = tentativeG;
                 neighbor.h = heuristic(neighbor, end);
                 neighbor.f = neighbor.g + neighbor.h;
                 neighbor.parent = current;
-                openSet.push(neighbor);
+
+                heap.add(neighbor);
             }
             else if (tentativeG < neighbor.g) {
                 neighbor.g = tentativeG;
@@ -411,6 +406,8 @@ function astar(maxIterations, start, end, sprite, ...targetClasses) {
                 neighbor.f = neighbor.g + neighbor.h;
                 neighbor.parent = current;
 
+                // Heapify up to maintain the heap property
+                heap.heapifyUp();
             }
         }
 
@@ -436,7 +433,6 @@ function generatePointsOnLine(startPoint, endPoint, numberOfPoints) {
     const points = [];
     const dx = endPoint.x - startPoint.x;
     const dy = endPoint.y - startPoint.y;
-
     for (let i = 0; i < numberOfPoints; i++) {
         const ratio = i / (numberOfPoints);
         const x = startPoint.x + dx * ratio;

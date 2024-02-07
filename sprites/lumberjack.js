@@ -20,6 +20,7 @@ class Lumberjack extends BaseSprite {
         this.tickPerUpdate = 2;
     }
 
+
     _tick() {
         this.pathfindCooldown -= this.deltaTime();
 
@@ -32,7 +33,7 @@ class Lumberjack extends BaseSprite {
                     (this.path[1].y * tileSize + tileSize / 2 - this.y) ** 2) / this.speed
             }
             else {
-                this.pathfindCooldown = 200;
+                this.pathfindCooldown = 300;
             }
         }
 

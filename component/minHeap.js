@@ -1,6 +1,15 @@
-class minHeap {
+class MinHeap {
     constructor() {
         this.heap = [];
+    }
+
+    compareTiles(tile1, tile2) {
+        if (tile1.f === tile2.f) {
+            // If f values are equal, compare based on h values
+            return tile1.h - tile2.h;
+        }
+
+        return tile1.f - tile2.f;
     }
 
     // Helper Methods
@@ -68,7 +77,7 @@ class minHeap {
 
     heapifyUp() {
         let index = this.heap.length - 1;
-        while (this.hasParent(index) && this.parent(index) > this.heap[index]) {
+        while (this.hasParent(index) && this.compareTiles(this.parent(index), this.heap[index]) > 0) {
             this.swap(this.getParentIndex(index), index);
             index = this.getParentIndex(index);
         }
@@ -78,7 +87,7 @@ class minHeap {
         let index = 0;
         while (this.hasLeftChild(index)) {
             let smallerChildIndex = this.getLeftChildIndex(index);
-            if (this.hasRightChild(index) && this.rightChild(index) < this.leftChild(index)) {
+            if (this.hasRightChild(index) && this.compareTiles(this.rightChild(index), this.leftChild(index)) < 0) {
                 smallerChildIndex = this.getRightChildIndex(index);
             }
             if (this.heap[index] < this.heap[smallerChildIndex]) {

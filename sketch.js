@@ -465,7 +465,7 @@ function findTargets(...targetClasses) {
             targetSprite.push(tile.sprite);
         }
     }
-    const mergedMovables = [...movables, ...sprout];
+    const mergedMovables = [...movables, sprout];
     for (const movable of mergedMovables) {
         if (anyInstance(movable, targetClasses)) {
             targetSprite.push(movable);

@@ -50,6 +50,9 @@ class BaseSprite {
      */
     move(vector, checkCollision = false) {
         this._move(vector, checkCollision);
+
+        //Update tile
+        this.tile = getTile(this.x, this.y)
     }
 
     draw() {
@@ -230,21 +233,11 @@ class BaseSprite {
      * @returns {BaseSprite | null} Sprite in a tile that is colliding
      */
     isCollidingAnySpriteUsingTile(x, y, ...excluding) {
-        const targetTiles = this.findClosestNeighbourTargetTile(1, "All");
-        for (const targetTile of targetTiles) {
-            if (targetTile.isTileWithMovable) {
-                for (const movable of targetTile.refrenceSprites) {
-                    if (this.isColliding(movable, x, y, ...excluding)) {
-                        return movable;
-                    }
-                }
-                targetTile.isTileWithMovable = false;
-                targetTile.refrenceSprites = null;
+        const targets = this.findClosestNeighbourUsingTile(2, "All");
+        for (const target of targets) {
+            if (this.isColliding(target, x, y, ...excluding)) {
+                return target;
             }
-            if (targetTile.sprite && this.isColliding(targetTile.sprite, x, y, ...excluding)) {
-                return targetTile.sprite;
-            }
-
         }
         return null;
     }
@@ -253,13 +246,10 @@ class BaseSprite {
      * Find closest neighbour tile by searching spirarly
      * @param {number} range - Radius for search
      * @param {...BaseSprite} targetClasses - Classes to target, all if empty
-     * @returns {Array<Tile>} Tile sorted from distance
+     * @returns {Array<BaseSprite>} Sprite sorted from distance
      */
-    findClosestNeighbourTargetTile(range, ...targetClasses) {
-        const targets = new Set([
-            ...getTilesOfTargetTiles(...targetClasses),
-            ...getTilesOfTargetMovable(...targetClasses),
-        ]);
+    findClosestNeighbourUsingTile(range, ...targetClasses) {
+        const targets = findTargets(...targetClasses);
 
         let result = [];
         const currentTile = getTile(this.x, this.y);
@@ -277,9 +267,12 @@ class BaseSprite {
                 x += dx;
                 y += dy;
                 if (inBoundOfGrid(x, y)) {
-                    const neighbor = tileGrid[y][x];
-                    if (targets.has(neighbor)) {
-                        result.push(neighbor);
+                    for (const target of targets) {
+                        if (!target.tile) return [];
+
+                        if (target.tile.x == x && target.tile.y == y) {
+                            result.push(target);
+                        }
                     }
                 }
             }

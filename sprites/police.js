@@ -12,7 +12,8 @@ class Police extends BaseSprite {
             speed: 0.1,
             collision_layers: new Set(["police"]),
             collision_masks: new Set(["lumberjack"]),
-            collide_range: tileSize / 2.5
+            collide_range: tileSize / 2.5,
+            name: "Police"
         });
         this.target = p5.Vector.random2D()
         this.timeIdle = 0

@@ -424,9 +424,7 @@ function astar(maxIterations, start, end, sprite, ...targetClasses) {
 function checkCollisionAlongPath(sprite, startPoint, endPoint, ...exclude) {
     const intermediatePoints = generatePointsOnLine(startPoint, endPoint, 3);
     for (points of intermediatePoints) {
-        if (sprite.isCollidingAnySpriteUsingTile(points.x, points.y, ...exclude)) {
-            return true;
-        }
+        if (sprite.isCollidingAnySpriteUsingTile(points.x, points.y, ...exclude)) return true;
     }
 
     return false;
@@ -436,12 +434,16 @@ function generatePointsOnLine(startPoint, endPoint, numberOfPoints) {
     const points = [];
     const dx = endPoint.x - startPoint.x;
     const dy = endPoint.y - startPoint.y;
+    const incrementX = dx / numberOfPoints;
+    const incrementY = dy / numberOfPoints;
+
+    let x = startPoint.x
+    let y = startPoint.y
 
     for (let i = 0; i < numberOfPoints; i++) {
-        const ratio = i / (numberOfPoints);
-        const x = startPoint.x + dx * ratio;
-        const y = startPoint.y + dy * ratio;
         points.push({ x: x, y: y });
+        x += incrementX;
+        y += incrementY;
     }
 
     return points;
@@ -466,7 +468,8 @@ function findTargets(...targetClasses) {
             targetSprite.push(tile.sprite);
         }
     }
-    for (const movable of [].concat(movables, sprout)) {
+    const mergedMovables = [...movables, ...sprout];
+    for (const movable of mergedMovables) {
         if (anyInstance(movable, targetClasses)) {
             targetSprite.push(movable);
         }
@@ -535,9 +538,7 @@ function anyInstance(target, classes) {
     }
 
     for (const typeClass of classes) {
-        if (target instanceof typeClass) {
-            return true;
-        }
+        if (target instanceof typeClass) return true;
     }
 
     return false;

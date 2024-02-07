@@ -230,7 +230,7 @@ class BaseSprite {
      * @returns {BaseSprite | null} Sprite in a tile that is colliding
      */
     isCollidingAnySpriteUsingTile(x, y, ...excluding) {
-        const targetTiles = this.findClosestNeighbourTargetTile(2, "All");
+        const targetTiles = this.findClosestNeighbourTargetTile(1, "All");
         for (const targetTile of targetTiles) {
             if (targetTile.isTileWithMovable) {
                 for (const movable of targetTile.refrenceSprites) {
@@ -238,12 +238,13 @@ class BaseSprite {
                         return movable;
                     }
                 }
+                targetTile.isTileWithMovable = false;
+                targetTile.refrenceSprites = null;
             }
-            else {
-                if (this.isColliding(targetTile.sprite, x, y, ...excluding)) {
-                    return targetTile.sprite;
-                }
+            if (targetTile.sprite && this.isColliding(targetTile.sprite, x, y, ...excluding)) {
+                return targetTile.sprite;
             }
+
         }
         return null;
     }

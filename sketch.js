@@ -483,8 +483,6 @@ function getTilesOfTargetTiles(...targetClasses) {
     const targetTiles = new Set();
     for (const tile of Tile.tileWithSprite) {
         if (anyInstance(tile.sprite, targetClasses)) {
-            movableTile.isTileWithMovable = false;
-            movableTile.refrenceSprite = null;
             targetTiles.add(tileGrid[tile.y][tile.x]);
         }
     }

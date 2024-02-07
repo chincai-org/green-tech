@@ -232,16 +232,17 @@ class BaseSprite {
     isCollidingAnySpriteUsingTile(x, y, ...excluding) {
         const targetTiles = this.findClosestNeighbourTargetTile(2, "All");
         for (const targetTile of targetTiles) {
-            let target = null;
             if (targetTile.isTileWithMovable) {
-                target = targetTile.refrenceSprite;
+                for (const movable of targetTile.refrenceSprites) {
+                    if (this.isColliding(movable, x, y, ...excluding)) {
+                        return movable;
+                    }
+                }
             }
             else {
-                target = targetTile.sprite;
-            }
-
-            if (this.isColliding(target, x, y, ...excluding)) {
-                return target;
+                if (this.isColliding(targetTile.sprite, x, y, ...excluding)) {
+                    return targetTile.sprite;
+                }
             }
         }
         return null;

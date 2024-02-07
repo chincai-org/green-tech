@@ -464,7 +464,10 @@ function getTilesOfTargetMovable(...targetClasses) {
         if (anyInstance(movable, targetClasses)) {
             movableTile = getTile(movable.x, movable.y);
             movableTile.isTileWithMovable = true;
-            movableTile.refrenceSprite = movable;
+            if (!movableTile.refrenceSprite) {
+                movableTile.refrenceSprites = [];
+            }
+            movableTile.refrenceSprites.push(movable);
             targetTiles.add(getTile(movable.x, movable.y));
         }
     }

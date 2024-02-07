@@ -9,11 +9,11 @@ document.addEventListener("DOMContentLoaded", function () {
             sideBox.style.display = 'block';
         }
     });
-});
 
-document.addEventListener("DOMContentLoaded", function () {
-    for (let index = 0; index < document.getElementsByClassName("inventory-box").length; index++) {
-        const inventoryElement = document.getElementsByClassName("inventory-box")[index];
+
+    const inventoryElements = document.getElementsByClassName("inventory-box");
+    for (let index = 0; index < inventoryElements.length - 1; index++) {
+        const inventoryElement = inventoryElements[index];
         inventoryElement.addEventListener("click", () => {
             if (hotkey === index) {
                 setHotkey(-1);
@@ -22,20 +22,8 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     }
-
 });
 
-for (let index = 0; index < document.getElementsByClassName("inventory-box").length; index++) {
-    const inventoryElement = document.getElementsByClassName("inventory-box")[index];
-    alert("run");
-    inventoryElement.addEventListener("click", () => {
-        if (hotkey === index) {
-            setHotkey(-1);
-        } else {
-            setHotkey(index);
-        }
-    });
-}
 
 function setHotkey(value) {
     if (hotkey == value) {

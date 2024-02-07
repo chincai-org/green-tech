@@ -72,9 +72,11 @@ img{
     transition: transform 0.1s ease;
     width: clamp(3.5rem, 7vw, 7rem);
 
-    img {
-        width: 100%;
-    }
+}
+
+.image-box{
+    padding: 0.5rem;
+    width: 100%;
 }
 
 .inventory-box:hover, .inventory-box.selected{

@@ -104,7 +104,7 @@ class BaseSprite {
             this.speed *
             this.deltaTime() *
             (vectDist == 0 ? vector.y : vector.y / vectDist);
-        if (!checkCollision || !this.isCollidingAnySprite(newX, newY)) {
+        if (!checkCollision || !this.isCollidingAnySpriteUsingTile(newX, newY)) {
             this.x = newX;
             this.y = newY;
         }
@@ -155,7 +155,8 @@ class BaseSprite {
      * @param {number} y - Hypothetical y-coordinate
      * @returns {Boolean}
      */
-    isColliding(other, x, y) {
+    isColliding(other, x, y, ...excluding) {
+        if (anyInstance(other, excluding)) return false;
         for (const layer of other.collision_layers) {
             if (this.collision_masks.has(layer)) {
                 if (x - this.collide_range < other.x + other.collide_range &&
@@ -221,7 +222,38 @@ class BaseSprite {
         return collidingSprite;
     }
 
-    findNeighbourTargetTile(range, ...targetClasses) {
+    /**
+     * Find hypothetical collision with any sprite either movables, tiled sprite and sprout
+     * @param {number} x - Hypothetical x-coordinate
+     * @param {number} y - Hypothetical y-coordinate
+     * @param {...BaseSprite} excluding - Sprites to exclude from collision check
+     * @returns {BaseSprite | null} Sprite in a tile that is colliding
+     */
+    isCollidingAnySpriteUsingTile(x, y, ...excluding) {
+        const targetTiles = this.findClosestNeighbourTargetTile(2, "All");
+        for (const targetTile of targetTiles) {
+            let target = null;
+            if (targetTile.isTileWithMovable) {
+                target = targetTile.refrenceSprite;
+            }
+            else {
+                target = targetTile.sprite;
+            }
+
+            if (this.isColliding(target, x, y, ...excluding)) {
+                return target;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Find closest neighbour tile by searching spirarly
+     * @param {number} range - Radius for search
+     * @param {...BaseSprite} targetClasses - Classes to target, all if empty
+     * @returns {Array<Tile>} Tile sorted from distance
+     */
+    findClosestNeighbourTargetTile(range, ...targetClasses) {
         const targets = new Set([
             ...getTilesOfTargetTiles(...targetClasses),
             ...getTilesOfTargetMovable(...targetClasses),

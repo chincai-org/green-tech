@@ -343,7 +343,7 @@ function closeFullscreen() {
  * @returns {Array<Vector>}
  */
 function pathFind(maxIterations, maxTarget, range, sprite, ...targetClasses) {
-    const targetTiles = sprite.findNeighbourTargetTile(range, ...targetClasses);
+    const targetTiles = sprite.findClosestNeighbourTargetTile(range, ...targetClasses);
     const startTile = getTile(sprite.x, sprite.y);
     let path = [];
 
@@ -424,7 +424,7 @@ function astar(maxIterations, start, end, sprite, ...targetClasses) {
 function checkCollisionAlongPath(sprite, startPoint, endPoint, ...exclude) {
     const intermediatePoints = generatePointsOnLine(startPoint, endPoint, 3);
     for (points of intermediatePoints) {
-        if (sprite.isCollidingAnySprite(points.x, points.y, ...exclude)) {
+        if (sprite.isCollidingAnySpriteUsingTile(points.x, points.y, ...exclude)) {
             return true;
         }
     }
@@ -462,6 +462,9 @@ function getTilesOfTargetMovable(...targetClasses) {
     const targetTiles = new Set();
     for (const movable of [].concat(movables, sprout)) {
         if (anyInstance(movable, targetClasses)) {
+            movableTile = getTile(movable.x, movable.y);
+            movableTile.isTileWithMovable = true;
+            movableTile.refrenceSprite = movable;
             targetTiles.add(getTile(movable.x, movable.y));
         }
     }
@@ -477,6 +480,8 @@ function getTilesOfTargetTiles(...targetClasses) {
     const targetTiles = new Set();
     for (const tile of Tile.tileWithSprite) {
         if (anyInstance(tile.sprite, targetClasses)) {
+            movableTile.isTileWithMovable = false;
+            movableTile.refrenceSprite = null;
             targetTiles.add(tileGrid[tile.y][tile.x]);
         }
     }
@@ -539,6 +544,10 @@ function findNeighbourNoDiagonal(vector) {
 }
 
 function anyInstance(target, classes) {
+    if (classes == "All") {
+        return true;
+    }
+
     for (const typeClass of classes) {
         if (target instanceof typeClass) {
             return true;

@@ -60,13 +60,13 @@ function windowResized() {
     sprout.x *= changeInWidth;
     sprout.y *= changeInWidth;
     sprout.collide_range *= changeInWidth;
-    movables.forEach(sprites => {
-        for (sprite of sprites) {
+    for (const movableArray of movables.values()) {
+        for (const sprite of movableArray) {
             sprite.x *= changeInWidth;
             sprite.y *= changeInWidth;
             sprite.collide_range *= changeInWidth;
         }
-    });
+    }
 
     // Resize tiles
     for (let i = 0; i < tileGrid.length; i++) {
@@ -103,7 +103,6 @@ function setup() {
 }
 
 function draw() {
-    console.log(movables);
     background(0);
 
     const now = Date.now();
@@ -260,6 +259,7 @@ function canvasClicked() {
 }
 
 function appendMovable(tile, sprite) {
+    sprite.tile = getTile(sprite.x, sprite.y);
     movables.has(tile) ? movables.get(tile).push(sprite) : movables.set(tile, [sprite]);
 }
 
@@ -442,7 +442,7 @@ function astar(maxIterations, start, end, sprite, ...targetClasses) {
 
 function checkCollisionAlongPath(sprite, startPoint, endPoint, ...exclude) {
     const intermediatePoints = generatePointsOnLine(startPoint, endPoint, 3);
-    for (point of intermediatePoints) {
+    for (const point of intermediatePoints) {
         if (sprite.checkCollisionInRange(point.x, point.y, 2, ...exclude)) return true;
     }
 

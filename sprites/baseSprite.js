@@ -50,11 +50,10 @@ class BaseSprite {
      * @param {Boolean} checkCollision - Check for collision when moving if then stop
      */
     move(vector, checkCollision = false) {
-        const oldTile = getTile(this.x, this.y)
         this._move(vector, checkCollision);
 
         // Update the tile
-        unappendMovable(oldTile, this);
+        unappendMovable(this.tile, this);
 
         this.tile = getTile(this.x, this.y);
         appendMovable(this.tile, this);

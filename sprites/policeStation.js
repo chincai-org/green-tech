@@ -21,7 +21,7 @@ class PoliceStation extends BaseSprite {
 
     _tick() {
         if (Date.now() - this.timeSpawned > this.spawnCoolDown && this.spawned < this.maxSpawn) {
-            movables.push(new Police(this.x, this.y));
+            movables.set(new Police(this.x, this.y), getTile(this.x, this.y));
             this.timeSpawned = Date.now();
             this.spawned++;
         }

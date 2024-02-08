@@ -54,6 +54,7 @@ class BaseSprite {
 
         //Update tile
         this.tile = getTile(this.x, this.y);
+        movables.set(this, this.tile);
     }
 
     draw() {
@@ -108,9 +109,11 @@ class BaseSprite {
             this.speed *
             this.deltaTime() *
             (vectDist == 0 ? vector.y : vector.y / vectDist);
-        if (!checkCollision || !this.isCollidingAnySpriteUsingTile(newX, newY)) {
-            this.x = newX;
-            this.y = newY;
+        if (inBoundOfMap(newX, newY)) {
+            if (!checkCollision || !this.checkCollisionInRange(newX, newY, 2)) {
+                this.x = newX;
+                this.y = newY;
+            }
         }
     }
 
@@ -183,7 +186,7 @@ class BaseSprite {
      * @returns {BaseSprite | null} Sprite that is colliding otherwise null
      */
     isCollidingMovables(x, y, ...excluding) {
-        for (let movable of movables) {
+        for (let movable of movables.keys()) {
             if (anyInstance(movable, excluding)) continue;
             if (movable !== this && this.isColliding(movable, x, y)) {
                 return movable;
@@ -200,7 +203,7 @@ class BaseSprite {
      * @returns {BaseSprite | null} Sprite in a tile that is colliding otherwise null
      */
     isCollidingTileSprite(x, y, ...excluding) {
-        for (const tile of Tile.tileWithSprite) {
+        for (const tile of Array.from(Tile.tileWithSprite)) {
             if (tile.sprite && tile.sprite !== this) {
                 if (anyInstance(tile.sprite, excluding)) continue;
                 if (this.isColliding(tile.sprite, x, y)) {
@@ -222,25 +225,47 @@ class BaseSprite {
         let collidingSprite = this.isCollidingMovables(x, y, ...excluding) ||
             this.isCollidingTileSprite(x, y, ...excluding) ||
             // Including sprout
-            (!anyInstance(sprout, excluding) && this !== sprout && this.isColliding(sprout, x, y));
+            (this !== sprout && this.isColliding(sprout, x, y, ...excluding));
         return collidingSprite;
     }
 
+
     /**
-     * Find hypothetical collision with any sprite either movables, tiled sprite and sprout
+     * Find collision in a range using tile
      * @param {number} x - Hypothetical x-coordinate
      * @param {number} y - Hypothetical y-coordinate
-     * @param {...BaseSprite} excluding - Sprites to exclude from collision check
-     * @returns {BaseSprite | null} Sprite in a tile that is colliding
+     * @param {number} range - Radius for search
+     * @returns {BaseSprite} Sprite that is colliding
      */
-    isCollidingAnySpriteUsingTile(x, y, ...excluding) {
-        const targets = this.findClosestNeighbourUsingTile(x, y, 2, "All");
-        for (const target of targets) {
-            if (this.isColliding(target, x, y, ...excluding)) {
-                return target;
+    checkCollisionInRange(x, y, range, ...excluding) {
+        const currentTile = getTile(x, y);
+
+        for (let i = currentTile.x - range; i <= (currentTile.x + range); i++) {
+            for (let j = currentTile.y - range; j <= (currentTile.y + range); j++) {
+                if (!inBoundOfGrid(i, j)) continue;
+                const tile = tileGrid[j][i];
+
+                if (Tile.tileWithSprite.has(tile)) {
+                    const tileSprite = tile.sprite;
+                    if (this.isColliding(tileSprite, x, y, ...excluding)) {
+                        return tileSprite;
+                    }
+                }
+                for (const [key, value] of movables.entries()) {
+                    if (value == tile) {
+                        const movableSprite = key;
+                        if (this.isColliding(movableSprite, x, y, ...excluding)) {
+                            return movableSprite;
+                        }
+                    }
+                }
+                if (this !== sprout && this.isColliding(sprout, x, y, ...excluding)) {
+                    return sprout
+                };
             }
         }
-        return null;
+        return false;
+
     }
 
     /**
@@ -294,5 +319,4 @@ class BaseSprite {
         }
         return result;
     }
-
 }

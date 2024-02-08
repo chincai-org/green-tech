@@ -56,7 +56,7 @@ class Sprout extends BaseSprite {
         if (!inBoundOfMap(x, y)) {
             return false;
             // check collide at real coord to prevent getting stuck
-        } else if (this.isCollidingAnySpriteUsingTile(x, y) && !this.isCollidingAnySpriteUsingTile(this.x, this.y)) {
+        } else if (this.checkCollisionInRange(x, y, 2) && !this.checkCollisionInRange(this.x, this.y, 2)) {
             return false;
         }
         return true;

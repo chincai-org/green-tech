@@ -34,7 +34,7 @@ class Lumberjack extends BaseSprite {
                     (this.path[1].y * tileSize + tileSize / 2 - this.y) ** 2) / this.speed
             }
             else {
-                this.pathfindCooldown = 300;
+                this.pathfindCooldown = 500;
             }
         }
 

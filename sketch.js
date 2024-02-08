@@ -14,7 +14,7 @@ let widthRatio = winWidth / constWinWidth;
 let heightRatio = winHeight / constWinHeight;
 
 const fullScreenElement = document.documentElement;
-const movables = [];
+const movables = new Map();
 const sprout = new Sprout(50, 50);
 const gridWidth = 100;
 const gridHeight = 100;
@@ -119,7 +119,7 @@ function draw() {
 
     drawGridLine();
 
-    for (let movable of movables) {
+    for (let movable of movables.keys()) {
         movable.draw();
     }
 
@@ -160,7 +160,7 @@ function draw() {
 
 function gameTick() {
     sprout.tick();
-    for (let movable of movables) {
+    for (let movable of movables.keys()) {
         movable.tick();
     }
     for (let tile of Tile.tileWithSprite) {
@@ -227,7 +227,7 @@ function canvasClicked() {
             tile.add(new PoliceStation(0, 0));
             break;
         case 2:
-            movables.push(new Lumberjack(realX, realY));
+            movables.set(new Lumberjack(realX, realY), getTile(realX, realY));
             break;
         case 3:
             tile.add(new Rock(0, 0));
@@ -243,9 +243,9 @@ function canvasClicked() {
         tile.remove();
     }
     else {
-        let lastMovable = movables[movables.length - 1];
+        let lastMovable = Array.from(movables.keys()).pop();
         if (lastMovable.isCollidingAnySprite(lastMovable.x, lastMovable.y)) {
-            movables.pop();
+            movables.remove(lastMovable);
         }
     }
 }
@@ -420,8 +420,8 @@ function astar(maxIterations, start, end, sprite, ...targetClasses) {
 
 function checkCollisionAlongPath(sprite, startPoint, endPoint, ...exclude) {
     const intermediatePoints = generatePointsOnLine(startPoint, endPoint, 3);
-    for (points of intermediatePoints) {
-        if (sprite.isCollidingAnySpriteUsingTile(points.x, points.y, ...exclude)) return true;
+    for (point of intermediatePoints) {
+        if (sprite.checkCollisionInRange(point.x, point.y, 2, ...exclude)) return true;
     }
 
     return false;
@@ -465,7 +465,7 @@ function findTargets(...targetClasses) {
             targetSprite.push(tile.sprite);
         }
     }
-    const mergedMovables = [...movables, sprout];
+    const mergedMovables = Array.from(movables.keys()).concat([sprout]);
     for (const movable of mergedMovables) {
         if (anyInstance(movable, targetClasses)) {
             targetSprite.push(movable);

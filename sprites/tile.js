@@ -5,7 +5,7 @@
  * @extends {BaseSprite}
  */
 class Tile extends BaseSprite {
-    static tileWithSprite = [];
+    static tileWithSprite = new Set();
 
     constructor(x, y, sprite = null) {
         super({ x, y });
@@ -34,13 +34,13 @@ class Tile extends BaseSprite {
             this.sprite.tile = this;
             this.sprite.x = (this.x + 0.5) * tileSize;
             this.sprite.y = (this.y + 0.5) * tileSize;
-            Tile.tileWithSprite.push(this);
+            Tile.tileWithSprite.add(this);
         }
     }
 
     remove() {
         if (this.sprite) {
-            Tile.tileWithSprite.splice(Tile.tileWithSprite.indexOf(this), 1);
+            Tile.tileWithSprite.remove(this);
             this.sprite.tile = null;
             this.sprite = null;
         }

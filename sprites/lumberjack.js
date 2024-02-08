@@ -19,6 +19,7 @@ class Lumberjack extends BaseSprite {
         });
         this.path = [];
         this.pathfindCooldown = 0;
+        this.actionCooldown = 500;
         this.tickPerUpdate = 2;
         Lumberjack.lumberjackCount++;
     }
@@ -26,12 +27,11 @@ class Lumberjack extends BaseSprite {
 
     _tick() {
         this.pathfindCooldown -= this.deltaTime();
+        this.actionCooldown -= this.deltaTime();
 
-        if (
-            this.pathfindCooldown < 0
-        ) {
+        if (this.pathfindCooldown < 0) {
             let maxIteration = Lumberjack.allLumberjackMaxIteration / Lumberjack.lumberjackCount;
-            this.path = pathFind(maxIteration, 3, 30, this, Tree, Sprout);
+            this.path = pathFind(maxIteration, 3, 30, this, Tree, Sprout, Police);
             if (this.path.length !== 0) {
                 this.pathfindCooldown = Math.sqrt((this.path[1].x * tileSize + tileSize / 2 - this.x) ** 2 +
                     (this.path[1].y * tileSize + tileSize / 2 - this.y) ** 2) / this.speed
@@ -58,6 +58,29 @@ class Lumberjack extends BaseSprite {
                 ),
                 true
             );
+        }
+
+        if (this.actionCooldown < 0) {
+            let tryFindTarget = this.findClosestNeighbourUsingTile(this.x, this.y, 1, Sprout, Tree, Police);
+            if (tryFindTarget.length > 0) {
+                const target = tryFindTarget[0];
+                if (target instanceof Tree && Tile.tileWithSprite.has(target.tile)) {
+                    // Chop tree
+                    if (target.hasGrown) {
+                        target.tile.remove();
+                    }
+                }
+                else if (target instanceof Police) {
+                    // Kill police
+                    target.parent.spawned--;
+                    unappendMovable(target.tile, target);
+                }
+                else if (target instanceof Sprout) {
+                    // Push sprout
+                    sprout.moveObjQueue.push({ vector: createVector(sprout.x - this.x, sprout.y - this.y), checkCollision: true })
+                }
+            }
+            this.actionCooldown = 2000;
         }
     }
 }

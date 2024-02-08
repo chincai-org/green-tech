@@ -19,6 +19,7 @@ class Police extends BaseSprite {
         this.timeIdle = 0
         this.timeNewDirection = randint(15, 50)
         this.tickPerUpdate = 2;
+        this.parent = null;
     }
 
     _tick() {

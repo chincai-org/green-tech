@@ -22,6 +22,9 @@ class BaseSprite {
         this.tickPerUpdate = 1;
         this.tickPassed = 0;
         this.name = config.name;
+        this.moveObjQueue = [];
+        // [vector: Vector2D, boolean: checkCollision]
+        // This setup allows other sprites to move it without refrencing deltaTime
     }
 
     /**
@@ -102,14 +105,37 @@ class BaseSprite {
      * @param {Boolean} checkCollision - Check for collision when moving if then stop
      */
     _move(vector = createVector(0, 0), checkCollision = false) {
+        const deltaTime = this.deltaTime();
+        // Handle queued up movement
+        while (this.moveObjQueue.length > 0) {
+            const moveObj = this.moveObjQueue.pop();
+            const moveVect = moveObj.vector;
+            let vectDist = Math.hypot(moveVect.x, moveVect.y);
+            const newX = this.x +
+                this.speed *
+                deltaTime *
+                (vectDist == 0 ? moveVect.x : moveVect.x / vectDist);
+            const newY = this.y +
+                this.speed *
+                deltaTime *
+                (vectDist == 0 ? moveVect.y : moveVect.y / vectDist);
+            if (inBoundOfMap(newX, newY)) {
+                if (!moveObj.checkCollision || !this.checkCollisionInRange(newX, newY, 2)) {
+                    this.x = newX;
+                    this.y = newY;
+                }
+            }
+
+        }
+
         let vectDist = Math.hypot(vector.x, vector.y);
         const newX = this.x +
             this.speed *
-            this.deltaTime() *
+            deltaTime *
             (vectDist == 0 ? vector.x : vector.x / vectDist);
         const newY = this.y +
             this.speed *
-            this.deltaTime() *
+            deltaTime *
             (vectDist == 0 ? vector.y : vector.y / vectDist);
         if (inBoundOfMap(newX, newY)) {
             if (!checkCollision || !this.checkCollisionInRange(newX, newY, 2)) {

@@ -404,7 +404,14 @@ function astar(maxIterations, start, end, sprite, ...targetClasses) {
 
         const neighbors = findNeighbour(current);
         for (const neighbor of neighbors) {
-            if (closedSet.includes(neighbor) ||
+            let tileAlreadyExist = false;
+            for (const tile of closedSet) {
+                if (tile.x == neighbor.x && tile.y == neighbor.y) {
+                    tileAlreadyExist = true;
+                    break;
+                }
+            }
+            if (tileAlreadyExist ||
                 checkCollisionAlongPath(sprite,
                     { x: (current.x + 0.5) * tileSize, y: (current.y + 0.5) * tileSize },
                     { x: (neighbor.x + 0.5) * tileSize, y: (neighbor.y + 0.5) * tileSize },
@@ -460,6 +467,7 @@ function generatePointsOnLine(startPoint, endPoint, numberOfPoints) {
     let y = startPoint.y
 
     for (let i = 0; i < numberOfPoints; i++) {
+        //appendMovable(getTile(x, y), new Rock2(x, y));
         points.push({ x: x, y: y });
         x += incrementX;
         y += incrementY;

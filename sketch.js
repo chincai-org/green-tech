@@ -119,7 +119,7 @@ function draw() {
 
     drawGridLine();
 
-    for (let movable of movables.keys()) {
+    for (let movable of movables.values()) {
         movable.draw();
     }
 
@@ -160,7 +160,7 @@ function draw() {
 
 function gameTick() {
     sprout.tick();
-    for (let movable of movables.keys()) {
+    for (let movable of movables.values()) {
         movable.tick();
     }
     for (let tile of Tile.tileWithSprite) {
@@ -227,7 +227,7 @@ function canvasClicked() {
             tile.add(new PoliceStation(0, 0));
             break;
         case 2:
-            movables.set(new Lumberjack(realX, realY), getTile(realX, realY));
+            movables.set(getTile(realX, realY), new Lumberjack(realX, realY));
             break;
         case 3:
             tile.add(new Rock(0, 0));
@@ -243,7 +243,8 @@ function canvasClicked() {
         tile.remove();
     }
     else {
-        let lastMovable = Array.from(movables.keys()).pop();
+        let lastMovableKey = Array.from(movables.keys()).pop();
+        let lastMovable = movables.get(lastMovableKey);
         if (lastMovable.isCollidingAnySprite(lastMovable.x, lastMovable.y)) {
             movables.remove(lastMovable);
         }
@@ -465,7 +466,7 @@ function findTargets(...targetClasses) {
             targetSprite.push(tile.sprite);
         }
     }
-    const mergedMovables = Array.from(movables.keys()).concat([sprout]);
+    const mergedMovables = Array.from(movables.values()).concat([sprout]);
     for (const movable of mergedMovables) {
         if (anyInstance(movable, targetClasses)) {
             targetSprite.push(movable);

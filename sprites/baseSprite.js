@@ -50,11 +50,13 @@ class BaseSprite {
      * @param {Boolean} checkCollision - Check for collision when moving if then stop
      */
     move(vector, checkCollision = false) {
+        const oldTile = getTile(this.x, this.y)
         this._move(vector, checkCollision);
 
-        //Update tile
+        // Update the tile
+        movables.delete(oldTile);
         this.tile = getTile(this.x, this.y);
-        movables.set(this, this.tile);
+        movables.set(this.tile, this);
     }
 
     draw() {
@@ -186,7 +188,7 @@ class BaseSprite {
      * @returns {BaseSprite | null} Sprite that is colliding otherwise null
      */
     isCollidingMovables(x, y, ...excluding) {
-        for (let movable of movables.keys()) {
+        for (let movable of movables.values()) {
             if (anyInstance(movable, excluding)) continue;
             if (movable !== this && this.isColliding(movable, x, y)) {
                 return movable;
@@ -251,19 +253,19 @@ class BaseSprite {
                         return tileSprite;
                     }
                 }
-                for (const [key, value] of movables.entries()) {
-                    if (value == tile) {
-                        const movableSprite = key;
-                        if (this.isColliding(movableSprite, x, y, ...excluding)) {
-                            return movableSprite;
-                        }
+                if (movables.has(tile)) {
+                    const movableSprite = movables.get(tile);
+                    if (this.isColliding(movableSprite, x, y, ...excluding)) {
+                        return movableSprite;
                     }
                 }
-                if (this !== sprout && this.isColliding(sprout, x, y, ...excluding)) {
-                    return sprout
-                };
+
             }
+            if (this !== sprout && this.isColliding(sprout, x, y, ...excluding)) {
+                return sprout
+            };
         }
+
         return false;
 
     }

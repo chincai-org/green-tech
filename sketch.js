@@ -14,7 +14,7 @@ let widthRatio = winWidth / constWinWidth;
 let heightRatio = winHeight / constWinHeight;
 
 const fullScreenElement = document.documentElement;
-const movables = new Map();
+const movables = new Map(); // Key of tile and value of array of sprites
 const sprout = new Sprout(50, 50);
 const gridWidth = 100;
 const gridHeight = 100;
@@ -60,10 +60,12 @@ function windowResized() {
     sprout.x *= changeInWidth;
     sprout.y *= changeInWidth;
     sprout.collide_range *= changeInWidth;
-    movables.forEach(sprite => {
-        sprite.x *= changeInWidth;
-        sprite.y *= changeInWidth;
-        sprite.collide_range *= changeInWidth;
+    movables.forEach(sprites => {
+        for (sprite of sprites) {
+            sprite.x *= changeInWidth;
+            sprite.y *= changeInWidth;
+            sprite.collide_range *= changeInWidth;
+        }
     });
 
     // Resize tiles
@@ -119,8 +121,10 @@ function draw() {
 
     drawGridLine();
 
-    for (let movable of movables.values()) {
-        movable.draw();
+    for (const movableValues of movables.values()) {
+        for (const movable of movableValues) {
+            movable.draw();
+        }
     }
 
     let startX = camX - windowWidth / 2;
@@ -160,10 +164,12 @@ function draw() {
 
 function gameTick() {
     sprout.tick();
-    for (let movable of movables.values()) {
-        movable.tick();
+    for (const movableValues of movables.values()) {
+        for (const movable of movableValues) {
+            movable.tick();
+        }
     }
-    for (let tile of Tile.tileWithSprite) {
+    for (const tile of Tile.tileWithSprite) {
         tile.tick();
     }
 }
@@ -227,7 +233,7 @@ function canvasClicked() {
             tile.add(new PoliceStation(0, 0));
             break;
         case 2:
-            movables.set(getTile(realX, realY), new Lumberjack(realX, realY));
+            appendMovable(tile, new Lumberjack(realX, realY));
             break;
         case 3:
             tile.add(new Rock(0, 0));
@@ -244,11 +250,25 @@ function canvasClicked() {
     }
     else {
         let lastMovableKey = Array.from(movables.keys()).pop();
-        let lastMovable = movables.get(lastMovableKey);
+        let lastMovables = movables.get(lastMovableKey);
+        let lastMovable = lastMovables[lastMovables.length - 1]
         if (lastMovable.isCollidingAnySprite(lastMovable.x, lastMovable.y)) {
-            movables.delete(lastMovableKey);
+            unappendMovable(tile, sprite)
         }
     }
+}
+
+function appendMovable(tile, sprite) {
+    movables.has(tile) ? movables.get(tile).push(sprite) : movables.set(tile, [sprite]);
+}
+
+function unappendMovable(tile, sprite) {
+    movableArray = movables.get(tile);
+    if (tile.length === 1) {
+        movables.delete(tile);
+        return;
+    }
+    movableArray.splice(movableArray.indexOf(sprite), 1);
 }
 
 function initGrid() {
@@ -466,10 +486,14 @@ function findTargets(...targetClasses) {
             targetSprite.push(tile.sprite);
         }
     }
-    const mergedMovables = Array.from(movables.values()).concat([sprout]);
-    for (const movable of mergedMovables) {
-        if (anyInstance(movable, targetClasses)) {
-            targetSprite.push(movable);
+    const mergedMovableValues = Array.from(movables.values());
+    mergedMovableValues.push([sprout]);
+    for (const movableValues of mergedMovableValues) {
+        for (const movable of movableValues) {
+            if (anyInstance(movable, targetClasses)) {
+                targetSprite.push(movable);
+            }
+
         }
     }
     return targetSprite;
@@ -560,6 +584,7 @@ function virtualEdit(callable) {
     callable();
     pop();
 }
+
 
 // Remove because live server
 /*

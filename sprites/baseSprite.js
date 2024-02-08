@@ -54,9 +54,10 @@ class BaseSprite {
         this._move(vector, checkCollision);
 
         // Update the tile
-        movables.delete(oldTile);
+        unappendMovable(oldTile, this);
+
         this.tile = getTile(this.x, this.y);
-        movables.set(this.tile, this);
+        appendMovable(this.tile, this);
     }
 
     draw() {
@@ -188,10 +189,12 @@ class BaseSprite {
      * @returns {BaseSprite | null} Sprite that is colliding otherwise null
      */
     isCollidingMovables(x, y, ...excluding) {
-        for (let movable of movables.values()) {
-            if (anyInstance(movable, excluding)) continue;
-            if (movable !== this && this.isColliding(movable, x, y)) {
-                return movable;
+        for (const movableValues of movables.values()) {
+            for (const movable of movableValues) {
+                if (anyInstance(movable, excluding)) continue;
+                if (movable !== this && this.isColliding(movable, x, y)) {
+                    return movable;
+                }
             }
         }
         return null;
@@ -254,9 +257,11 @@ class BaseSprite {
                     }
                 }
                 if (movables.has(tile)) {
-                    const movableSprite = movables.get(tile);
-                    if (this.isColliding(movableSprite, x, y, ...excluding)) {
-                        return movableSprite;
+                    const movableSprites = movables.get(tile);
+                    for (const movableSprite of movableSprites) {
+                        if (this.isColliding(movableSprite, x, y, ...excluding)) {
+                            return movableSprite;
+                        }
                     }
                 }
 

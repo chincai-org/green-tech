@@ -246,7 +246,7 @@ function canvasClicked() {
         let lastMovableKey = Array.from(movables.keys()).pop();
         let lastMovable = movables.get(lastMovableKey);
         if (lastMovable.isCollidingAnySprite(lastMovable.x, lastMovable.y)) {
-            movables.remove(lastMovable);
+            movables.delete(lastMovableKey);
         }
     }
 }

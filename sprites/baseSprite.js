@@ -106,6 +106,7 @@ class BaseSprite {
      */
     _move(vector = createVector(0, 0), checkCollision = false) {
         const deltaTime = this.deltaTime();
+        this.moveObjQueue.push({ vector: vector, checkCollision: checkCollision });
         // Handle queued up movement
         while (this.moveObjQueue.length > 0) {
             const moveObj = this.moveObjQueue.pop();
@@ -126,22 +127,6 @@ class BaseSprite {
                 }
             }
 
-        }
-
-        let vectDist = Math.hypot(vector.x, vector.y);
-        const newX = this.x +
-            this.speed *
-            deltaTime *
-            (vectDist == 0 ? vector.x : vector.x / vectDist);
-        const newY = this.y +
-            this.speed *
-            deltaTime *
-            (vectDist == 0 ? vector.y : vector.y / vectDist);
-        if (inBoundOfMap(newX, newY)) {
-            if (!checkCollision || !this.checkCollisionInRange(newX, newY, 2)) {
-                this.x = newX;
-                this.y = newY;
-            }
         }
     }
 

@@ -103,6 +103,7 @@ function setup() {
 }
 
 function draw() {
+    console.log(movables);
     background(0);
 
     const now = Date.now();
@@ -253,7 +254,7 @@ function canvasClicked() {
         let lastMovables = movables.get(lastMovableKey);
         let lastMovable = lastMovables[lastMovables.length - 1]
         if (lastMovable.isCollidingAnySprite(lastMovable.x, lastMovable.y)) {
-            unappendMovable(tile, sprite)
+            unappendMovable(tile, lastMovable)
         }
     }
 }
@@ -264,7 +265,7 @@ function appendMovable(tile, sprite) {
 
 function unappendMovable(tile, sprite) {
     movableArray = movables.get(tile);
-    if (tile.length === 1) {
+    if (movableArray.length === 1) {
         movables.delete(tile);
         return;
     }

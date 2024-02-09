@@ -76,14 +76,33 @@ class BaseSprite {
         if (debugMode) {
             push();
             stroke(this.config.color);
-            text(
-                `(${Math.round(this.x)}, ${Math.round(this.y)})`,
-                drawX,
-                drawY - 20
-            );
+            if (this instanceof DebugSprite) {
+                // Do custom debugging logic here
+                // check if multiple sprite in same position
+                let samePos = 0;
+                for (const movable of movables.get(this.tile)) {
+                    if (movable.x == this.x && movable.y == this.y) {
+                        samePos++;
+                    }
+                }
+                if (samePos > 1) {
+                    text(
+                        `(${samePos})`,
+                        drawX,
+                        drawY - 2
+                    );
+                }
+            }
+            else {
+                text(
+                    `(${Math.round(this.x)}, ${Math.round(this.y)})`,
+                    drawX,
+                    drawY - 20
+                );
 
-            fill(0, 153, 255, 150);
-            square(drawX - this.collide_range, drawY - this.collide_range, this.collide_range * 2);
+                fill(0, 153, 255, 150);
+                square(drawX - this.collide_range, drawY - this.collide_range, this.collide_range * 2);
+            }
             pop();
         }
         this._draw(drawX, drawY);

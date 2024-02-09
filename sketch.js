@@ -411,17 +411,16 @@ function astar(maxIterations, start, end, sprite, ...targetClasses) {
                 neighbor = neighborVector;
             }
 
-            if (arrayExistVector(closedSet, neighbor) ||
-                checkCollisionAlongPath(sprite,
-                    { x: (current.x + 0.5) * tileSize, y: (current.y + 0.5) * tileSize },
-                    { x: (neighbor.x + 0.5) * tileSize, y: (neighbor.y + 0.5) * tileSize },
-                    ...targetClasses)) {
-                continue;
-            }
+            if (arrayExistVector(closedSet, neighbor)) continue;
+
 
             const tentativeG = current.g + 1; // Assuming each step costs 1
 
             if (!arrayExistVector(heap.heap, neighbor)) {
+                if (current != start && checkCollisionAlongPath(sprite,
+                    { x: (current.x + 0.5) * tileSize, y: (current.y + 0.5) * tileSize },
+                    { x: (neighbor.x + 0.5) * tileSize, y: (neighbor.y + 0.5) * tileSize },
+                    ...targetClasses)) continue;
                 neighbor.g = tentativeG;
                 neighbor.h = heuristic(neighbor, end);
                 neighbor.f = neighbor.g + neighbor.h;
@@ -437,12 +436,11 @@ function astar(maxIterations, start, end, sprite, ...targetClasses) {
                 // Heapify up to maintain the heap property
                 heap.heapifyUp();
             }
-            
+
         }
 
         iteration++;
     }
-
     // No path found
     return [];
 }
@@ -459,6 +457,9 @@ function arrayExistVector(array, tileTarget) {
 function checkCollisionAlongPath(sprite, startPoint, endPoint, ...exclude) {
     const intermediatePoints = generatePointsOnLine(startPoint, endPoint, 3);
     for (const point of intermediatePoints) {
+        if (debugMode) {
+            appendMovable(new DebugSprite(point.x, point.y));
+        }
         if (sprite.checkCollisionInRange(point.x, point.y, 2, ...exclude)) return true;
     }
 

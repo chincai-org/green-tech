@@ -233,7 +233,7 @@ function canvasClicked() {
             tile.add(new PoliceStation(0, 0));
             break;
         case 2:
-            appendMovable(tile, new Lumberjack(realX, realY));
+            appendMovable(new Lumberjack(realX, realY));
             break;
         case 3:
             tile.add(new Rock(0, 0));
@@ -253,20 +253,20 @@ function canvasClicked() {
         let lastMovables = movables.get(lastMovableKey);
         let lastMovable = lastMovables[lastMovables.length - 1]
         if (lastMovable.isCollidingAnySprite(lastMovable.x, lastMovable.y)) {
-            unappendMovable(tile, lastMovable)
+            unappendMovable(lastMovable)
         }
     }
 }
 
-function appendMovable(tile, sprite) {
+function appendMovable(sprite) {
     sprite.tile = getTile(sprite.x, sprite.y);
-    movables.has(tile) ? movables.get(tile).push(sprite) : movables.set(tile, [sprite]);
+    movables.has(sprite.tile) ? movables.get(sprite.tile).push(sprite) : movables.set(sprite.tile, [sprite]);
 }
 
-function unappendMovable(tile, sprite) {
-    movableArray = movables.get(tile);
+function unappendMovable(sprite) {
+    movableArray = movables.get(sprite.tile);
     if (movableArray.length === 1) {
-        movables.delete(tile);
+        movables.delete(sprite.tile);
         return;
     }
     movableArray.splice(movableArray.indexOf(sprite), 1);
@@ -402,16 +402,16 @@ function astar(maxIterations, start, end, sprite, ...targetClasses) {
             return path;
         }
 
-        const neighbors = findNeighbour(current);
-        for (const neighbor of neighbors) {
-            let tileAlreadyExist = false;
-            for (const tile of closedSet) {
-                if (tile.x == neighbor.x && tile.y == neighbor.y) {
-                    tileAlreadyExist = true;
-                    break;
-                }
+        const neighborVectors = findNeighbour(current);
+        for (const neighborVector of neighborVectors) {
+            // findNeighbor() returns new vector only
+            let neighbor = heap.getElement(neighborVector.x, neighborVector.y);
+            // if not in heap yet means not processsed
+            if (neighbor === null) {
+                neighbor = neighborVector;
             }
-            if (tileAlreadyExist ||
+
+            if (arrayExistVector(closedSet, neighbor) ||
                 checkCollisionAlongPath(sprite,
                     { x: (current.x + 0.5) * tileSize, y: (current.y + 0.5) * tileSize },
                     { x: (neighbor.x + 0.5) * tileSize, y: (neighbor.y + 0.5) * tileSize },
@@ -421,12 +421,11 @@ function astar(maxIterations, start, end, sprite, ...targetClasses) {
 
             const tentativeG = current.g + 1; // Assuming each step costs 1
 
-            if (!heap.heap.includes(neighbor)) {
+            if (!arrayExistVector(heap.heap, neighbor)) {
                 neighbor.g = tentativeG;
                 neighbor.h = heuristic(neighbor, end);
                 neighbor.f = neighbor.g + neighbor.h;
                 neighbor.parent = current;
-
                 heap.add(neighbor);
             }
             else if (tentativeG < neighbor.g) {
@@ -438,6 +437,7 @@ function astar(maxIterations, start, end, sprite, ...targetClasses) {
                 // Heapify up to maintain the heap property
                 heap.heapifyUp();
             }
+            
         }
 
         iteration++;
@@ -445,6 +445,15 @@ function astar(maxIterations, start, end, sprite, ...targetClasses) {
 
     // No path found
     return [];
+}
+
+function arrayExistVector(array, tileTarget) {
+    for (const tile of array) {
+        if (tile.x == tileTarget.x && tile.y == tileTarget.y) {
+            return true;
+        }
+    }
+    return false;
 }
 
 function checkCollisionAlongPath(sprite, startPoint, endPoint, ...exclude) {
@@ -467,7 +476,6 @@ function generatePointsOnLine(startPoint, endPoint, numberOfPoints) {
     let y = startPoint.y
 
     for (let i = 0; i < numberOfPoints; i++) {
-        //appendMovable(getTile(x, y), new Rock2(x, y));
         points.push({ x: x, y: y });
         x += incrementX;
         y += incrementY;

@@ -3,6 +3,15 @@ class MinHeap {
         this.heap = [];
     }
 
+    getElement(x, y) {
+        for (const tile of this.heap) {
+            if (tile.x === x && tile.y === y) {
+                return tile;
+            }
+        }
+        return null; // Element not found
+    }
+
     compareTiles(tile1, tile2) {
         if (tile1.f === tile2.f) {
             // If f values are equal, compare based on h values

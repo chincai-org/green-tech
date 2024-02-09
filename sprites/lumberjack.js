@@ -73,7 +73,7 @@ class Lumberjack extends BaseSprite {
                 else if (target instanceof Police) {
                     // Kill police
                     target.parent.spawned--;
-                    unappendMovable(target.tile, target);
+                    unappendMovable(target);
                 }
                 else if (target instanceof Sprout) {
                     // Push sprout

@@ -56,10 +56,10 @@ class BaseSprite {
         this._move(vector, checkCollision);
 
         // Update the tile
-        unappendMovable(this.tile, this);
+        unappendMovable(this);
 
         this.tile = getTile(this.x, this.y);
-        appendMovable(this.tile, this);
+        appendMovable(this);
     }
 
     draw() {

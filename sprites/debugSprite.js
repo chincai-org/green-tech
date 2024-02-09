@@ -18,7 +18,7 @@ class DebugSprite extends BaseSprite {
     }
 
     _tick() {
-        if (Date.now() - this.timePlaced > 300) {
+        if (Date.now() - this.timePlaced > 220) {
             unappendMovable(this);
         }
     }

@@ -381,6 +381,7 @@ function pathFind(maxIterations, maxTarget, range, sprite, ...targetClasses) {
 }
 
 function astar(maxIterations, start, end, sprite, ...targetClasses) {
+    const collisionCheckedSet = new Set();
     start.g = 0;
     let closedSet = [];
     let heap = new MinHeap();
@@ -420,6 +421,7 @@ function astar(maxIterations, start, end, sprite, ...targetClasses) {
                 if (current != start && checkCollisionAlongPath(sprite,
                     { x: (current.x + 0.5) * tileSize, y: (current.y + 0.5) * tileSize },
                     { x: (neighbor.x + 0.5) * tileSize, y: (neighbor.y + 0.5) * tileSize },
+                    collisionCheckedSet,
                     ...targetClasses)) continue;
                 neighbor.g = tentativeG;
                 neighbor.h = heuristic(neighbor, end);
@@ -454,13 +456,19 @@ function arrayExistVector(array, tileTarget) {
     return false;
 }
 
-function checkCollisionAlongPath(sprite, startPoint, endPoint, ...exclude) {
+function checkCollisionAlongPath(sprite, startPoint, endPoint, collisionCheckedSet, ...exclude) {
     const intermediatePoints = generatePointsOnLine(startPoint, endPoint, 3);
     for (const point of intermediatePoints) {
-        if (debugMode) {
-            appendMovable(new DebugSprite(point.x, point.y));
+        const pointString = `${point.x},${point.y}`;
+        if (!collisionCheckedSet.has(pointString)) {
+            if (debugMode) {
+                appendMovable(new DebugSprite(point.x, point.y));
+            }
+            collisionCheckedSet.add(pointString);
+            if (sprite.checkCollisionInRange(point.x, point.y, 2, ...exclude)) {
+                return true;
+            }
         }
-        if (sprite.checkCollisionInRange(point.x, point.y, 2, ...exclude)) return true;
     }
 
     return false;

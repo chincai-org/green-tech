@@ -4,8 +4,6 @@
  * @extends {BaseSprite}
  */
 class Lumberjack extends BaseSprite {
-    static lumberjackCount = 0;
-    static allLumberjackMaxIteration = 400;
     constructor(x, y) {
         super({
             x,
@@ -21,7 +19,7 @@ class Lumberjack extends BaseSprite {
         this.pathfindCooldown = 0;
         this.actionCooldown = 500;
         this.tickPerUpdate = 2;
-        Lumberjack.lumberjackCount++;
+        this.mapChanged = true;
     }
 
 
@@ -29,15 +27,15 @@ class Lumberjack extends BaseSprite {
         this.pathfindCooldown -= this.deltaTime();
         this.actionCooldown -= this.deltaTime();
 
-        if (this.pathfindCooldown < 0) {
-            let maxIteration = Lumberjack.allLumberjackMaxIteration / Lumberjack.lumberjackCount;
-            this.path = pathFind(maxIteration, 3, 30, this, Tree, Sprout, Police);
+        if (this.pathfindCooldown < 0 && this.mapChanged == true) {
+            this.mapChanged = false;
+            this.path = pathFind(1000, 30, this, Tree, Sprout, Police);
             if (this.path.length !== 0) {
                 this.pathfindCooldown = Math.sqrt((this.path[1].x * tileSize + tileSize / 2 - this.x) ** 2 +
                     (this.path[1].y * tileSize + tileSize / 2 - this.y) ** 2) / this.speed
             }
             else {
-                this.pathfindCooldown = 500;
+                this.pathfindCooldown = 2000;
             }
         }
 

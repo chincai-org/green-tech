@@ -49,7 +49,12 @@ class Sprout extends BaseSprite {
             Math.min(this.y, gridHeight * tileSize - windowHeight / 2),
             windowHeight / 2
         );
-        this.tile = getTile(this.x, this.y);
+
+        let currTile = getTile(this.x, this.y);
+        if (this.tile != currTile) {
+            this.tile = getTile(this.x, this.y);
+            mapChanged();
+        }
     }
 
     isNextStepValid(x, y) {

@@ -16,6 +16,7 @@ let heightRatio = winHeight / constWinHeight;
 const fullScreenElement = document.documentElement;
 const movables = new Map(); // Key of tile and value of array of sprites
 const sprout = new Sprout(50, 50);
+const mapChangedWatch = [];
 const gridWidth = 100;
 const gridHeight = 100;
 const tileGrid = [];
@@ -233,7 +234,11 @@ function canvasClicked() {
             tile.add(new PoliceStation(0, 0));
             break;
         case 2:
-            appendMovable(new Lumberjack(realX, realY));
+            let newLumberjack = new Lumberjack(realX, realY);
+            appendMovable(newLumberjack);
+            if (!newLumberjack.isCollidingAnySprite(newLumberjack.x, newLumberjack.y)) {
+                mapChangedWatch.push(newLumberjack);
+            }
             break;
         case 3:
             tile.add(new Rock(0, 0));
@@ -261,6 +266,7 @@ function canvasClicked() {
 function appendMovable(sprite) {
     sprite.tile = getTile(sprite.x, sprite.y);
     movables.has(sprite.tile) ? movables.get(sprite.tile).push(sprite) : movables.set(sprite.tile, [sprite]);
+    mapChanged();
 }
 
 function unappendMovable(sprite) {
@@ -270,6 +276,13 @@ function unappendMovable(sprite) {
         return;
     }
     movableArray.splice(movableArray.indexOf(sprite), 1);
+    mapChanged();
+}
+
+function mapChanged() {
+    for (const movable of mapChangedWatch) {
+        movable.mapChanged = true;
+    }
 }
 
 function initGrid() {
@@ -364,19 +377,21 @@ function closeFullscreen() {
  * @param {...Class} targetClasses  - The class that you wish to find, example: Tree
  * @returns {Array<Vector>}
  */
-function pathFind(maxIterations, maxTarget, range, sprite, ...targetClasses) {
+function pathFind(maxIterations, range, sprite, ...targetClasses) {
+    let time = Date.now();
     const targets = sprite.findClosestNeighbourUsingTile(sprite.x, sprite.y, range, ...targetClasses);
     const startTile = getTile(sprite.x, sprite.y);
     let path = [];
 
-    for (const target of targets.slice(0, maxTarget)) {
-        const maxIterationsPerTarget = maxIterations / targets.slice(0, maxTarget).length;
-        path = astar(maxIterationsPerTarget, startTile, target.tile, sprite, ...targetClasses);
+    for (const target of targets) {
+        path = astar(maxIterations, startTile, target.tile, sprite, ...targetClasses);
         if (path != 0) {
+            console.log("Time taken: " + (Date.now() - time) + "ms");
             return path;
         }
     }
 
+    console.log("Time taken: " + (Date.now() - time) + "ms");
     return path;
 }
 
@@ -470,7 +485,7 @@ function arrayExistVector(array, tileTarget) {
 }
 
 function checkCollisionAlongPath(sprite, startPoint, endPoint, collisionCheckedMap, ...exclude) {
-    const intermediatePoints = generatePointsOnLine(startPoint, endPoint, 3);
+    const intermediatePoints = generatePointsOnLine(startPoint, endPoint);
     let colliding = false;
     for (const point of intermediatePoints) {
         const pointString = `${point.x},${point.y}`;
@@ -493,10 +508,15 @@ function checkCollisionAlongPath(sprite, startPoint, endPoint, collisionCheckedM
     return colliding;
 }
 
-function generatePointsOnLine(startPoint, endPoint, numberOfPoints) {
+function generatePointsOnLine(startPoint, endPoint) {
     const points = [];
     const dx = endPoint.x - startPoint.x;
     const dy = endPoint.y - startPoint.y;
+    const increment = tileSize / 2;
+    let numberOfPoints = Math.floor(Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) / increment);
+    if (numberOfPoints === 0) {
+        numberOfPoints = 1;
+    }
     const incrementX = dx / numberOfPoints;
     const incrementY = dy / numberOfPoints;
 

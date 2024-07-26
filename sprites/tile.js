@@ -12,7 +12,6 @@ class Tile extends BaseSprite {
 
         /** @type {BaseSprite} */
         this.sprite = null;
-        this.add(sprite);
     }
 
     draw() {
@@ -36,6 +35,7 @@ class Tile extends BaseSprite {
             this.sprite.y = (this.y + 0.5) * tileSize;
             Tile.tileWithSprite.add(this);
         }
+        mapChanged();
     }
 
     remove() {
@@ -44,6 +44,7 @@ class Tile extends BaseSprite {
             this.sprite.tile = null;
             this.sprite = null;
         }
+        mapChanged();
     }
 
     onResize(changeInWidth) {

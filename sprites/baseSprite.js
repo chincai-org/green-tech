@@ -59,6 +59,9 @@ class BaseSprite {
         let currTile = getTile(this.x, this.y);
         if (this.tile != currTile) {
             this.tile = getTile(this.x, this.y);
+            if (this instanceof Lumberjack) {
+                return;
+            }
             mapChanged();
         }
     }

@@ -46,6 +46,8 @@ const maxDeltaTime = 500;
 let delta = 0;
 const tickSpeed = 60;
 const msBetweenTicks = 1000 / tickSpeed;
+const collisionCheckedMap = new Map();
+let isMapChanged = false;
 
 function windowResized() {
     let changeInWidth = window.innerWidth / winWidth;
@@ -252,11 +254,13 @@ function canvasClicked() {
 function appendMovable(sprite) {
     sprite.tile = getTile(sprite.x, sprite.y);
     movables.push(sprite);
+    if (sprite instanceof DebugSprite) { return }
     mapChanged();
 }
 
 function unappendMovable(sprite) {
     movables.splice(movables.indexOf(sprite), 1);
+    if (sprite instanceof DebugSprite) { return }
     mapChanged();
 }
 
@@ -264,6 +268,7 @@ function mapChanged() {
     for (const movable of mapChangedWatch) {
         movable.mapChanged = true;
     }
+    isMapChanged = true;
 }
 
 function initGrid() {
@@ -359,6 +364,11 @@ function closeFullscreen() {
  * @returns {Array<Vector>}
  */
 function pathFind(maxIterations, range, sprite, ...targetClasses) {
+    if (isMapChanged) {
+        collisionCheckedMap.clear();
+        isMapChanged = false;
+    }
+
     let time = Date.now();
     const targets = findClosestTargets(sprite.x, sprite.y, range, ...targetClasses);
     const startTile = getTile(sprite.x, sprite.y);
@@ -377,7 +387,6 @@ function pathFind(maxIterations, range, sprite, ...targetClasses) {
 }
 
 function astar(maxIterations, start, end, sprite, ...targetClasses) {
-    const collisionCheckedMap = new Map();
     start.g = 0;
     let closedSet = [];
     let heap = new MinHeap();
@@ -505,12 +514,16 @@ function generatePointsOnLine(startPoint, endPoint) {
     let y = startPoint.y
 
     for (let i = 0; i < numberOfPoints; i++) {
-        points.push({ x: x, y: y });
+        points.push({ x: roundToNearest(x, 5), y: roundToNearest(y, 5) });
         x += incrementX;
         y += incrementY;
     }
 
     return points;
+}
+
+function roundToNearest(value, place) {
+    return Math.round(value / place) * place;
 }
 
 

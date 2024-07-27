@@ -32,7 +32,8 @@ class Lumberjack extends BaseSprite {
             this.path = pathFind(1000, tileSize * 30, this, Tree, Sprout, Police);
             if (this.path.length !== 0) {
                 this.pathfindCooldown = Math.sqrt((this.path[1].x * tileSize + tileSize / 2 - this.x) ** 2 +
-                    (this.path[1].y * tileSize + tileSize / 2 - this.y) ** 2) / this.speed
+                    (this.path[1].y * tileSize + tileSize / 2 - this.y) ** 2) / this.speed;
+                this.mapChanged = true; // allowed to continue
             }
             else {
                 this.pathfindCooldown = 2000;

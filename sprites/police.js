@@ -9,7 +9,7 @@ class Police extends BaseSprite {
             x,
             y,
             color: "#40E0D0",
-            speed: 0.1,
+            speed: widthRatio * 0.1,
             collision_layers: new Set(["police"]),
             collision_masks: new Set(["lumberjack"]),
             collide_range: tileSize / 2.5,
@@ -31,7 +31,7 @@ class Police extends BaseSprite {
         this.timeNewDirection--
         if (this.timeNewDirection < 1) {
             this.target = p5.Vector.random2D();
-            this.timeNewDirection = randint(15, 50)
+            this.timeNewDirection = randint(15, 50);
             this.timeIdle = randint(250, 500);
         }
     }

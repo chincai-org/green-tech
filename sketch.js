@@ -14,8 +14,8 @@ let widthRatio = winWidth / constWinWidth;
 let heightRatio = winHeight / constWinHeight;
 
 const fullScreenElement = document.documentElement;
-const movables = new Map(); // Key of tile and value of array of sprites
-const sprout = new Sprout(50, 50);
+const movables = [];
+let sprout = null;
 const mapChangedWatch = [];
 const gridWidth = 100;
 const gridHeight = 100;
@@ -54,19 +54,13 @@ function windowResized() {
     widthRatio = winWidth / constWinWidth;
     heightRatio = winHeight / constWinHeight;
     tileSize = (constWinWidth * widthRatio) / 30;
-    sprout.speed = widthRatio * 0.5;
     resizeCanvas(winWidth, winHeight);
 
-    // Resize movables
-    sprout.x *= changeInWidth;
-    sprout.y *= changeInWidth;
-    sprout.collide_range *= changeInWidth;
-    for (const movableArray of movables.values()) {
-        for (const sprite of movableArray) {
-            sprite.x *= changeInWidth;
-            sprite.y *= changeInWidth;
-            sprite.collide_range *= changeInWidth;
-        }
+    for (const sprite of movables) {
+        sprite.x *= changeInWidth;
+        sprite.y *= changeInWidth;
+        sprite.collide_range *= changeInWidth;
+        sprite.speed *= changeInWidth;
     }
 
     // Resize tiles
@@ -80,7 +74,6 @@ function windowResized() {
 
 function preload() {
     soundFormats("ogg", "wav");
-    sproutFrontImg = loadImage(sprout.img);
     // song = loadSound("bestmusic.wav");
 }
 
@@ -99,8 +92,9 @@ function setup() {
 
     lastPollute = Date.now();
 
-    // Init sprite
-    sprout.collide_range = tileSize / 2;
+    sprout = new Sprout(50, 50);
+    sproutFrontImg = loadImage(sprout.img);
+    appendMovable(sprout);
 }
 
 function draw() {
@@ -118,14 +112,11 @@ function draw() {
         delta--;
     }
 
-    sprout.draw();
 
     drawGridLine();
 
-    for (const movableValues of movables.values()) {
-        for (const movable of movableValues) {
-            movable.draw();
-        }
+    for (const movable of movables) {
+        movable.draw();
     }
 
     let startX = camX - windowWidth / 2;
@@ -164,11 +155,8 @@ function draw() {
 }
 
 function gameTick() {
-    sprout.tick();
-    for (const movableValues of movables.values()) {
-        for (const movable of movableValues) {
-            movable.tick();
-        }
+    for (const movable of movables) {
+        movable.tick();
     }
     for (const tile of Tile.tileWithSprite) {
         tile.tick();
@@ -254,9 +242,7 @@ function canvasClicked() {
         tile.remove();
     }
     else {
-        let lastMovableKey = Array.from(movables.keys()).pop();
-        let lastMovables = movables.get(lastMovableKey);
-        let lastMovable = lastMovables[lastMovables.length - 1]
+        let lastMovable = movables[movables.length - 1]
         if (lastMovable.isCollidingAnySprite(lastMovable.x, lastMovable.y)) {
             unappendMovable(lastMovable)
         }
@@ -265,17 +251,12 @@ function canvasClicked() {
 
 function appendMovable(sprite) {
     sprite.tile = getTile(sprite.x, sprite.y);
-    movables.has(sprite.tile) ? movables.get(sprite.tile).push(sprite) : movables.set(sprite.tile, [sprite]);
+    movables.push(sprite);
     mapChanged();
 }
 
 function unappendMovable(sprite) {
-    movableArray = movables.get(sprite.tile);
-    if (movableArray.length === 1) {
-        movables.delete(sprite.tile);
-        return;
-    }
-    movableArray.splice(movableArray.indexOf(sprite), 1);
+    movables.splice(movables.indexOf(sprite), 1);
     mapChanged();
 }
 
@@ -379,7 +360,7 @@ function closeFullscreen() {
  */
 function pathFind(maxIterations, range, sprite, ...targetClasses) {
     let time = Date.now();
-    const targets = sprite.findClosestNeighbourUsingTile(sprite.x, sprite.y, range, ...targetClasses);
+    const targets = findClosestTargets(sprite.x, sprite.y, range, ...targetClasses);
     const startTile = getTile(sprite.x, sprite.y);
     let path = [];
 
@@ -493,7 +474,7 @@ function checkCollisionAlongPath(sprite, startPoint, endPoint, collisionCheckedM
             if (debugMode) {
                 appendMovable(new DebugSprite(point.x, point.y));
             }
-            if (sprite.checkCollisionInRange(point.x, point.y, 2, ...exclude)) {
+            if (sprite.checkCollisionInRange(point.x, point.y, tileSize * 2, ...exclude)) {
                 collisionCheckedMap.set(pointString, true);
                 colliding = true;
             }
@@ -535,34 +516,11 @@ function generatePointsOnLine(startPoint, endPoint) {
 
 function heuristic(node, end) {
     // Manhattan distance heuristic
-    return Math.abs(node.x - end.x) + Math.abs(node.y - end.y);
+    return 2 * (Math.abs(node.x - end.x) + Math.abs(node.y - end.y));
 }
 
 
-/**
- * Find sprite that is in the targetClasses
- * @param {...Class} targetClasses  - The class that you wish to find, example: Tree
- * @returns {Array<BaseSprite>} - array of sprites corresponding to the target classes
- */
-function findTargets(...targetClasses) {
-    const targetSprite = [];
-    for (const tile of Tile.tileWithSprite) {
-        if (anyInstance(tile.sprite, targetClasses)) {
-            targetSprite.push(tile.sprite);
-        }
-    }
-    const mergedMovableValues = Array.from(movables.values());
-    mergedMovableValues.push([sprout]);
-    for (const movableValues of mergedMovableValues) {
-        for (const movable of movableValues) {
-            if (anyInstance(movable, targetClasses)) {
-                targetSprite.push(movable);
-            }
 
-        }
-    }
-    return targetSprite;
-}
 
 /**
  *
@@ -584,8 +542,6 @@ function findNeighbour(vector) {
             }
         }
     }
-    // Reverse the order if needed (to prioritize horizontal or vertical movement)
-    result.sort((a, b) => Math.abs(a.x - x) + Math.abs(a.y - y) - Math.abs(b.x - x) + Math.abs(b.y - y));
 
     return result;
 }

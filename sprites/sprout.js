@@ -13,6 +13,7 @@ class Sprout extends BaseSprite {
             collision_layers: new Set(["sprout"]),
             collision_masks: new Set(["lumberjack", "tree"]),
             image: "assets/sproutfront.png",
+            collide_range: tileSize / 2,
             name: "Sprout"
         });
     }
@@ -40,7 +41,7 @@ class Sprout extends BaseSprite {
         ) {
             joyY = 0;
         }
-        this._move(createVector(joyX, joyY));
+        this._move({ x: joyX, y: joyY });
         camX = Math.max(
             Math.min(this.x, gridWidth * tileSize - windowWidth / 2),
             windowWidth / 2
@@ -61,7 +62,7 @@ class Sprout extends BaseSprite {
         if (!inBoundOfMap(x, y)) {
             return false;
             // check collide at real coord to prevent getting stuck
-        } else if (this.checkCollisionInRange(x, y, 2) && !this.checkCollisionInRange(this.x, this.y, 2)) {
+        } else if (this.checkCollisionInRange(x, y, tileSize * 2) && !this.checkCollisionInRange(this.x, this.y, tileSize * 2)) {
             return false;
         }
         return true;

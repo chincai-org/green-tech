@@ -29,7 +29,7 @@ class Lumberjack extends BaseSprite {
 
         if (this.pathfindCooldown < 0 && this.mapChanged == true) {
             this.mapChanged = false;
-            this.path = pathFind(1000, 30, this, Tree, Sprout, Police);
+            this.path = pathFind(1000, tileSize * 30, this, Tree, Sprout, Police);
             if (this.path.length !== 0) {
                 this.pathfindCooldown = Math.sqrt((this.path[1].x * tileSize + tileSize / 2 - this.x) ** 2 +
                     (this.path[1].y * tileSize + tileSize / 2 - this.y) ** 2) / this.speed
@@ -50,16 +50,17 @@ class Lumberjack extends BaseSprite {
 
             this.move(
                 // Move to center of next path
-                createVector(
-                    this.path[1].x * tileSize + tileSize / 2 - this.x,
-                    this.path[1].y * tileSize + tileSize / 2 - this.y
-                ),
+
+                {
+                    x: this.path[1].x * tileSize + tileSize / 2 - this.x,
+                    y: this.path[1].y * tileSize + tileSize / 2 - this.y
+                },
                 true
             );
         }
 
         if (this.actionCooldown < 0) {
-            let tryFindTarget = this.findClosestNeighbourUsingTile(this.x, this.y, 1, Sprout, Tree, Police);
+            let tryFindTarget = findClosestTargets(this.x, this.y, tileSize * 2, Sprout, Tree, Police);
             if (tryFindTarget.length > 0) {
                 const target = tryFindTarget[0];
                 if (target instanceof Tree && Tile.tileWithSprite.has(target.tile)) {
@@ -75,7 +76,11 @@ class Lumberjack extends BaseSprite {
                 }
                 else if (target instanceof Sprout) {
                     // Push sprout
-                    sprout.moveObjQueue.push({ vector: createVector(sprout.x - this.x, sprout.y - this.y), checkCollision: true })
+                    sprout.moveObjQueue.push({
+                        vector: {
+                            x: sprout.x - this.x, y: sprout.y - this.y
+                        }, checkCollision: true
+                    })
                 }
             }
             this.actionCooldown = 2000;

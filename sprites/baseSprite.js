@@ -58,10 +58,8 @@ class BaseSprite {
         // Update the tile
         let currTile = getTile(this.x, this.y);
         if (this.tile != currTile) {
-            unappendMovable(this);
-
             this.tile = getTile(this.x, this.y);
-            appendMovable(this);
+            mapChanged();
         }
     }
 
@@ -83,7 +81,7 @@ class BaseSprite {
                 // Do custom debugging logic here
                 // check if multiple sprite in same position
                 let samePos = 0;
-                for (const movable of movables.get(this.tile)) {
+                for (const movable of movables) {
                     if (movable.x == this.x && movable.y == this.y) {
                         samePos++;
                     }
@@ -126,7 +124,7 @@ class BaseSprite {
      * @param {Vector} [vector] - The direction to move to
      * @param {Boolean} checkCollision - Check for collision when moving if then stop
      */
-    _move(vector = createVector(0, 0), checkCollision = false) {
+    _move(vector = { x: 0, y: 0 }, checkCollision = false) {
         const deltaTime = this.deltaTime();
         this.moveObjQueue.push({ vector: vector, checkCollision: checkCollision });
         // Handle queued up movement
@@ -143,7 +141,7 @@ class BaseSprite {
                 deltaTime *
                 (vectDist == 0 ? moveVect.y : moveVect.y / vectDist);
             if (inBoundOfMap(newX, newY)) {
-                if (!moveObj.checkCollision || !this.checkCollisionInRange(newX, newY, 2)) {
+                if (!moveObj.checkCollision || !this.checkCollisionInRange(newX, newY, tileSize * 2)) {
                     this.x = newX;
                     this.y = newY;
                 }
@@ -158,7 +156,9 @@ class BaseSprite {
      * @returns {Vector}
      */
     distance(other) {
-        return createVector(this.x - other.x, this.y - other.y);
+        return {
+            x: this.x - other.x, y: this.y - other.y
+        };
     }
 
     /**
@@ -221,12 +221,10 @@ class BaseSprite {
      * @returns {BaseSprite | null} Sprite that is colliding otherwise null
      */
     isCollidingMovables(x, y, ...excluding) {
-        for (const movableValues of movables.values()) {
-            for (const movable of movableValues) {
-                if (anyInstance(movable, excluding)) continue;
-                if (movable !== this && this.isColliding(movable, x, y)) {
-                    return movable;
-                }
+        for (const movable of movables) {
+            if (anyInstance(movable, excluding)) continue;
+            if (movable !== this && this.isColliding(movable, x, y)) {
+                return movable;
             }
         }
         return null;
@@ -252,7 +250,7 @@ class BaseSprite {
     }
 
     /**
-     * Find hypothetical collision with any sprite either movables, tiled sprite and sprout
+     * Find hypothetical collision with any sprite either movables, tiled sprite
      * @param {number} x - Hypothetical x-coordinate
      * @param {number} y - Hypothetical y-coordinate
      * @param {...BaseSprite} excluding - Sprites to exclude from collision check
@@ -260,9 +258,7 @@ class BaseSprite {
      */
     isCollidingAnySprite(x, y, ...excluding) {
         let collidingSprite = this.isCollidingMovables(x, y, ...excluding) ||
-            this.isCollidingTileSprite(x, y, ...excluding) ||
-            // Including sprout
-            (this !== sprout && this.isColliding(sprout, x, y, ...excluding));
+            this.isCollidingTileSprite(x, y, ...excluding)
         return collidingSprite;
     }
 
@@ -275,39 +271,21 @@ class BaseSprite {
      * @returns {BaseSprite} Sprite that is colliding
      */
     checkCollisionInRange(x, y, range, ...excluding) {
-        const currentTile = getTile(x, y);
-
-        for (let i = currentTile.x - range; i <= (currentTile.x + range); i++) {
-            for (let j = currentTile.y - range; j <= (currentTile.y + range); j++) {
-                if (!inBoundOfGrid(i, j)) continue;
-                const tile = tileGrid[j][i];
-
-                if (Tile.tileWithSprite.has(tile)) {
-                    const tileSprite = tile.sprite;
-                    if (this.isColliding(tileSprite, x, y, ...excluding)) {
-                        return tileSprite;
-                    }
-                }
-                if (movables.has(tile)) {
-                    const movableSprites = movables.get(tile);
-                    for (const movableSprite of movableSprites) {
-                        if (this.isColliding(movableSprite, x, y, ...excluding)) {
-                            return movableSprite;
-                        }
-                    }
-                }
-
+        const targets = findClosestTargets(x, y, range);
+        for (const target of targets) {
+            if (this.isColliding(target, x, y, ...excluding)) {
+                return true;
             }
-            if (this !== sprout && this.isColliding(sprout, x, y, ...excluding)) {
-                return sprout
-            };
         }
-
         return false;
-
     }
+}
 
-    /**
+function distance(sprite1, sprite2) {
+    return Math.sqrt((sprite1.x - sprite2.x) ** 2 + (sprite1.y - sprite2.y) ** 2);
+}
+
+/**
      * Find closest neighbour tile by searching spirarly
      * @param {number} x - Hypothetical x-coordinate
      * @param {number} y - Hypothetical y-coordinate
@@ -315,47 +293,44 @@ class BaseSprite {
      * @param {...BaseSprite} targetClasses - Classes to target, all if empty
      * @returns {Array<BaseSprite>} Sprite sorted from distance
      */
-    findClosestNeighbourUsingTile(hypotheticalX, hypotheticalY, range, ...targetClasses) {
-        const targets = findTargets(...targetClasses);
+function findClosestTargets(x, y, range, ...targetClasses) {
+    const targets = findTargets(...targetClasses);
 
-        let result = [];
-        const currentTile = getTile(hypotheticalX, hypotheticalY);
+    const filteredTargets = targets.filter(target => distance({ x: x, y: y }, target) <= range);
 
-        // Loops spirally
-        let x = currentTile.x;
-        let y = currentTile.y;
-        let nMove = 1;
-        let dx = 1;
-        let dy = 0;
+    filteredTargets.sort((a, b) => distance({ x: x, y: y }, a) - distance({ x: x, y: y }, b));
 
-        for (let i = 1; i < range * 4 + 2; i++) {
-            // Move
-            for (let j = 0; j < nMove; j++) {
-                x += dx;
-                y += dy;
-                if (inBoundOfGrid(x, y)) {
-                    for (const target of targets) {
-                        if (!target.tile) {
-                            continue;
-                        };
+    return filteredTargets;
 
-                        if (target.tile.x == x && target.tile.y == y) {
-                            result.push(target);
-                        }
-                    }
-                }
-            }
+}
 
-            // Change direction
-            const temp = dx;
-            dx = -dy;
-            dy = temp;
-
-            // Increase move per 2 incriment
-            if (i % 2 == 0) {
-                nMove++;
-            }
+/**
+ * Find sprite that is in the targetClasses
+ * @param {...Class} targetClasses  - The class that you wish to find, example: Tree
+ * @returns {Array<BaseSprite>} - array of sprites corresponding to the target classes
+ */
+function findTargets(...targetClasses) {
+    const targetSprite = [];
+    if (targetClasses.length == 0) {
+        for (const tile of Tile.tileWithSprite) {
+            targetSprite.push(tile.sprite);
         }
-        return result;
+        for (const movable of movables) {
+            targetSprite.push(movable);
+        }
+        return targetSprite;
     }
+
+    for (const tile of Tile.tileWithSprite) {
+        if (anyInstance(tile.sprite, targetClasses)) {
+            targetSprite.push(tile.sprite);
+        }
+    }
+    for (const movable of movables) {
+        if (anyInstance(movable, targetClasses)) {
+            targetSprite.push(movable);
+        }
+
+    }
+    return targetSprite;
 }

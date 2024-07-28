@@ -51,12 +51,8 @@ class Lumberjack extends BaseSprite {
 
             this.move(
                 // Move to center of next path
-
-                {
-                    x: this.path[1].x * tileSize + tileSize / 2 - this.x,
-                    y: this.path[1].y * tileSize + tileSize / 2 - this.y
-                },
-                true
+                this.path[1].x * tileSize + tileSize / 2 - this.x,
+                this.path[1].y * tileSize + tileSize / 2 - this.y
             );
         }
 
@@ -78,9 +74,7 @@ class Lumberjack extends BaseSprite {
                 else if (target instanceof Sprout) {
                     // Push sprout
                     sprout.moveObjQueue.push({
-                        vector: {
-                            x: sprout.x - this.x, y: sprout.y - this.y
-                        }, checkCollision: true
+                        x: sprout.x - this.x, y: sprout.y - this.y
                     })
                 }
             }

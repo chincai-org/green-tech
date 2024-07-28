@@ -13,11 +13,11 @@ class Sprout extends BaseSprite {
             collision_layers: new Set(["sprout"]),
             collision_masks: new Set(["lumberjack", "tree"]),
             image: "assets/sproutfront.png",
-            collide_range: tileSize / 2,
+            collide_range: tileSize / 2.2,
             name: "Sprout"
         });
     }
-    move() {
+    _tick() {
         let right = keyIsDown(RIGHT_ARROW) || keyIsDown(68);
         let left = keyIsDown(LEFT_ARROW) || keyIsDown(65);
         let up = keyIsDown(UP_ARROW) || keyIsDown(87);
@@ -30,18 +30,7 @@ class Sprout extends BaseSprite {
         } else {
             this.speed = widthRatio * 0.5;
         }
-
-        if (
-            !this.isNextStepValid(this.x + this.speed * joyX * this.deltaTime(), this.y)
-        ) {
-            joyX = 0;
-        }
-        if (
-            !this.isNextStepValid(this.x, this.y + this.speed * joyY * this.deltaTime())
-        ) {
-            joyY = 0;
-        }
-        this._move({ x: joyX, y: joyY });
+        this.move(joyX, joyY);
         camX = Math.max(
             Math.min(this.x, gridWidth * tileSize - windowWidth / 2),
             windowWidth / 2
@@ -50,22 +39,6 @@ class Sprout extends BaseSprite {
             Math.min(this.y, gridHeight * tileSize - windowHeight / 2),
             windowHeight / 2
         );
-
-        let currTile = getTile(this.x, this.y);
-        if (this.tile != currTile) {
-            this.tile = getTile(this.x, this.y);
-            mapChanged();
-        }
-    }
-
-    isNextStepValid(x, y) {
-        if (!inBoundOfMap(x, y)) {
-            return false;
-            // check collide at real coord to prevent getting stuck
-        } else if (this.checkCollisionInRange(x, y, tileSize * 2) && !this.checkCollisionInRange(this.x, this.y, tileSize * 2)) {
-            return false;
-        }
-        return true;
     }
 
     chopWood() {

@@ -428,7 +428,7 @@ function astar(maxIterations, start, end, sprite, ...targetClasses) {
                         { x: sprite.x, y: sprite.y },
                         { x: (neighbor.x + 0.5) * tileSize, y: (neighbor.y + 0.5) * tileSize },
                         collisionCheckedMap,
-                        ...targetClasses)) {
+                        ...targetClasses) && sprite.checkCollisionInRange(sprite.x, sprite.y, sprite.collide_range + tileSize)) {
                         continue;
                     }
                 }
@@ -483,7 +483,7 @@ function checkCollisionAlongPath(sprite, startPoint, endPoint, collisionCheckedM
             if (debugMode) {
                 appendMovable(new DebugSprite(point.x, point.y));
             }
-            if (sprite.checkCollisionInRange(point.x, point.y, tileSize * 2, ...exclude)) {
+            if (sprite.checkCollisionInRange(point.x, point.y, sprite.collide_range + tileSize, ...exclude)) {
                 collisionCheckedMap.set(pointString, true);
                 colliding = true;
             }

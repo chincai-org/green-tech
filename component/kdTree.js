@@ -32,7 +32,7 @@ class KDTree {
         }
 
         const axis = node.axis;
-        const dist = distance(sprite, node.sprite);
+        const dist = distance(sprite.x, sprite.y, node.sprite.x, node.sprite.y);
 
         if (dist <= range) {
             results.push(node);

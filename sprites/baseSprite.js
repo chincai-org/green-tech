@@ -49,11 +49,11 @@ class BaseSprite {
     }
 
     /**
-     * @param {Vector} vector - The direction to move to
-     * @param {Boolean} checkCollision - Check for collision when moving if then stop
+     * @param {Int} x - The x direction to move to
+     * @param {Int} y - The y direction to move to
      */
-    move(vector, checkCollision = false) {
-        this._move(vector, checkCollision);
+    move(x, y) {
+        this._move(x, y);
 
         // Update the tile
         let currTile = getTile(this.x, this.y);
@@ -67,7 +67,7 @@ class BaseSprite {
     }
 
     draw() {
-        let distance = this.distance({ x: camX, y: camY });
+        let distance = this.distance(camX, camY);
         let drawX = windowWidth / 2 + distance.x;
         let drawY = windowHeight / 2 + distance.y;
         if (this.img === null) {
@@ -120,32 +120,38 @@ class BaseSprite {
      * Update the sprite
      */
     _tick() {
-        this.move();
     }
 
     /**
      * @param {Vector} [vector] - The direction to move to
      * @param {Boolean} checkCollision - Check for collision when moving if then stop
      */
-    _move(vector = { x: 0, y: 0 }, checkCollision = false) {
+    _move(x, y) {
         const deltaTime = this.deltaTime();
-        this.moveObjQueue.push({ vector: vector, checkCollision: checkCollision });
+        this.moveObjQueue.push({ x, y });
         // Handle queued up movement
         while (this.moveObjQueue.length > 0) {
             const moveObj = this.moveObjQueue.pop();
-            const moveVect = moveObj.vector;
-            let vectDist = Math.hypot(moveVect.x, moveVect.y);
+            let vectDist = Math.hypot(moveObj.x, moveObj.y);
             const newX = this.x +
                 this.speed *
                 deltaTime *
-                (vectDist == 0 ? moveVect.x : moveVect.x / vectDist);
+                (vectDist == 0 ? moveObj.x : moveObj.x / vectDist);
             const newY = this.y +
                 this.speed *
                 deltaTime *
-                (vectDist == 0 ? moveVect.y : moveVect.y / vectDist);
+                (vectDist == 0 ? moveObj.y : moveObj.y / vectDist);
             if (inBoundOfMap(newX, newY)) {
-                if (!moveObj.checkCollision || !this.checkCollisionInRange(newX, newY, tileSize * 2)) {
+                // cliping in map
+                if (this.checkCollisionInRange(this.x, this.y, this.collide_range + tileSize)) {
                     this.x = newX;
+                    this.y = newY;
+                    continue;
+                }
+                if (!this.checkCollisionInRange(newX, this.y, this.collide_range + tileSize)) {
+                    this.x = newX;
+                }
+                if (!this.checkCollisionInRange(this.x, newY, this.collide_range + tileSize)) {
                     this.y = newY;
                 }
             }
@@ -155,12 +161,13 @@ class BaseSprite {
 
     /**
      *
-     * @param {BaseSprite} other
+     * @param {Int} x - The x-coordinate to calculate distance
+     * @param {Int} Y - The y-coordinate to calculate distance
      * @returns {Vector}
      */
-    distance(other) {
+    distance(x, y) {
         return {
-            x: this.x - other.x, y: this.y - other.y
+            x: this.x - x, y: this.y - y
         };
     }
 
@@ -284,8 +291,8 @@ class BaseSprite {
     }
 }
 
-function distance(sprite1, sprite2) {
-    return Math.sqrt((sprite1.x - sprite2.x) ** 2 + (sprite1.y - sprite2.y) ** 2);
+function distance(x1, y1, x2, y2) {
+    return Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2);
 }
 
 /**
@@ -299,9 +306,9 @@ function distance(sprite1, sprite2) {
 function findClosestTargets(x, y, range, ...targetClasses) {
     const targets = findTargets(...targetClasses);
 
-    const filteredTargets = targets.filter(target => distance({ x: x, y: y }, target) <= range);
+    const filteredTargets = targets.filter(target => distance(x, y, target.x, target.y) <= range);
 
-    filteredTargets.sort((a, b) => distance({ x: x, y: y }, a) - distance({ x: x, y: y }, b));
+    filteredTargets.sort((a, b) => distance(x, y, a.x, b.y) - distance(x, y, b.x, b.y));
 
     return filteredTargets;
 

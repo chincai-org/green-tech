@@ -27,7 +27,7 @@ class Police extends BaseSprite {
             this.timeIdle--
             return
         }
-        this.move(this.target, true);
+        this.move(this.target.x, this.target.y);
         this.timeNewDirection--
         if (this.timeNewDirection < 1) {
             this.target = p5.Vector.random2D();

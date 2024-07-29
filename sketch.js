@@ -412,7 +412,7 @@ function astar(maxIterations, start, end, sprite, ...targetClasses) {
                         { x: sprite.x, y: sprite.y },
                         { x: (neighbor.x + 0.5) * tileSize, y: (neighbor.y + 0.5) * tileSize },
                         collisionCheckedMap,
-                        ...targetClasses) && !sprite.is) {
+                        ...targetClasses) && !sprite.isCollidingInRange(sprite.x, sprite.y, sprite.collide_range + tileSize)) {
                         continue;
                     }
                 }

@@ -14,7 +14,7 @@ let widthRatio = winWidth / constWinWidth;
 let heightRatio = winHeight / constWinHeight;
 
 const fullScreenElement = document.documentElement;
-const movables = [];
+const sprites = []
 let sprout = null;
 const mapChangedWatch = [];
 const gridWidth = 100;
@@ -42,7 +42,8 @@ let polluteRate = 10;
 let lastPollute;
 
 // Game tick
-const maxDeltaTime = 500;
+const maxDelta = 4;
+const maxDeltaTime = 200;
 let delta = 0;
 const tickSpeed = 60;
 const msBetweenTicks = 1000 / tickSpeed;
@@ -58,19 +59,11 @@ function windowResized() {
     tileSize = (constWinWidth * widthRatio) / 30;
     resizeCanvas(winWidth, winHeight);
 
-    for (const sprite of movables) {
+    for (const sprite of sprites) {
         sprite.x *= changeInWidth;
         sprite.y *= changeInWidth;
         sprite.collide_range *= changeInWidth;
         sprite.speed *= changeInWidth;
-    }
-
-    // Resize tiles
-    for (let i = 0; i < tileGrid.length; i++) {
-        for (let j = 0; j < tileGrid[i].length; j++) {
-            tileGrid[j][i].onResize(changeInWidth);
-        }
-
     }
 }
 
@@ -96,7 +89,7 @@ function setup() {
 
     sprout = new Sprout(50, 50);
     sproutFrontImg = loadImage(sprout.img);
-    appendMovable(sprout);
+    appendSprite(sprout);
 }
 
 function draw() {
@@ -105,10 +98,10 @@ function draw() {
     const now = Date.now();
     let deltaTime = now - lastUpdate;
 
-    deltaTime = (deltaTime > maxDeltaTime) ? 0 : deltaTime;
-
     // Game tick
     delta += deltaTime / msBetweenTicks;
+    if (delta > maxDelta) delta = maxDelta;
+
     while (delta >= 1) {
         gameTick();
         delta--;
@@ -117,8 +110,8 @@ function draw() {
 
     drawGridLine();
 
-    for (const movable of movables) {
-        movable.draw();
+    for (const sprite of sprites) {
+        sprite.draw();
     }
 
     let startX = camX - windowWidth / 2;
@@ -136,13 +129,6 @@ function draw() {
     startTileY = (startTileY - tileBuffer < 0) ? startTileY : startTileY - tileBuffer;
     endTileY = (endTileY + tileBuffer < gridHeight) ? endTileY : endTileY + tileBuffer;
 
-
-    for (let row of tileGrid.slice(startTileY, endTileY)) {
-        for (let tile of row.slice(startTileX, endTileX)) {
-            tile.draw();
-        }
-    }
-
     // Check if last pollute is a minute ago
     if (now - lastPollute > 60000) {
         pollution += polluteRate;
@@ -157,11 +143,8 @@ function draw() {
 }
 
 function gameTick() {
-    for (const movable of movables) {
-        movable.tick();
-    }
-    for (const tile of Tile.tileWithSprite) {
-        tile.tick();
+    for (const sprite of sprites) {
+        sprite.tick();
     }
 }
 
@@ -225,10 +208,7 @@ function canvasClicked() {
             break;
         case 2:
             let newLumberjack = new Lumberjack(realX, realY);
-            appendMovable(newLumberjack);
-            if (!newLumberjack.isCollidingAnySprite(newLumberjack.x, newLumberjack.y)) {
-                mapChangedWatch.push(newLumberjack);
-            }
+            appendSprite(newLumberjack);
             break;
         case 3:
             tile.add(new Rock(0, 0));
@@ -238,35 +218,41 @@ function canvasClicked() {
     }
 
     // Remove if colliding with any sprite
-    if (tile.sprite) {
-        if (!tile.sprite.isCollidingAnySprite(tile.sprite.x, tile.sprite.y)) return
-        if (tile.sprite.name == "Tree") resource += 1
-        tile.remove();
+    let lastSprite = sprites[sprites.length - 1]
+    if (lastSprite.isCollidingAnySprite()) {
+        if (tile.sprite) {
+            if (lastSprite.name == "Tree") {
+                resource += 1;
+            }
+            tile.remove();
+        }
+        else {
+            unappendSprite(lastSprite);
+        }
     }
     else {
-        let lastMovable = movables[movables.length - 1]
-        if (lastMovable.isCollidingAnySprite(lastMovable.x, lastMovable.y)) {
-            unappendMovable(lastMovable)
+        if (lastSprite instanceof Lumberjack) {
+            mapChangedWatch.push(lastSprite);
         }
     }
 }
 
-function appendMovable(sprite) {
+function appendSprite(sprite) {
     sprite.tile = getTile(sprite.x, sprite.y);
-    movables.push(sprite);
+    sprites.push(sprite);
     if (sprite instanceof DebugSprite) { return }
     mapChanged();
 }
 
-function unappendMovable(sprite) {
-    movables.splice(movables.indexOf(sprite), 1);
+function unappendSprite(sprite) {
+    sprites.splice(sprites.indexOf(sprite), 1);
     if (sprite instanceof DebugSprite) { return }
     mapChanged();
 }
 
 function mapChanged() {
-    for (const movable of mapChangedWatch) {
-        movable.mapChanged = true;
+    for (const sprite of mapChangedWatch) {
+        sprite.mapChanged = true;
     }
     isMapChanged = true;
 }
@@ -363,26 +349,24 @@ function closeFullscreen() {
  * @param {...Class} targetClasses  - The class that you wish to find, example: Tree
  * @returns {Array<Vector>}
  */
-function pathFind(maxIterations, range, sprite, ...targetClasses) {
+function pathFind(range, sprite, ...targetClasses) {
+    const maxIterations = 3 * range * range / tileSize / tileSize;
     if (isMapChanged) {
         collisionCheckedMap.clear();
         isMapChanged = false;
     }
 
-    let time = Date.now();
-    const targets = findClosestTargets(sprite.x, sprite.y, range, ...targetClasses);
+    const targets = sprite.findRangedTargetsSorted(range, ...targetClasses);
     const startTile = getTile(sprite.x, sprite.y);
     let path = [];
 
     for (const target of targets) {
         path = astar(maxIterations, startTile, target.tile, sprite, ...targetClasses);
         if (path != 0) {
-            console.log("Time taken: " + (Date.now() - time) + "ms");
             return path;
         }
     }
 
-    console.log("Time taken: " + (Date.now() - time) + "ms");
     return path;
 }
 
@@ -428,7 +412,7 @@ function astar(maxIterations, start, end, sprite, ...targetClasses) {
                         { x: sprite.x, y: sprite.y },
                         { x: (neighbor.x + 0.5) * tileSize, y: (neighbor.y + 0.5) * tileSize },
                         collisionCheckedMap,
-                        ...targetClasses) && sprite.checkCollisionInRange(sprite.x, sprite.y, sprite.collide_range + tileSize)) {
+                        ...targetClasses) && !sprite.is) {
                         continue;
                     }
                 }
@@ -481,9 +465,9 @@ function checkCollisionAlongPath(sprite, startPoint, endPoint, collisionCheckedM
         const pointString = `${point.x},${point.y}`;
         if (!collisionCheckedMap.has(pointString)) {
             if (debugMode) {
-                appendMovable(new DebugSprite(point.x, point.y));
+                appendSprite(new DebugSprite(point.x, point.y));
             }
-            if (sprite.checkCollisionInRange(point.x, point.y, sprite.collide_range + tileSize, ...exclude)) {
+            if (sprite.isCollidingInRange(point.x, point.y, sprite.collide_range + tileSize, ...exclude)) {
                 collisionCheckedMap.set(pointString, true);
                 colliding = true;
             }

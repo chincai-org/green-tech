@@ -17,9 +17,11 @@ class Lumberjack extends BaseSprite {
         });
         this.path = [];
         this.pathfindCooldown = 0;
-        this.actionCooldown = 500;
+        this.actionCooldown = 1000;
         this.tickPerUpdate = 2;
+        this.onPath = false;
         this.mapChanged = true;
+        this.stallingScore = 0;
     }
 
 
@@ -27,21 +29,16 @@ class Lumberjack extends BaseSprite {
         this.pathfindCooldown -= this.deltaTime();
         this.actionCooldown -= this.deltaTime();
 
-        if (this.pathfindCooldown < 0 && this.mapChanged == true) {
-            this.mapChanged = false;
-            this.path = pathFind(1000, tileSize * 30, this, Tree, Sprout, Police);
-            if (this.path.length !== 0) {
-                this.pathfindCooldown = Math.sqrt((this.path[1].x * tileSize + tileSize / 2 - this.x) ** 2 +
-                    (this.path[1].y * tileSize + tileSize / 2 - this.y) ** 2) / this.speed;
-                this.mapChanged = true; // allowed to continue
-            }
-            else {
+        if (this.pathfindCooldown < 0 && !this.onPath) {
+            this.path = pathFind(tileSize * 20, this, Tree, Sprout, Police);
+            if (this.path.length < 1) {
                 this.pathfindCooldown = 2000;
             }
         }
 
 
-        if (this.path.length > 0) {
+        if (this.path.length > 1) {
+            this.onPath = true;
             if (this.path.length == 2) {
                 // target found do logic here
                 this.path = [];
@@ -49,18 +46,25 @@ class Lumberjack extends BaseSprite {
                 return;
             }
 
-            this.move(
-                // Move to center of next path
-                this.path[1].x * tileSize + tileSize / 2 - this.x,
-                this.path[1].y * tileSize + tileSize / 2 - this.y
-            );
+            if (this.moveToTile(this.path[1].x, this.path[1].y)) {
+                if (!this.mapChanged) {
+                    this.path.shift();
+                }
+                else {
+                    this.mapChanged = false;
+                    this.path = pathFind(tileSize * 20, this, Tree, Sprout, Police);
+                }
+            }
+        }
+        else {
+            this.onPath = false;
         }
 
         if (this.actionCooldown < 0) {
-            let tryFindTarget = findClosestTargets(this.x, this.y, tileSize * 2, Sprout, Tree, Police);
+            let tryFindTarget = this.findRangedTargetsSorted(tileSize * 2, Sprout, Tree, Police);
             if (tryFindTarget.length > 0) {
                 const target = tryFindTarget[0];
-                if (target instanceof Tree && Tile.tileWithSprite.has(target.tile)) {
+                if (target instanceof Tree) {
                     // Chop tree
                     if (target.hasGrown) {
                         target.tile.remove();
@@ -69,16 +73,14 @@ class Lumberjack extends BaseSprite {
                 else if (target instanceof Police) {
                     // Kill police
                     target.parent.spawned--;
-                    unappendMovable(target);
+                    unappendSprite(target);
                 }
                 else if (target instanceof Sprout) {
                     // Push sprout
-                    sprout.moveObjQueue.push({
-                        x: sprout.x - this.x, y: sprout.y - this.y
-                    })
+                    target.moveBy((sprout.x - this.x) * 1.5, (sprout.y - this.y) * 1.5, 200);
                 }
             }
-            this.actionCooldown = 2000;
+            this.actionCooldown = 1000;
         }
     }
 }

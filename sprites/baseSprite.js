@@ -22,7 +22,7 @@ class BaseSprite {
         this.tickPerUpdate = 1;
         this.tickPassed = 0;
         this.name = config.name;
-        this.moveObjQueue = [];
+        this.animation = null;
         // [vector: Vector2D, boolean: checkCollision]
         // This setup allows other sprites to move it without refrencing deltaTime
     }
@@ -52,10 +52,32 @@ class BaseSprite {
      * @param {Int} x - The x direction to move to
      * @param {Int} y - The y direction to move to
      */
-    move(x, y) {
-        this._move(x, y);
+    move(x, y, speed = this.speed) {
+        this._move(x, y, speed);
+        this.checkMapChange();
+    }
 
-        // Update the tile
+    moveBy(x, y, t) {
+        let distance = Math.hypot(x, y);
+        let speed = distance / t;
+        this.animation = { x: x, y: y, speed: speed, time: t };
+        this.checkMapChange();
+    }
+
+    moveTo(x, y) {
+        this._move(x - this.x, y - this.y, this.speed);
+        if (this.distanceHyp(x, y) < 3) {
+            return true;
+        }
+        this.checkMapChange();
+        return false;
+    }
+
+    moveToTile(x, y) {
+        return this.moveTo(x * tileSize + tileSize / 2, y * tileSize + tileSize / 2)
+    }
+
+    checkMapChange() {
         let currTile = getTile(this.x, this.y);
         if (this.tile != currTile) {
             this.tile = getTile(this.x, this.y);
@@ -84,8 +106,8 @@ class BaseSprite {
                 // Do custom debugging logic here
                 // check if multiple sprite in same position
                 let samePos = 0;
-                for (const movable of movables) {
-                    if (movable.x == this.x && movable.y == this.y) {
+                for (const sprite of sprites) {
+                    if (sprite.x == this.x && sprite.y == this.y) {
                         samePos++;
                     }
                 }
@@ -120,42 +142,42 @@ class BaseSprite {
      * Update the sprite
      */
     _tick() {
+        // handle animation
+        if (this.animation && this.animation.time > 0) {
+            this.move(this.animation.x, this.animation.y, this.animation.speed, this.animation);
+            this.animation.time -= this.deltaTime();
+        }
     }
 
     /**
-     * @param {Vector} [vector] - The direction to move to
+     * @param {Int} x - The x direction to move to
+     * @param {Int} y - The y direction to move to
      * @param {Boolean} checkCollision - Check for collision when moving if then stop
      */
-    _move(x, y) {
+    _move(x, y, speed) {
         const deltaTime = this.deltaTime();
-        this.moveObjQueue.push({ x, y });
         // Handle queued up movement
-        while (this.moveObjQueue.length > 0) {
-            const moveObj = this.moveObjQueue.pop();
-            let vectDist = Math.hypot(moveObj.x, moveObj.y);
-            const newX = this.x +
-                this.speed *
-                deltaTime *
-                (vectDist == 0 ? moveObj.x : moveObj.x / vectDist);
-            const newY = this.y +
-                this.speed *
-                deltaTime *
-                (vectDist == 0 ? moveObj.y : moveObj.y / vectDist);
-            if (inBoundOfMap(newX, newY)) {
-                // cliping in map
-                if (this.checkCollisionInRange(this.x, this.y, this.collide_range + tileSize)) {
-                    this.x = newX;
-                    this.y = newY;
-                    continue;
-                }
-                if (!this.checkCollisionInRange(newX, this.y, this.collide_range + tileSize)) {
-                    this.x = newX;
-                }
-                if (!this.checkCollisionInRange(this.x, newY, this.collide_range + tileSize)) {
-                    this.y = newY;
-                }
+        let vectDist = Math.hypot(x, y);
+        const newX = this.x +
+            speed *
+            deltaTime *
+            (vectDist == 0 ? x : x / vectDist);
+        const newY = this.y +
+            speed *
+            deltaTime *
+            (vectDist == 0 ? y : y / vectDist);
+        if (inBoundOfMap(newX, newY)) {
+            // cliping in map
+            if (this.isCollidingInRange(this.x, this.y, this.collide_range + tileSize)) {
+                this.x = newX;
+                this.y = newY;
             }
-
+            if (!this.isCollidingInRange(newX, this.y, this.collide_range + tileSize)) {
+                this.x = newX;
+            }
+            if (!this.isCollidingInRange(this.x, newY, this.collide_range + tileSize)) {
+                this.y = newY;
+            }
         }
     }
 
@@ -170,6 +192,12 @@ class BaseSprite {
             x: this.x - x, y: this.y - y
         };
     }
+
+    distanceHyp(x, y) {
+        return Math.sqrt((this.x - x) ** 2 + (this.y - y) ** 2);
+    }
+
+
 
     /**
      *
@@ -224,54 +252,22 @@ class BaseSprite {
     }
 
     /**
-     * Find hypothetical collision with any movables
-     * @param {number} x - Hypothetical x-coordinate
-     * @param {number} y - Hypothetical y-coordinate
-     * @param {...BaseSprite} excluding - Sprites to exclude from collision check
-     * @returns {BaseSprite | null} Sprite that is colliding otherwise null
-     */
-    isCollidingMovables(x, y, ...excluding) {
-        for (const movable of movables) {
-            if (anyInstance(movable, excluding)) continue;
-            if (movable !== this && this.isColliding(movable, x, y)) {
-                return movable;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Find hypothetical collision with any sprite in a tile
-     * @param {number} x - Hypothetical x-coordinate
-     * @param {number} y - Hypothetical y-coordinate
-     * @param {...BaseSprite} excluding - Sprites to exclude from collision check
-     * @returns {BaseSprite | null} Sprite in a tile that is colliding otherwise null
-     */
-    isCollidingTileSprite(x, y, ...excluding) {
-        for (const tile of Array.from(Tile.tileWithSprite)) {
-            if (tile.sprite && tile.sprite !== this) {
-                if (anyInstance(tile.sprite, excluding)) continue;
-                if (this.isColliding(tile.sprite, x, y)) {
-                    return tile.sprite;
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Find hypothetical collision with any sprite either movables, tiled sprite
+     * Find hypothetical collision with any sprite 
      * @param {number} x - Hypothetical x-coordinate
      * @param {number} y - Hypothetical y-coordinate
      * @param {...BaseSprite} excluding - Sprites to exclude from collision check
      * @returns {BaseSprite | null} Sprite in a tile that is colliding
      */
-    isCollidingAnySprite(x, y, ...excluding) {
-        let collidingSprite = this.isCollidingMovables(x, y, ...excluding) ||
-            this.isCollidingTileSprite(x, y, ...excluding)
-        return collidingSprite;
+    isCollidingAnySprite(x = this.x, y = this.y, ...excluding) {
+        for (const sprite of sprites) {
+            if (sprite == this) continue;
+            if (anyInstance(sprite, excluding)) continue;
+            if (this.isColliding(sprite, x, y)) {
+                return sprite;
+            }
+        }
+        return null;
     }
-
 
     /**
      * Find collision in a range using tile
@@ -280,8 +276,8 @@ class BaseSprite {
      * @param {number} range - Radius for search
      * @returns {BaseSprite} Sprite that is colliding
      */
-    checkCollisionInRange(x, y, range, ...excluding) {
-        const targets = findClosestTargets(x, y, range);
+    isCollidingInRange(x, y, range, ...excluding) {
+        const targets = findRangedTargets(x, y, range);
         for (const target of targets) {
             if (this.isColliding(target, x, y, ...excluding)) {
                 return true;
@@ -289,30 +285,27 @@ class BaseSprite {
         }
         return false;
     }
+
+    /**
+     * Find closest neighbour tile by searching spirarly
+     * @param {number} range - Radius for search
+     * @param {...BaseSprite} targetClasses - Classes to target, all if empty
+     * @returns {Array<BaseSprite>} Sprite sorted from distance
+     */
+
+    findRangedTargetsSorted(range, ...targetClasses) {
+        return findRangedTargets(this.x, this.y, range, ...targetClasses).sort((a, b) => this.distanceHyp(a.x, a.y) - this.distanceHyp(b.x, b.y));
+    }
+}
+
+function findRangedTargets(x, y, range, ...targetClasses) {
+    return findTargets(...targetClasses).filter(target => distance(x, y, target.x, target.y) <= range);
 }
 
 function distance(x1, y1, x2, y2) {
     return Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2);
 }
 
-/**
-     * Find closest neighbour tile by searching spirarly
-     * @param {number} x - Hypothetical x-coordinate
-     * @param {number} y - Hypothetical y-coordinate
-     * @param {number} range - Radius for search
-     * @param {...BaseSprite} targetClasses - Classes to target, all if empty
-     * @returns {Array<BaseSprite>} Sprite sorted from distance
-     */
-function findClosestTargets(x, y, range, ...targetClasses) {
-    const targets = findTargets(...targetClasses);
-
-    const filteredTargets = targets.filter(target => distance(x, y, target.x, target.y) <= range);
-
-    filteredTargets.sort((a, b) => distance(x, y, a.x, b.y) - distance(x, y, b.x, b.y));
-
-    return filteredTargets;
-
-}
 
 /**
  * Find sprite that is in the targetClasses
@@ -322,25 +315,13 @@ function findClosestTargets(x, y, range, ...targetClasses) {
 function findTargets(...targetClasses) {
     const targetSprite = [];
     if (targetClasses.length == 0) {
-        for (const tile of Tile.tileWithSprite) {
-            targetSprite.push(tile.sprite);
-        }
-        for (const movable of movables) {
-            targetSprite.push(movable);
-        }
-        return targetSprite;
+        return sprites;
     }
 
-    for (const tile of Tile.tileWithSprite) {
-        if (anyInstance(tile.sprite, targetClasses)) {
-            targetSprite.push(tile.sprite);
+    for (const sprite of sprites) {
+        if (anyInstance(sprite, targetClasses)) {
+            targetSprite.push(sprite);
         }
-    }
-    for (const movable of movables) {
-        if (anyInstance(movable, targetClasses)) {
-            targetSprite.push(movable);
-        }
-
     }
     return targetSprite;
 }

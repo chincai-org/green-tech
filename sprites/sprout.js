@@ -39,6 +39,13 @@ class Sprout extends BaseSprite {
             Math.min(this.y, gridHeight * tileSize - windowHeight / 2),
             windowHeight / 2
         );
+
+
+        // handle animation
+        if (this.animation && this.animation.time > 0) {
+            this.move(this.animation.x, this.animation.y, this.animation.speed, this.animation);
+            this.animation.time -= this.deltaTime();
+        }
     }
 
     chopWood() {

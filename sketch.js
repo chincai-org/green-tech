@@ -407,23 +407,13 @@ function astar(maxIterations, start, end, sprite, ...targetClasses) {
             const tentativeG = current.g + 1; // Assuming each step costs 1
 
             if (!arrayExistVector(heap.heap, neighbor)) {
-                if (current == start) {
-                    if (checkCollisionAlongPath(sprite,
-                        { x: sprite.x, y: sprite.y },
-                        { x: (neighbor.x + 0.5) * tileSize, y: (neighbor.y + 0.5) * tileSize },
-                        collisionCheckedMap,
-                        ...targetClasses) && !sprite.isCollidingInRange(sprite.x, sprite.y, sprite.collide_range + tileSize)) {
-                        continue;
-                    }
-                }
-                else {
-                    if (checkCollisionAlongPath(sprite,
+                if (checkCollisionAlongPath(sprite,
+                    current == start ? { x: sprite.x, y: sprite.y } :
                         { x: (current.x + 0.5) * tileSize, y: (current.y + 0.5) * tileSize },
-                        { x: (neighbor.x + 0.5) * tileSize, y: (neighbor.y + 0.5) * tileSize },
-                        collisionCheckedMap,
-                        ...targetClasses)) {
-                        continue;
-                    }
+                    { x: (neighbor.x + 0.5) * tileSize, y: (neighbor.y + 0.5) * tileSize },
+                    collisionCheckedMap,
+                    ...targetClasses)) {
+                    continue;
                 }
                 neighbor.g = tentativeG;
                 neighbor.h = heuristic(neighbor, end);

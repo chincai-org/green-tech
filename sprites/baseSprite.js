@@ -22,18 +22,9 @@ class BaseSprite {
         this.tickPerUpdate = 1;
         this.tickPassed = 0;
         this.name = config.name;
-        this.animation = null;
-        // [vector: Vector2D, boolean: checkCollision]
-        // This setup allows other sprites to move it without refrencing deltaTime
-    }
-
-    /**
-     * Update the sprite
-     * @returns {Number} Time in milliseconds since last update
-     */
-    deltaTime() {
-        const deltaTime = Date.now() - this.lastUpdate;
-        return (deltaTime > maxDeltaTime) ? 0 : deltaTime;
+        this.animation = { x: 0, y: 0, speed: 0, time: 0 };
+        this.deltaTime = 0;
+        this.idleTime = 0;
     }
 
     /**
@@ -43,7 +34,22 @@ class BaseSprite {
         this.tickPassed++;
         if (this.tickPassed >= this.tickPerUpdate) {
             this.tickPassed = 0;
+            const deltaTime = Date.now() - this.lastUpdate;
+            if (deltaTime < maxDeltaTime) {
+                this.deltaTime = deltaTime;
+            }
+            else {
+                this.deltaTime = 0;
+            }
+            const lastX = this.x;
+            const lastY = this.y;
             this._tick();
+            if (lastX == this.x && lastY == this.y) {
+                this.idleTime += deltaTime;
+            }
+            else {
+                this.idleTime = 0;
+            }
             this.lastUpdate = Date.now();
         }
     }
@@ -54,14 +60,12 @@ class BaseSprite {
      */
     move(x, y, speed = this.speed) {
         this._move(x, y, speed);
-        this.checkMapChange();
     }
 
     moveBy(x, y, t) {
         let distance = Math.hypot(x, y);
         let speed = distance / t;
         this.animation = { x: x, y: y, speed: speed, time: t };
-        this.checkMapChange();
     }
 
     moveTo(x, y) {
@@ -69,7 +73,6 @@ class BaseSprite {
         if (this.distanceHyp(x, y) < 3) {
             return true;
         }
-        this.checkMapChange();
         return false;
     }
 
@@ -143,9 +146,9 @@ class BaseSprite {
      */
     _tick() {
         // handle animation
-        if (this.animation && this.animation.time > 0) {
+        if (this.animation.time > 0) {
             this.move(this.animation.x, this.animation.y, this.animation.speed, this.animation);
-            this.animation.time -= this.deltaTime();
+            this.animation.time -= this.deltaTime;
         }
     }
 
@@ -155,16 +158,15 @@ class BaseSprite {
      * @param {Boolean} checkCollision - Check for collision when moving if then stop
      */
     _move(x, y, speed) {
-        const deltaTime = this.deltaTime();
         // Handle queued up movement
         let vectDist = Math.hypot(x, y);
         const newX = this.x +
             speed *
-            deltaTime *
+            this.deltaTime *
             (vectDist == 0 ? x : x / vectDist);
         const newY = this.y +
             speed *
-            deltaTime *
+            this.deltaTime *
             (vectDist == 0 ? y : y / vectDist);
         if (inBoundOfMap(newX, newY)) {
             // cliping in map
@@ -179,6 +181,8 @@ class BaseSprite {
                 this.y = newY;
             }
         }
+
+        this.checkMapChange();
     }
 
     /**

@@ -57,7 +57,7 @@ class Sprout extends BaseSprite {
                 tileGrid[neighbor.y][neighbor.x].sprite.hasGrown === true &&
                 resource < parseInt(document.getElementsByClassName('progress-bar')[0].dataset.number.split('/')[1])
             ) {
-                tileGrid[neighbor.y][neighbor.x].remove();
+                unappendSprite(tileGrid[neighbor.y][neighbor.x].sprite);
 
                 resource += 2;
 

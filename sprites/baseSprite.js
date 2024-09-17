@@ -25,6 +25,16 @@ class BaseSprite {
         this.animation = { x: 0, y: 0, speed: 0, time: 0 };
         this.deltaTime = 0;
         this.idleTime = 0;
+        this.onTile = false;
+    }
+
+    static _ref = null;
+
+    static ref() {
+        if (!BaseSprite._ref) {
+            BaseSprite._ref = new BaseSprite(0, 0);
+        }
+        return BaseSprite._ref;
     }
 
     /**
@@ -69,24 +79,38 @@ class BaseSprite {
     }
 
     moveTo(x, y) {
-        this._move(x - this.x, y - this.y, this.speed);
-        if (this.distanceHyp(x, y) < 3) {
+        if (this.distanceHyp(x, y) < tileSize / 4) {
             return true;
         }
-        return false;
+        else {
+            this._move(x - this.x, y - this.y, this.speed);
+            return false;
+        }
     }
 
     moveToTile(x, y) {
         return this.moveTo(x * tileSize + tileSize / 2, y * tileSize + tileSize / 2)
     }
 
-    checkMapChange() {
+    checkMapChange(forced) {
         let currTile = getTile(this.x, this.y);
-        if (this.tile != currTile) {
-            this.tile = getTile(this.x, this.y);
-            if (this instanceof Lumberjack) {
-                return;
-            }
+        let oldTileToCheck = findNeighbour(this.tile);
+        if (this.tile != currTile || forced) {
+            this.tile = currTile;
+
+            // hard coded for lumberjack
+            let tileToCheck = findNeighbour(this.tile);
+            let center = this.tile.center();
+            navMesh.set(this.tile, Lumberjack.ref().isCollidingInRange(center.x, center.y, Lumberjack.ref().collide_range + tileSize));
+
+            const processTile = (tile) => {
+                let center = centerFromCoord(tile.x, tile.y);
+                navMesh.set(tileGrid[tile.y][tile.x], Lumberjack.ref().isCollidingInRange(center.x, center.y, Lumberjack.ref().collide_range + tileSize));
+            };
+
+            oldTileToCheck.forEach(tile => processTile(tile));
+            tileToCheck.forEach(tile => processTile(tile));
+
             mapChanged();
         }
     }
@@ -284,10 +308,10 @@ class BaseSprite {
         const targets = findRangedTargets(x, y, range);
         for (const target of targets) {
             if (this.isColliding(target, x, y, ...excluding)) {
-                return true;
+                return target;
             }
         }
-        return false;
+        return null;
     }
 
     /**

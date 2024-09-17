@@ -14,12 +14,16 @@ let widthRatio = winWidth / constWinWidth;
 let heightRatio = winHeight / constWinHeight;
 
 const fullScreenElement = document.documentElement;
-const sprites = []
+const sprites = [];
 let sprout = null;
 const mapChangedWatch = [];
 const gridWidth = 100;
 const gridHeight = 100;
 const tileGrid = [];
+
+// hardcode for lumberjack
+const navMesh = new Map();
+
 let tileSize = (constWinWidth * widthRatio) / 30;
 // let song;
 
@@ -33,7 +37,6 @@ let startTileX;
 let startTileY;
 let endTileX;
 let endTileY;
-let tileBuffer = 2;
 
 let resource = 50;
 let energy = 1000;
@@ -45,10 +48,11 @@ let lastPollute;
 const maxDelta = 4;
 const maxDeltaTime = 200;
 let delta = 0;
-const tickSpeed = 60;
+const tickSpeed = 120;
 const msBetweenTicks = 1000 / tickSpeed;
-const collisionCheckedMap = new Map();
-let isMapChanged = false;
+let tps = 0;
+let ticks = 0;
+let timeSinceLastSecond = 0;
 
 function windowResized() {
     let changeInWidth = window.innerWidth / winWidth;
@@ -82,6 +86,7 @@ function setup() {
     canvas.mouseClicked(canvasClicked);
 
     initGrid();
+    initNavMesh();
 
     // bgsong();
 
@@ -92,6 +97,17 @@ function setup() {
     appendSprite(sprout);
 }
 
+function inDrawRange(point, camX, camY) {
+    let camViewLeft = camX - windowWidth / 2;
+    let camViewRight = camX + windowWidth / 2;
+    let camViewTop = camY - windowHeight / 2;
+    let camViewBottom = camY + windowHeight / 2;
+    if (point.x >= camViewLeft - tileSize && point.x <= camViewRight + tileSize && point.y >= camViewTop - tileSize && point.y <= camViewBottom + tileSize) {
+        return true;
+    }
+    return false;
+}
+
 function draw() {
     background(0);
 
@@ -100,34 +116,38 @@ function draw() {
 
     // Game tick
     delta += deltaTime / msBetweenTicks;
-    if (delta > maxDelta) delta = maxDelta;
+    if (delta > maxDelta) {
+        delta = maxDelta;
+    }
 
     while (delta >= 1) {
         gameTick();
+        ticks++;
         delta--;
     }
 
+    let lumberjackCount = 0;
+    for (const sprite of sprites) {
+        if (sprite instanceof Lumberjack) {
+            lumberjackCount++;
+        }
+    }
+
+    timeSinceLastSecond += deltaTime;
+    if (timeSinceLastSecond >= 1000) {
+        tps = ticks;
+        ticks = 0;
+        timeSinceLastSecond = 0;
+        console.log("TPS:", tps, "Lumberjack count:", lumberjackCount, "lag", tickSpeed - tps, "lag/lum:", (tickSpeed - tps) / lumberjackCount);
+    }
 
     drawGridLine();
 
     for (const sprite of sprites) {
-        sprite.draw();
+        if (inDrawRange(sprite, camX, camY)) {
+            sprite.draw();
+        }
     }
-
-    let startX = camX - windowWidth / 2;
-    let startY = camY - windowHeight / 2;
-    startTileX = Math.ceil(startX / tileSize);
-    startTileY = Math.ceil(startY / tileSize);
-
-    let endX = startX + windowWidth;
-    let endY = startY + windowHeight;
-    endTileX = Math.ceil(endX / tileSize);
-    endTileY = Math.ceil(endY / tileSize);
-
-    startTileX = (startTileX - tileBuffer < 0) ? startTileX : startTileX - tileBuffer;
-    endTileX = (endTileX + tileBuffer > gridWidth) ? endTileX : endTileX + tileBuffer;
-    startTileY = (startTileY - tileBuffer < 0) ? startTileY : startTileY - tileBuffer;
-    endTileY = (endTileY + tileBuffer < gridHeight) ? endTileY : endTileY + tileBuffer;
 
     // Check if last pollute is a minute ago
     if (now - lastPollute > 60000) {
@@ -138,6 +158,21 @@ function draw() {
     }
 
     lastUpdate = now;
+
+    if (debugMode) {
+        for (const tile of navMesh.keys()) {
+            let center = centerFromCoord(tile.x, tile.y);
+            if (inDrawRange(center, camX, camY)) {
+                if (navMesh.get(tile)) {
+                    fill(255, 0, 0);
+                }
+                else {
+                    fill(0, 0, 255);
+                }
+                circle(center.x - camX + windowWidth / 2, center.y - camY + windowHeight / 2, 5);
+            }
+        }
+    }
 
     uiUpdate();
 }
@@ -192,70 +227,79 @@ function canvasClicked() {
 
     let tile = getTile(realX, realY);
 
-    if (tile.sprite != null) {
-        return;
-    }
-
     switch (hotkey) {
         case 0:
             if (resource >= 1) {
-                tile.add(new Tree(0, 0));
-                resource -= 1
+                if (appendSprite(new Tree(0, 0), tile)) {
+                    resource -= 1;
+                }
             }
             break;
         case 1:
-            tile.add(new PoliceStation(0, 0));
+            appendSprite(new PoliceStation(0, 0), tile);
             break;
         case 2:
-            let newLumberjack = new Lumberjack(realX, realY);
-            appendSprite(newLumberjack);
+            appendSprite(new Lumberjack(realX, realY));
             break;
         case 3:
-            tile.add(new Rock(0, 0));
+            appendSprite(new Rock(0, 0), tile);
             break;
         default:
             return;
     }
-
-    // Remove if colliding with any sprite
-    let lastSprite = sprites[sprites.length - 1]
-    if (lastSprite.isCollidingAnySprite()) {
-        if (tile.sprite) {
-            if (lastSprite.name == "Tree") {
-                resource += 1;
-            }
-            tile.remove();
-        }
-        else {
-            unappendSprite(lastSprite);
-        }
-    }
-    else {
-        if (lastSprite instanceof Lumberjack) {
-            mapChangedWatch.push(lastSprite);
-        }
-    }
 }
 
-function appendSprite(sprite) {
-    sprite.tile = getTile(sprite.x, sprite.y);
-    sprites.push(sprite);
-    if (sprite instanceof DebugSprite) { return }
-    mapChanged();
+function appendSprite(sprite, tile = null) {
+    if (sprite instanceof DebugSprite) {
+        return;
+    }
+    if (tile) {
+        sprite.x = (tile.x + 0.5) * tileSize;
+        sprite.y = (tile.y + 0.5) * tileSize;
+    }
+
+    if (sprite.isCollidingAnySprite() || tile?.sprite != null) {
+        console.info("cannot append sprite, colliding with other sprite");
+        return false;
+    }
+    else {
+        if (tile) {
+            tile.add(sprite);
+        }
+        sprite.tile = getTile(sprite.x, sprite.y);
+        sprites.push(sprite);
+
+        if (sprite instanceof Lumberjack) {
+            mapChangedWatch.push(sprite);
+        }
+        sprite.checkMapChange(true);
+        return true;
+    }
+
 }
 
 function unappendSprite(sprite) {
+    if (sprite instanceof DebugSprite) {
+        return;
+    }
+
     sprites.splice(sprites.indexOf(sprite), 1);
-    if (sprite instanceof DebugSprite) { return }
-    mapChanged();
+    if (sprite instanceof Lumberjack) {
+        mapChangedWatch.splice(mapChangedWatch.indexOf(sprite), 1);
+    }
+
+    if (sprite.onTile) {
+        sprite.tile.remove();
+    }
+    sprite.checkMapChange(true);
 }
 
 function mapChanged() {
     for (const sprite of mapChangedWatch) {
         sprite.mapChanged = true;
     }
-    isMapChanged = true;
 }
+
 
 function initGrid() {
     for (let y = 0; y < gridHeight; y++) {
@@ -269,6 +313,15 @@ function initGrid() {
         tileGrid.push(row);
     }
 }
+
+function initNavMesh() {
+    for (let y = 0; y < gridHeight; y++) {
+        for (let x = 0; x < gridWidth; x++) {
+            navMesh.set(tileGrid[y][x], false);
+        }
+    }
+}
+
 
 function inBoundOfGrid(tileX, tileY) {
     return (
@@ -351,17 +404,13 @@ function closeFullscreen() {
  */
 function pathFind(range, sprite, ...targetClasses) {
     const maxIterations = 3 * range * range / tileSize / tileSize;
-    if (isMapChanged) {
-        collisionCheckedMap.clear();
-        isMapChanged = false;
-    }
 
     const targets = sprite.findRangedTargetsSorted(range, ...targetClasses);
     const startTile = getTile(sprite.x, sprite.y);
     let path = [];
 
     for (const target of targets) {
-        path = astar(maxIterations, startTile, target.tile, sprite, ...targetClasses);
+        path = astar(maxIterations, startTile, target.tile, ...targetClasses);
         if (path != 0) {
             return path;
         }
@@ -370,7 +419,7 @@ function pathFind(range, sprite, ...targetClasses) {
     return path;
 }
 
-function astar(maxIterations, start, end, sprite, ...targetClasses) {
+function astar(maxIterations, start, end, ...targetClasses) {
     start.g = 0;
     let closedSet = [];
     let heap = new MinHeap();
@@ -407,13 +456,24 @@ function astar(maxIterations, start, end, sprite, ...targetClasses) {
             const tentativeG = current.g + 1; // Assuming each step costs 1
 
             if (!arrayExistVector(heap.heap, neighbor)) {
-                if (checkCollisionAlongPath(sprite,
-                    current == start ? { x: sprite.x, y: sprite.y } :
-                        { x: (current.x + 0.5) * tileSize, y: (current.y + 0.5) * tileSize },
-                    { x: (neighbor.x + 0.5) * tileSize, y: (neighbor.y + 0.5) * tileSize },
-                    collisionCheckedMap,
-                    ...targetClasses)) {
+                let neighborTile = tileGrid[neighbor.y][neighbor.x];
+                let blockage = navMesh.get(neighborTile);
+                if (blockage && !anyInstance(blockage, targetClasses)) {
                     continue;
+                }
+                else {
+                    // diaonal check ajacent tile
+                    let dy = neighbor.y - current.y;
+                    let dx = neighbor.x - current.x;
+                    if (abs(dy) + abs(dx) == 2) {
+                        let tile1 = tileGrid[current.y][neighbor.x];
+                        let tile2 = tileGrid[neighbor.y][current.x];
+                        let blockage1 = navMesh.get(tile1);
+                        let blockage2 = navMesh.get(tile2);
+                        if ((blockage1 && !anyInstance(blockage1, targetClasses)) || (blockage2 && !anyInstance(blockage2, targetClasses))) {
+                            continue;
+                        }
+                    }
                 }
                 neighbor.g = tentativeG;
                 neighbor.h = heuristic(neighbor, end);
@@ -446,54 +506,6 @@ function arrayExistVector(array, tileTarget) {
         }
     }
     return false;
-}
-
-function checkCollisionAlongPath(sprite, startPoint, endPoint, collisionCheckedMap, ...exclude) {
-    const intermediatePoints = generatePointsOnLine(startPoint, endPoint);
-    let colliding = false;
-    for (const point of intermediatePoints) {
-        const pointString = `${point.x},${point.y}`;
-        if (!collisionCheckedMap.has(pointString)) {
-            if (debugMode) {
-                appendSprite(new DebugSprite(point.x, point.y));
-            }
-            if (sprite.isCollidingInRange(point.x, point.y, sprite.collide_range + tileSize, ...exclude)) {
-                collisionCheckedMap.set(pointString, true);
-                colliding = true;
-            }
-            else {
-                collisionCheckedMap.set(pointString, false);
-            }
-        }
-        else {
-            colliding = collisionCheckedMap.get(pointString);
-        }
-    }
-    return colliding;
-}
-
-function generatePointsOnLine(startPoint, endPoint) {
-    const points = [];
-    const dx = endPoint.x - startPoint.x;
-    const dy = endPoint.y - startPoint.y;
-    const increment = tileSize / 2;
-    let numberOfPoints = Math.floor(Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) / increment);
-    if (numberOfPoints === 0) {
-        numberOfPoints = 1;
-    }
-    const incrementX = dx / numberOfPoints;
-    const incrementY = dy / numberOfPoints;
-
-    let x = startPoint.x
-    let y = startPoint.y
-
-    for (let i = 0; i < numberOfPoints; i++) {
-        points.push({ x: roundToNearest(x, 5), y: roundToNearest(y, 5) });
-        x += incrementX;
-        y += incrementY;
-    }
-
-    return points;
 }
 
 function roundToNearest(value, place) {

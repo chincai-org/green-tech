@@ -72,7 +72,7 @@ class Lumberjack extends BaseSprite {
                 if (target instanceof Tree) {
                     // Chop tree
                     if (target.hasGrown) {
-                        target.tile.remove();
+                        unappendSprite(target);
                     }
                 }
                 else if (target instanceof Police) {

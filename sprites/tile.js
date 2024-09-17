@@ -21,22 +21,30 @@ class Tile extends BaseSprite {
 
         if (sprite) {
             this.sprite.tile = this;
-            this.sprite.x = (this.x + 0.5) * tileSize;
-            this.sprite.y = (this.y + 0.5) * tileSize;
-            appendSprite(this.sprite);
+            this.sprite.onTile = true;
         }
-        mapChanged();
     }
 
     remove() {
         if (this.sprite) {
-            unappendSprite(this.sprite);
-            this.sprite.tile = null;
             this.sprite = null;
         }
-        mapChanged();
     }
 
+    center() {
+        return {
+            x: (this.x + 0.5) * tileSize,
+            y: (this.y + 0.5) * tileSize
+        }
+    }
+
+}
+
+function centerFromCoord(x, y) {
+    return {
+        x: (x + 0.5) * tileSize,
+        y: (y + 0.5) * tileSize
+    }
 }
 
 /**

@@ -46,7 +46,7 @@ let lastPollute;
 
 // Game tick
 let maxDelta = 4;
-const maxDeltaTime = 200;
+const maxDeltaTime = 100;
 let delta = 0;
 let tickSpeed = 120;
 let msBetweenTicks = 1000 / tickSpeed;
@@ -118,9 +118,7 @@ function draw() {
     let deltaTime = now - lastUpdate;
 
     // Game tick
-    if (deltaTime < maxDeltaTime) {
-        delta += deltaTime / msBetweenTicks;
-    }
+    delta += deltaTime / msBetweenTicks;
     if (delta > maxDelta) {
         delta = maxDelta;
     }

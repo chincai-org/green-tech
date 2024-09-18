@@ -32,7 +32,7 @@ class BaseSprite {
 
     static ref() {
         if (!BaseSprite._ref) {
-            BaseSprite._ref = new BaseSprite(0, 0);
+            BaseSprite._ref = new this(0, 0);
         }
         return BaseSprite._ref;
     }
@@ -100,14 +100,13 @@ class BaseSprite {
 
             // hard coded for lumberjack
             let tileToCheck = findNeighbour(this.tile);
-            let center = this.tile.center();
-            navMesh.set(this.tile, Lumberjack.ref().isCollidingInRange(center.x, center.y, Lumberjack.ref().collide_range + tileSize));
 
             const processTile = (tile) => {
                 let center = centerFromCoord(tile.x, tile.y);
                 navMesh.set(tileGrid[tile.y][tile.x], Lumberjack.ref().isCollidingInRange(center.x, center.y, Lumberjack.ref().collide_range + tileSize));
             };
 
+            processTile(this.tile);
             oldTileToCheck.forEach(tile => processTile(tile));
             tileToCheck.forEach(tile => processTile(tile));
 

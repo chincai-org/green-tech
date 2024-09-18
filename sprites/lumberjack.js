@@ -24,6 +24,7 @@ class Lumberjack extends BaseSprite {
         this.maxIdleTime = 5000;
     }
 
+    static pathFindRange = 20;
 
     _tick() {
         this.pathfindCooldown -= this.deltaTime;
@@ -52,7 +53,7 @@ class Lumberjack extends BaseSprite {
                 }
                 else {
                     this.mapChanged = false;
-                    this.path = pathFind(tileSize * 20, this, Tree, Sprout, Police);
+                    this.path = pathFind(tileSize * Lumberjack.PathFindRange, this, Tree, Sprout, Police);
                 }
             }
 

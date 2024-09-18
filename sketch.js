@@ -45,14 +45,17 @@ let polluteRate = 10;
 let lastPollute;
 
 // Game tick
-const maxDelta = 4;
+let maxDelta = 4;
 const maxDeltaTime = 200;
 let delta = 0;
 const tickSpeed = 120;
 const msBetweenTicks = 1000 / tickSpeed;
 let tps = 0;
 let ticks = 0;
-let timeSinceLastSecond = 0;
+let lagRecord = false;
+let stepAmmount = 1;
+let lastSecond = Date.now();
+let lastTick = 0;
 
 function windowResized() {
     let changeInWidth = window.innerWidth / winWidth;
@@ -133,12 +136,28 @@ function draw() {
         }
     }
 
-    timeSinceLastSecond += deltaTime;
-    if (timeSinceLastSecond >= 1000) {
-        tps = ticks;
-        ticks = 0;
-        timeSinceLastSecond = 0;
-        console.log("TPS:", tps, "Lumberjack count:", lumberjackCount, "lag", tickSpeed - tps, "lag/lum:", (tickSpeed - tps) / lumberjackCount);
+    const timePassed = Date.now() - lastSecond;
+    if (timePassed >= 1000) {
+        const tickPassed = ticks - lastTick;
+        const tps = (tickPassed / timePassed * 1000).toFixed(2);
+        const lag = (tickSpeed - tps).toFixed(2);
+        const lagPerLumberjack = (lag / lumberjackCount).toFixed(2);
+        if (lagRecord) {
+            console.log("TPS:", tps, "Lumberjack count:", lumberjackCount, "lag", lag, "lag/lum:", lagPerLumberjack);
+            const lagPercent = lag / tickSpeed * 100;
+            if (lagPercent > 80) {
+                console.log("Lag rached 80% of tick speed, stepAmmount:", stepAmmount, "maxDelta:", maxDelta, "range:", Lumberjack.pathFindRange);
+                console.log("Reached number of lumberjack: ", lumberjackCount);
+                lagRecord = false;
+            }
+            let center = { x: sprout.x, y: sprout.y };
+            for (let i = 0; i < stepAmmount; i++) {
+                // attempt to append new lumberjack
+                while (!appendSprite(new Lumberjack(center.x + randint(-Lumberjack.pathFindRange * tileSize, Lumberjack.pathFindRange * tileSize), center.y + randint(-Lumberjack.pathFindRange * tileSize, Lumberjack.pathFindRange * tileSize))));
+            }
+        }
+        lastSecond = Date.now();
+        lastTick = ticks;
     }
 
     drawGridLine();
@@ -294,6 +313,21 @@ function unappendSprite(sprite) {
     sprite.checkMapChange(true);
 }
 
+// empty every sprite except sprout
+function resetSprites() {
+    for (const sprite of sprites) {
+        if (sprite.onTile) {
+            sprite.tile.remove();
+        }
+    }
+    sprites.length = 0;
+    mapChangedWatch.length = 0;
+    navMesh.clear();
+    initNavMesh();
+    appendSprite(sprout);
+    sprout.checkMapChange(true);
+}
+
 function mapChanged() {
     for (const sprite of mapChangedWatch) {
         sprite.mapChanged = true;
@@ -394,6 +428,24 @@ function closeFullscreen() {
     } else if (document.msExitFullscreen) {
         document.msExitFullscreen();
     }
+}
+
+function lagProfileTest(steps = null, maxDeltaAsign = null, range = null) {
+    resetSprites();
+    lagRecord = true;
+    stepAmmount = steps || stepAmmount;
+    maxDelta = maxDeltaAsign || maxDelta;
+    Lumberjack.pathFindRange = range || Lumberjack.pathFindRange;
+
+    let centerTileCoord = { x: gridWidth / 2, y: gridHeight / 2 };
+    let center = centerFromCoord(centerTileCoord.x, centerTileCoord.y);
+    sprout.x = center.x;
+    sprout.y = center.y;
+    let neighbors = findNeighbour(centerTileCoord);
+    for (const neighbor of neighbors) {
+        appendSprite(new Rock(0, 0), tileGrid[neighbor.y][neighbor.x]);
+    }
+    return "Test started until reached 80% lag";
 }
 
 /**

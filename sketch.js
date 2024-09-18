@@ -49,7 +49,7 @@ let maxDelta = 4;
 const maxDeltaTime = 200;
 let delta = 0;
 let tickSpeed = 120;
-const msBetweenTicks = 1000 / tickSpeed;
+let msBetweenTicks = 1000 / tickSpeed;
 let tps = 0;
 let ticks = 0;
 let lagRecord = false;
@@ -438,6 +438,7 @@ function lagProfileTest(steps = null, _maxDelta = null, _tickSpeed = null, range
     stepamount = steps || stepamount;
     maxDelta = _maxDelta || maxDelta;
     tickSpeed = _tickSpeed || tickSpeed;
+    msBetweenTicks = 1000 / tickSpeed;
     Lumberjack.pathFindRange = range || Lumberjack.pathFindRange;
 
     let centerTileCoord = { x: gridWidth / 2, y: gridHeight / 2 };

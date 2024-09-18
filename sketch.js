@@ -48,12 +48,12 @@ let lastPollute;
 let maxDelta = 4;
 const maxDeltaTime = 200;
 let delta = 0;
-const tickSpeed = 120;
+let tickSpeed = 120;
 const msBetweenTicks = 1000 / tickSpeed;
 let tps = 0;
 let ticks = 0;
 let lagRecord = false;
-let stepAmmount = 1;
+let stepamount = 1;
 let lastSecond = Date.now();
 let lastTick = 0;
 
@@ -118,7 +118,9 @@ function draw() {
     let deltaTime = now - lastUpdate;
 
     // Game tick
-    delta += deltaTime / msBetweenTicks;
+    if (deltaTime < maxDeltaTime) {
+        delta += deltaTime / msBetweenTicks;
+    }
     if (delta > maxDelta) {
         delta = maxDelta;
     }
@@ -146,12 +148,12 @@ function draw() {
             console.log("TPS:", tps, "Lumberjack count:", lumberjackCount, "lag", lag, "lag/lum:", lagPerLumberjack);
             const lagPercent = lag / tickSpeed * 100;
             if (lagPercent > 80) {
-                console.log("Lag rached 80% of tick speed, stepAmmount:", stepAmmount, "maxDelta:", maxDelta, "range:", Lumberjack.pathFindRange);
+                console.log("Lag rached 80% of tick speed, stepamount:", stepamount, "maxDelta:", maxDelta, "range:", Lumberjack.pathFindRange);
                 console.log("Reached number of lumberjack: ", lumberjackCount);
                 lagRecord = false;
             }
             let center = { x: sprout.x, y: sprout.y };
-            for (let i = 0; i < stepAmmount; i++) {
+            for (let i = 0; i < stepamount; i++) {
                 // attempt to append new lumberjack
                 while (!appendSprite(new Lumberjack(center.x + randint(-Lumberjack.pathFindRange * tileSize, Lumberjack.pathFindRange * tileSize), center.y + randint(-Lumberjack.pathFindRange * tileSize, Lumberjack.pathFindRange * tileSize))));
             }
@@ -430,11 +432,12 @@ function closeFullscreen() {
     }
 }
 
-function lagProfileTest(steps = null, maxDeltaAsign = null, range = null) {
+function lagProfileTest(steps = null, _maxDelta = null, _tickSpeed = null, range = null) {
     resetSprites();
     lagRecord = true;
-    stepAmmount = steps || stepAmmount;
-    maxDelta = maxDeltaAsign || maxDelta;
+    stepamount = steps || stepamount;
+    maxDelta = _maxDelta || maxDelta;
+    tickSpeed = _tickSpeed || tickSpeed;
     Lumberjack.pathFindRange = range || Lumberjack.pathFindRange;
 
     let centerTileCoord = { x: gridWidth / 2, y: gridHeight / 2 };

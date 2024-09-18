@@ -45,12 +45,7 @@ class BaseSprite {
         if (this.tickPassed >= this.tickPerUpdate) {
             this.tickPassed = 0;
             const deltaTime = Date.now() - this.lastUpdate;
-            if (deltaTime < maxDeltaTime) {
-                this.deltaTime = deltaTime;
-            }
-            else {
-                this.deltaTime = 0;
-            }
+            this.deltaTime = deltaTime;
             const lastX = this.x;
             const lastY = this.y;
             this._tick();

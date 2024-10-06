@@ -33,6 +33,7 @@ class BaseSprite {
     static ref() {
         if (!BaseSprite._ref) {
             BaseSprite._ref = new this(0, 0);
+            refrences.push(BaseSprite._ref);
         }
         return BaseSprite._ref;
     }

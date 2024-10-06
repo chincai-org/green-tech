@@ -15,6 +15,7 @@ let heightRatio = winHeight / constWinHeight;
 
 const fullScreenElement = document.documentElement;
 const sprites = [];
+const refrences = [];
 let sprout = null;
 const mapChangedWatch = [];
 const gridWidth = 100;
@@ -64,14 +65,19 @@ function windowResized() {
     widthRatio = winWidth / constWinWidth;
     heightRatio = winHeight / constWinHeight;
     tileSize = (constWinWidth * widthRatio) / 30;
-    resizeCanvas(winWidth, winHeight);
 
+    for (const refrence of refrences){
+        refrence.collide_range *= changeInWidth;
+        refrence.speed *= changeInWidth;
+    }
     for (const sprite of sprites) {
         sprite.x *= changeInWidth;
         sprite.y *= changeInWidth;
         sprite.collide_range *= changeInWidth;
         sprite.speed *= changeInWidth;
     }
+
+    resizeCanvas(winWidth, winHeight);
 }
 
 function preload() {

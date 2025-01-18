@@ -80,7 +80,7 @@ class BaseSprite {
     }
 
     moveTo(x, y) {
-        if (this.distanceHyp(x, y) < tileSize / 4) {
+        if (this.distance(x, y) < tileSize / 4) {
             return true;
         }
         else {
@@ -116,9 +116,9 @@ class BaseSprite {
     }
 
     draw() {
-        let distance = this.distance(camX, camY);
-        let drawX = windowWidth / 2 + distance.x;
-        let drawY = windowHeight / 2 + distance.y;
+        let distanceVec = this.distanceVec(camX, camY);
+        let drawX = windowWidth / 2 + distanceVec.x;
+        let drawY = windowHeight / 2 + distanceVec.y;
         if (this.img === null) {
             fill(this.config.color);
             circle(drawX, drawY, 13 * widthRatio);
@@ -215,13 +215,13 @@ class BaseSprite {
      * @param {Int} Y - The y-coordinate to calculate distance
      * @returns {Vector}
      */
-    distance(x, y) {
+    distanceVec(x, y) {
         return {
             x: this.x - x, y: this.y - y
         };
     }
 
-    distanceHyp(x, y) {
+    distance(x, y) {
         return Math.sqrt((this.x - x) ** 2 + (this.y - y) ** 2);
     }
 
@@ -305,7 +305,7 @@ class BaseSprite {
      * @returns {BaseSprite} Sprite that is colliding
      */
     isCollidingInRange(x, y, range, ...excluding) {
-        const targets = findRangedTargets(x, y, range);
+        const targets = findRangedTargets(x, y, range, "All");
         for (const target of targets) {
             if (this.isColliding(target, x, y, ...excluding)) {
                 return target;
@@ -322,16 +322,43 @@ class BaseSprite {
      */
 
     findRangedTargetsSorted(range, ...targetClasses) {
-        return findRangedTargets(this.x, this.y, range, ...targetClasses).sort((a, b) => this.distanceHyp(a.x, a.y) - this.distanceHyp(b.x, b.y));
+        const targetSprites = [];
+        if(targetClasses.length === 0){
+            return [];
+        }
+
+        for(const sprite of sprites){
+            if(anyInstance(sprite, targetClasses)){
+                const dist = distance(this.x, this.y, sprite.x, sprite.y);
+                if (dist <= range) {
+                    targetSprites.push({ sprite, dist });
+                }
+            }
+        }
+
+        targetSprites.sort((a, b) => a.dist - b.dist);
+
+        return targetSprites.map(item => item.sprite);
     }
 }
 
 function findRangedTargets(x, y, range, ...targetClasses) {
-    return findTargets(...targetClasses).filter(target => distance(x, y, target.x, target.y) <= range);
+    const targetSprites = [];
+    if(targetClasses.length === 0){
+        return [];
+    }
+
+    for(const sprite of sprites){
+        if(anyInstance(sprite, targetClasses) && distance(x, y, sprite.x, sprite.y) <= range){
+            targetSprites.push(sprite);
+        }
+    }
+
+    return targetSprites;
 }
 
 function distance(x1, y1, x2, y2) {
-    return Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2);
+    return Math.hypot(x1 - x2, y1 - y2);
 }
 
 
@@ -341,15 +368,27 @@ function distance(x1, y1, x2, y2) {
  * @returns {Array<BaseSprite>} - array of sprites corresponding to the target classes
  */
 function findTargets(...targetClasses) {
-    const targetSprite = [];
-    if (targetClasses.length == 0) {
-        return sprites;
+    const targetSprites = [];
+    if (targetClasses.length === 0) {
+        return [];
     }
 
     for (const sprite of sprites) {
         if (anyInstance(sprite, targetClasses)) {
-            targetSprite.push(sprite);
+            targetSprites.push(sprite);
         }
     }
-    return targetSprite;
+    return targetSprites;
+}
+
+function anyInstance(target, classes) {
+    if (classes == "All") {
+        return true;
+    }
+
+    for (const typeClass of classes) {
+        if (target instanceof typeClass) return true;
+    }
+
+    return false;
 }

@@ -54,7 +54,7 @@ let msBetweenTicks = 1000 / tickSpeed;
 let tps = 0;
 let ticks = 0;
 let lagRecord = false;
-let stepamount = 1;
+let stepamount = 5;
 let lastSecond = Date.now();
 let lastTick = 0;
 
@@ -642,18 +642,6 @@ function findNeighbourNoDiagonal(vector) {
     result.length = index;
 
     return result;
-}
-
-function anyInstance(target, classes) {
-    if (classes == "All") {
-        return true;
-    }
-
-    for (const typeClass of classes) {
-        if (target instanceof typeClass) return true;
-    }
-
-    return false;
 }
 
 /**

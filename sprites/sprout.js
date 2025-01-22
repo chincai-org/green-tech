@@ -13,7 +13,7 @@ class Sprout extends BaseSprite {
             collision_layers: new Set(["sprout"]),
             collision_masks: new Set(["lumberjack", "tree"]),
             image: "assets/sproutfront.png",
-            collide_range: tileSize / 2.2,
+            collide_range: tileSize / 2 * 0.9,
             name: "Sprout"
         });
     }

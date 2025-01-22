@@ -22,9 +22,6 @@ const gridWidth = 100;
 const gridHeight = 100;
 const tileGrid = [];
 
-// hardcode for lumberjack
-const navMesh = new Map();
-
 let tileSize = (constWinWidth * widthRatio) / 30;
 // let song;
 
@@ -95,7 +92,6 @@ function setup() {
     canvas.mouseClicked(canvasClicked);
 
     initGrid();
-    initNavMesh();
 
     // bgsong();
 
@@ -148,6 +144,8 @@ function draw() {
         const tps = (tickPassed / timePassed * 1000).toFixed(2);
         const lag = (tickSpeed - tps).toFixed(2);
         const lagPerLumberjack = (lag / lumberjackCount).toFixed(2);
+
+        // recording lag
         if (lagRecord) {
             console.log("TPS:", tps, "Lumberjack count:", lumberjackCount, "lag", lag, "lag/lum:", lagPerLumberjack);
             const lagPercent = lag / tickSpeed * 100;
@@ -183,21 +181,6 @@ function draw() {
     }
 
     lastUpdate = now;
-
-    if (debugMode) {
-        for (const tile of navMesh.keys()) {
-            let center = centerFromCoord(tile.x, tile.y);
-            if (inDrawRange(center, camX, camY)) {
-                if (navMesh.get(tile)) {
-                    fill(255, 0, 0);
-                }
-                else {
-                    fill(0, 0, 255);
-                }
-                circle(center.x - camX + windowWidth / 2, center.y - camY + windowHeight / 2, 5);
-            }
-        }
-    }
 
     uiUpdate();
 }
@@ -316,7 +299,7 @@ function unappendSprite(sprite) {
     if (sprite.onTile) {
         sprite.tile.remove();
     }
-    sprite.checkMapChange(true);
+    sprite.checkMapChange(true, true);
 }
 
 // empty every sprite except sprout
@@ -328,8 +311,6 @@ function resetSprites() {
     }
     sprites.length = 0;
     mapChangedWatch.length = 0;
-    navMesh.clear();
-    initNavMesh();
     appendSprite(sprout);
     sprout.checkMapChange(true);
 }
@@ -353,15 +334,6 @@ function initGrid() {
         tileGrid.push(row);
     }
 }
-
-function initNavMesh() {
-    for (let y = 0; y < gridHeight; y++) {
-        for (let x = 0; x < gridWidth; x++) {
-            navMesh.set(tileGrid[y][x], false);
-        }
-    }
-}
-
 
 function inBoundOfGrid(tileX, tileY) {
     return (
@@ -451,7 +423,9 @@ function lagProfileTest(steps = null, _maxDelta = null, _tickSpeed = null, range
     sprout.y = center.y;
     let neighbors = findNeighbour(centerTileCoord);
     for (const neighbor of neighbors) {
-        appendSprite(new Rock(0, 0), tileGrid[neighbor.y][neighbor.x]);
+        let rock = new Rock(0, 0);
+        rock.collide_range = tileSize / 2 * 0.9;
+        appendSprite(rock, tileGrid[neighbor.y][neighbor.x]);
     }
     return "Test started until reached 80% lag";
 }
@@ -470,7 +444,7 @@ function pathFind(range, sprite, ...targetClasses) {
     let path = [];
 
     for (const target of targets) {
-        path = astar(maxIterations, startTile, target.tile, ...targetClasses);
+        path = astar(sprite, maxIterations, startTile, target.tile, ...targetClasses);
         if (path != 0) {
             return path;
         }
@@ -479,7 +453,7 @@ function pathFind(range, sprite, ...targetClasses) {
     return path;
 }
 
-function astar(maxIterations, start, end, ...targetClasses) {
+function astar(sprite, maxIterations, start, end, ...targetClasses) {
     start.g = 0;
     let closedSet = [];
     let heap = new MinHeap();
@@ -516,9 +490,8 @@ function astar(maxIterations, start, end, ...targetClasses) {
             const tentativeG = current.g + 1; // Assuming each step costs 1
 
             if (!arrayExistVector(heap.heap, neighbor)) {
-                let neighborTile = tileGrid[neighbor.y][neighbor.x];
-                let blockage = navMesh.get(neighborTile);
-                if (blockage && !anyInstance(blockage, targetClasses)) {
+                let neighborTileCenter = tileGrid[neighbor.y][neighbor.x].center();
+                if(sprite.isCollidingUsingTile(neighborTileCenter.x, neighborTileCenter.y, ...targetClasses)){
                     continue;
                 }
                 else {
@@ -526,11 +499,9 @@ function astar(maxIterations, start, end, ...targetClasses) {
                     let dy = neighbor.y - current.y;
                     let dx = neighbor.x - current.x;
                     if (abs(dy) + abs(dx) == 2) {
-                        let tile1 = tileGrid[current.y][neighbor.x];
-                        let tile2 = tileGrid[neighbor.y][current.x];
-                        let blockage1 = navMesh.get(tile1);
-                        let blockage2 = navMesh.get(tile2);
-                        if ((blockage1 && !anyInstance(blockage1, targetClasses)) || (blockage2 && !anyInstance(blockage2, targetClasses))) {
+                        let tile1Center = tileGrid[current.y][neighbor.x].center();
+                        let tile2Center = tileGrid[neighbor.y][current.x].center();
+                        if (sprite.isCollidingUsingTile(tile1Center.x, tile1Center.y, ...targetClasses) || sprite.isCollidingUsingTile(tile2Center.x, tile2Center.y, ...targetClasses)) {
                             continue;
                         }
                     }

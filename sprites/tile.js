@@ -10,6 +10,7 @@ class Tile extends BaseSprite {
 
         /** @type {BaseSprite} */
         this.sprite = null;
+        this.occupied = [];
     }
 
     /**
@@ -51,8 +52,23 @@ function centerFromCoord(x, y) {
  *
  * @param {number} x
  * @param {number} y
+ * Guarentees tile is valid
  * @returns {Tile}
  */
 function getTile(x, y) {
-    return tileGrid[Math.floor(y / tileSize)][Math.floor(x / tileSize)];
+    let tileX = Math.floor(x / tileSize);
+    let tileY = Math.floor(y / tileSize);
+    if(tileX < 0){
+        tileX = 0;
+    }
+    else if(tileX > gridWidth){
+        tileX = gridWidth;
+    }
+    if(tileY < 0){
+        tileY = 0;
+    }
+    else if(tileY > gridHeight){
+        tileY = gridHeight;
+    }
+    return tileGrid[tileY][tileX];
 }

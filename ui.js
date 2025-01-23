@@ -67,3 +67,8 @@ function uiUpdate() {
 document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('img').forEach(image => image.setAttribute('draggable', false));
 });
+
+//sound
+// document.addEventListener("click", function() {
+//     soundControl.backgroundMusic.startAndLoop(1);
+// })

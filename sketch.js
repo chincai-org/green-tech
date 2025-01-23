@@ -23,7 +23,6 @@ const gridHeight = 100;
 const tileGrid = [];
 
 let tileSize = (constWinWidth * widthRatio) / 30;
-// let song;
 
 let lastUpdate = Date.now();
 let debugMode = false;
@@ -78,8 +77,10 @@ function windowResized() {
 }
 
 function preload() {
-    soundFormats("ogg", "wav");
-    // song = loadSound("bestmusic.wav");
+    // soundFormats("ogg", "wav");
+    // songData.forEach(song => {
+    //     song.about["object"] = loadSound(song.directory); 
+    // });
 }
 
 function setup() {
@@ -93,7 +94,6 @@ function setup() {
 
     initGrid();
 
-    // bgsong();
 
     lastPollute = Date.now();
 
@@ -227,9 +227,7 @@ function gameTick() {
     }
 }
 
-// function bgsong() {
-//     song.loop();
-// }
+
 
 function keyPressed() {
     const CTRL_KEY_CODE = 17;

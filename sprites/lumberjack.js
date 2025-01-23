@@ -68,7 +68,7 @@ class Lumberjack extends BaseSprite {
         }
 
         if (this.actionCooldown < 0) {
-            let tryFindTarget = this.findRangedTargetsSorted(tileSize * 2, Sprout, Tree, Police);
+            let tryFindTarget = this.findRangedTargetsSorted(this.collide_range + tileSize * 2, Sprout, Tree, Police);
             if (tryFindTarget.length > 0) {
                 const target = tryFindTarget[0];
                 if (target instanceof Tree) {

@@ -15,7 +15,9 @@ class BaseSprite {
         this.cost = config.cost;
         this.tile = null;
         this.img = config.image || null;
-        this.collision_masks = new Set(config.collision_masks?.add("all") || ["all"]);
+        this.collision_masks = new Set(
+            config.collision_masks?.add("all") || ["all"]
+        );
         this.collision_layers = new Set(config.collision_layers || []);
         this.collide_range = config.collide_range || 0;
         this.lastUpdate = Date.now();
@@ -50,8 +52,7 @@ class BaseSprite {
             const deltaTime = Date.now() - this.lastUpdate;
             if (deltaTime < maxDeltaTime) {
                 this.deltaTime = deltaTime;
-            }
-            else {
+            } else {
                 this.deltaTime = 0;
             }
             const lastX = this.x;
@@ -59,8 +60,7 @@ class BaseSprite {
             this._tick();
             if (lastX == this.x && lastY == this.y) {
                 this.idleTime += deltaTime;
-            }
-            else {
+            } else {
                 this.idleTime = 0;
             }
             this.lastUpdate = Date.now();
@@ -84,15 +84,17 @@ class BaseSprite {
     moveTo(x, y) {
         if (this.distance(x, y) < tileSize / 4) {
             return true;
-        }
-        else {
+        } else {
             this._move(x - this.x, y - this.y, this.speed);
             return false;
         }
     }
 
     moveToTile(tile) {
-        return this.moveTo(tile.x * tileSize + tileSize / 2, tile.y * tileSize + tileSize / 2)
+        return this.moveTo(
+            tile.x * tileSize + tileSize / 2,
+            tile.y * tileSize + tileSize / 2
+        );
     }
 
     checkMapChange(forced = false, deleted = false) {
@@ -103,19 +105,34 @@ class BaseSprite {
             // Update occupied by looping through rectangle
             this.tile = currTile;
             this.lastMapUpdatePos = { x: this.x, y: this.y };
-            let oldFirstTile = getTile(oldPos.x - this.collide_range, oldPos.y - this.collide_range);
-            let oldLastTile = getTile(oldPos.x + this.collide_range, oldPos.y + this.collide_range);
+            let oldFirstTile = getTile(
+                oldPos.x - this.collide_range,
+                oldPos.y - this.collide_range
+            );
+            let oldLastTile = getTile(
+                oldPos.x + this.collide_range,
+                oldPos.y + this.collide_range
+            );
             // Remove from old
             for (let i = oldFirstTile.x; i <= oldLastTile.x; i++) {
                 for (let j = oldFirstTile.y; j <= oldLastTile.y; j++) {
-                    tileGrid[j][i].occupied.splice(tileGrid[j][i].occupied.indexOf(this), 1);
+                    tileGrid[j][i].occupied.splice(
+                        tileGrid[j][i].occupied.indexOf(this),
+                        1
+                    );
                 }
             }
 
             // When unappend sprite dont need to push
             if (!deleted) {
-                let lastTile = getTile(this.x + this.collide_range, this.y + this.collide_range);
-                let firstTile = getTile(this.x - this.collide_range, this.y - this.collide_range);
+                let lastTile = getTile(
+                    this.x + this.collide_range,
+                    this.y + this.collide_range
+                );
+                let firstTile = getTile(
+                    this.x - this.collide_range,
+                    this.y - this.collide_range
+                );
 
                 for (let i = firstTile.x; i <= lastTile.x; i++) {
                     for (let j = firstTile.y; j <= lastTile.y; j++) {
@@ -137,7 +154,13 @@ class BaseSprite {
             fill(this.config.color);
             circle(drawX, drawY, 13 * widthRatio);
         } else {
-            image(this.img, drawX - tileSize / 2, drawY - tileSize / 2, tileSize, tileSize);
+            image(
+                this.img,
+                drawX - tileSize / 2,
+                drawY - tileSize / 2,
+                tileSize,
+                tileSize
+            );
         }
         if (this.hp >= 0 && this.isDamaged) {
             fill(this.config.color);
@@ -162,14 +185,9 @@ class BaseSprite {
                     }
                 }
                 if (samePos > 1) {
-                    text(
-                        `(${samePos})`,
-                        drawX,
-                        drawY - 2
-                    );
+                    text(`(${samePos})`, drawX, drawY - 2);
                 }
-            }
-            else {
+            } else {
                 text(
                     `(${Math.round(this.x)}, ${Math.round(this.y)})`,
                     drawX,
@@ -177,7 +195,11 @@ class BaseSprite {
                 );
 
                 fill(0, 153, 255, 150);
-                square(drawX - this.collide_range, drawY - this.collide_range, this.collide_range * 2);
+                square(
+                    drawX - this.collide_range,
+                    drawY - this.collide_range,
+                    this.collide_range * 2
+                );
             }
             pop();
         }
@@ -194,7 +216,12 @@ class BaseSprite {
     _tick() {
         // handle animation
         if (this.animation.time > 0) {
-            this.move(this.animation.x, this.animation.y, this.animation.speed, this.animation);
+            this.move(
+                this.animation.x,
+                this.animation.y,
+                this.animation.speed,
+                this.animation
+            );
             this.animation.time -= this.deltaTime;
         }
     }
@@ -207,14 +234,12 @@ class BaseSprite {
     _move(x, y, speed) {
         // Handle queued up movement
         let vectDist = Math.hypot(x, y);
-        const newX = this.x +
-            speed *
-            this.deltaTime *
-            (vectDist == 0 ? x : x / vectDist);
-        const newY = this.y +
-            speed *
-            this.deltaTime *
-            (vectDist == 0 ? y : y / vectDist);
+        const newX =
+            this.x +
+            speed * this.deltaTime * (vectDist == 0 ? x : x / vectDist);
+        const newY =
+            this.y +
+            speed * this.deltaTime * (vectDist == 0 ? y : y / vectDist);
         if (inBoundOfMap(newX, newY)) {
             // cliping in map
             if (this.isCollidingUsingTile(this.x, this.y)) {
@@ -240,7 +265,8 @@ class BaseSprite {
      */
     distanceVec(x, y) {
         return {
-            x: this.x - x, y: this.y - y
+            x: this.x - x,
+            y: this.y - y
         };
     }
 
@@ -253,8 +279,6 @@ class BaseSprite {
     distance(x, y) {
         return Math.hypot(this.x - x, this.y - y);
     }
-
-
 
     /**
      *
@@ -273,9 +297,13 @@ class BaseSprite {
     _collide(other) {
         for (let layer of other.collision_layers) {
             if (this.collision_masks.has(layer)) {
-                if (this.x - this.collide_range < other.x + other.collide_range &&
-                    this.x + this.collide_range > other.x - other.collide_range &&
-                    this.y - this.collide_range < other.y + other.collide_range &&
+                if (
+                    this.x - this.collide_range <
+                        other.x + other.collide_range &&
+                    this.x + this.collide_range >
+                        other.x - other.collide_range &&
+                    this.y - this.collide_range <
+                        other.y + other.collide_range &&
                     this.y + this.collide_range > other.y - other.collide_range
                 ) {
                     return true;
@@ -295,7 +323,8 @@ class BaseSprite {
     isColliding(other, x, y) {
         for (const layer of other.collision_layers) {
             if (this.collision_masks.has(layer)) {
-                if (x - this.collide_range < other.x + other.collide_range &&
+                if (
+                    x - this.collide_range < other.x + other.collide_range &&
                     x + this.collide_range > other.x - other.collide_range &&
                     y - this.collide_range < other.y + other.collide_range &&
                     y + this.collide_range > other.y - other.collide_range
@@ -308,7 +337,7 @@ class BaseSprite {
     }
 
     /**
-     * Find hypothetical collision with any sprite 
+     * Find hypothetical collision with any sprite
      * @param {number} x - Hypothetical x-coordinate
      * @param {number} y - Hypothetical y-coordinate
      * @returns {BaseSprite | null} Sprite in a tile that is colliding
@@ -329,14 +358,20 @@ class BaseSprite {
      * @param {number} y - Hypothetical y-coordinate
      * @returns {BaseSprite} Sprite that is colliding
      */
-    isCollidingUsingTile(x, y){
-        let lastTile = getTile(x + this.collide_range + tileSize, y + this.collide_range + tileSize);
-        let firstTile = getTile(x - this.collide_range - tileSize, y - this.collide_range - tileSize);
+    isCollidingUsingTile(x, y) {
+        let lastTile = getTile(
+            x + this.collide_range + tileSize,
+            y + this.collide_range + tileSize
+        );
+        let firstTile = getTile(
+            x - this.collide_range - tileSize,
+            y - this.collide_range - tileSize
+        );
 
-        // check own occupied tile if collding with target 
-        for(let i = firstTile.x; i <= lastTile.x; i++){
-            for(let j = firstTile.y; j <= lastTile.y; j++){
-                for(const target of tileGrid[j][i].occupied){
+        // check own occupied tile if collding with target
+        for (let i = firstTile.x; i <= lastTile.x; i++) {
+            for (let j = firstTile.y; j <= lastTile.y; j++) {
+                for (const target of tileGrid[j][i].occupied) {
                     if (this.isColliding(target, x, y)) {
                         return target;
                     }
@@ -375,12 +410,12 @@ class BaseSprite {
 }
 
 /**
-* Find targets in a hypothetical position in a range
-* @param {number} x, y - Hypothetical position 
-* @param {number} range - Radius for search
-* @param {...BaseSprite} targetClasses - Classes to target, "all" target all
-* @returns {Array<BaseSprite>} Sprite sorted by distance
-*/
+ * Find targets in a hypothetical position in a range
+ * @param {number} x, y - Hypothetical position
+ * @param {number} range - Radius for search
+ * @param {...BaseSprite} targetClasses - Classes to target, "all" target all
+ * @returns {Array<BaseSprite>} Sprite sorted by distance
+ */
 function findRangedTargets(x, y, range, ...targetClasses) {
     const targetSprites = [];
     if (targetClasses.length === 0) {
@@ -388,14 +423,16 @@ function findRangedTargets(x, y, range, ...targetClasses) {
     }
 
     for (const sprite of sprites) {
-        if (anyInstance(sprite, targetClasses) && distance(x, y, sprite.x, sprite.y) <= range) {
+        if (
+            anyInstance(sprite, targetClasses) &&
+            distance(x, y, sprite.x, sprite.y) <= range
+        ) {
             targetSprites.push(sprite);
         }
     }
 
     return targetSprites;
 }
-
 
 /**
  * @param {number} x1, y1, x2, y2

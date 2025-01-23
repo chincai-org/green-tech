@@ -457,7 +457,7 @@ function lagProfileTest(
     let neighbours = centerTileCoord.neighbour();
     for (const neighbour of neighbours) {
         let rock = new Rock(0, 0);
-        rock.collide_range = tileSize / 2 * 0.9;
+        rock.collide_range = (tileSize / 2) * 0.9;
         appendSprite(rock, tileGrid[neighbour.y][neighbour.x]);
     }
     return "Test started until reached 80% lag";
@@ -489,7 +489,7 @@ function pathFind(range, sprite, ...targetClasses) {
 function astar(sprite, target, maxIterations, start, end) {
     let closedSet = [];
     let heap = new MinHeap();
-    heap.add({tile: start, g: 0});
+    heap.add({ tile: start, g: 0 });
 
     let iteration = 0;
     while (!heap.isEmpty() && iteration < maxIterations) {
@@ -497,13 +497,15 @@ function astar(sprite, target, maxIterations, start, end) {
         closedSet.push(current);
 
         let currentCenter = current.tile.center();
-        if (sprite.isCollidingUsingTile(currentCenter.x , currentCenter.y) == target) {
+        if (
+            sprite.isCollidingUsingTile(currentCenter.x, currentCenter.y) ==
+            target
+        ) {
             // Path found, reconstruct and return path
             const path = [];
             let temp = current;
             while (temp) {
                 path.unshift(temp.tile);
-                console.log(temp);
                 temp = temp.parent;
             }
             return path;
@@ -524,8 +526,11 @@ function astar(sprite, target, maxIterations, start, end) {
             if (!arrayExistVector(heap.heap, neighbour)) {
                 let tileCenter = tileGrid[neighbour.y][neighbour.x].center();
 
-                let colliding = sprite.isCollidingUsingTile(tileCenter.x, tileCenter.y); 
-                if(colliding && colliding != target){
+                let colliding = sprite.isCollidingUsingTile(
+                    tileCenter.x,
+                    tileCenter.y
+                );
+                if (colliding && colliding != target) {
                     continue;
                 } else {
                     // diaonal check ajacent tile
@@ -534,22 +539,43 @@ function astar(sprite, target, maxIterations, start, end) {
                     if (abs(dy) + abs(dx) == 2) {
                         // reuse variable tileCenter and colliding
                         tileCenter = tileGrid[current.y][neighbour.x].center();
-                        let tileCenter2 = tileGrid[neighbour.y][current.x].center();
+                        let tileCenter2 =
+                            tileGrid[neighbour.y][current.x].center();
 
-                        colliding = sprite.isCollidingUsingTile(tileCenter.x, tileCenter.y);
-                        let colliding2 = sprite.isCollidingUsingTile(tileCenter2.x, tileCenter2.y);
-                        if ((colliding && colliding != target) || (colliding2 && colliding2 != target)) {
+                        colliding = sprite.isCollidingUsingTile(
+                            tileCenter.x,
+                            tileCenter.y
+                        );
+                        let colliding2 = sprite.isCollidingUsingTile(
+                            tileCenter2.x,
+                            tileCenter2.y
+                        );
+                        if (
+                            (colliding && colliding != target) ||
+                            (colliding2 && colliding2 != target)
+                        ) {
                             continue;
                         }
                     }
                 }
 
                 let heuristicVal = heuristic(neighbour, end);
-                heap.add({tile: neighbour, parent: current, g: tentativeG, h: heuristicVal, f: tentativeG + heuristicVal});
-            }
-            else if (tentativeG < neighbour.g) {
+                heap.add({
+                    tile: neighbour,
+                    parent: current,
+                    g: tentativeG,
+                    h: heuristicVal,
+                    f: tentativeG + heuristicVal
+                });
+            } else if (tentativeG < neighbour.g) {
                 let heuristicVal = heuristic(neighbour, end);
-                heap.add({tile: neighbour, parent: current, g: tentativeG, h: heuristicVal, f: tentativeG + heuristicVal});
+                heap.add({
+                    tile: neighbour,
+                    parent: current,
+                    g: tentativeG,
+                    h: heuristicVal,
+                    f: tentativeG + heuristicVal
+                });
 
                 // Heapify up to maintain the heap property
                 heap.heapifyUp();

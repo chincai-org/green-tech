@@ -47,7 +47,7 @@ class Lumberjack extends BaseSprite {
                 return;
             }
 
-            if (this.moveToTile(this.path[1].x, this.path[1].y)) {
+            if (this.moveToTile(this.path[1])) {
                 if (!this.mapChanged) {
                     this.path.shift();
                 }

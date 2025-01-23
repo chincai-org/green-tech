@@ -421,11 +421,11 @@ function lagProfileTest(steps = null, _maxDelta = null, _tickSpeed = null, range
     let center = centerFromCoord(centerTileCoord.x, centerTileCoord.y);
     sprout.x = center.x;
     sprout.y = center.y;
-    let neighbors = findNeighbour(centerTileCoord);
-    for (const neighbor of neighbors) {
+    let neighbours = centerTileCoord.neighbour();
+    for (const neighbour of neighbours) {
         let rock = new Rock(0, 0);
         rock.collide_range = tileSize / 2 * 0.9;
-        appendSprite(rock, tileGrid[neighbor.y][neighbor.x]);
+        appendSprite(rock, tileGrid[neighbour.y][neighbour.x]);
     }
     return "Test started until reached 80% lag";
 }
@@ -444,7 +444,7 @@ function pathFind(range, sprite, ...targetClasses) {
     let path = [];
 
     for (const target of targets) {
-        path = astar(sprite, maxIterations, startTile, target.tile, ...targetClasses);
+        path = astar(sprite, target, maxIterations, startTile, target.tile);
         if (path != 0) {
             return path;
         }
@@ -453,70 +453,72 @@ function pathFind(range, sprite, ...targetClasses) {
     return path;
 }
 
-function astar(sprite, maxIterations, start, end, ...targetClasses) {
-    start.g = 0;
+function astar(sprite, target, maxIterations, start, end) {
     let closedSet = [];
     let heap = new MinHeap();
-    heap.add(start);
+    heap.add({tile: start, g: 0});
 
     let iteration = 0;
     while (!heap.isEmpty() && iteration < maxIterations) {
         let current = heap.remove();
         closedSet.push(current);
 
-        if (current.x == end.x && current.y == end.y) {
+        let currentCenter = current.tile.center();
+        if (sprite.isCollidingUsingTile(currentCenter.x , currentCenter.y) == target) {
             // Path found, reconstruct and return path
             const path = [];
             let temp = current;
             while (temp) {
-                path.unshift({ x: temp.x, y: temp.y });
+                path.unshift(temp.tile);
+                console.log(temp);
                 temp = temp.parent;
             }
             return path;
         }
 
-        const neighborVectors = findNeighbour(current);
-        for (const neighborVector of neighborVectors) {
-            // findNeighbor() returns new vector only
-            let neighbor = heap.getElement(neighborVector.x, neighborVector.y);
+        const neighbourTiles = current.tile.neighbour();
+        for (const neighbourTile of neighbourTiles) {
+            let neighbour = heap.getElement(neighbourTile.x, neighbourTile.y);
             // if not in heap yet means not processsed
-            if (neighbor === null) {
-                neighbor = neighborVector;
+            if (neighbour === null) {
+                neighbour = neighbourTile;
             }
 
-            if (arrayExistVector(closedSet, neighbor)) continue;
+            if (arrayExistVector(closedSet, neighbour)) continue;
 
 
             const tentativeG = current.g + 1; // Assuming each step costs 1
 
-            if (!arrayExistVector(heap.heap, neighbor)) {
-                let neighborTileCenter = tileGrid[neighbor.y][neighbor.x].center();
-                if(sprite.isCollidingUsingTile(neighborTileCenter.x, neighborTileCenter.y, ...targetClasses)){
+            if (!arrayExistVector(heap.heap, neighbour)) {
+                let tileCenter = tileGrid[neighbour.y][neighbour.x].center();
+
+                let colliding = sprite.isCollidingUsingTile(tileCenter.x, tileCenter.y); 
+                if(colliding && colliding != target){
                     continue;
                 }
                 else {
                     // diaonal check ajacent tile
-                    let dy = neighbor.y - current.y;
-                    let dx = neighbor.x - current.x;
+                    let dy = neighbour.y - current.y;
+                    let dx = neighbour.x - current.x;
                     if (abs(dy) + abs(dx) == 2) {
-                        let tile1Center = tileGrid[current.y][neighbor.x].center();
-                        let tile2Center = tileGrid[neighbor.y][current.x].center();
-                        if (sprite.isCollidingUsingTile(tile1Center.x, tile1Center.y, ...targetClasses) || sprite.isCollidingUsingTile(tile2Center.x, tile2Center.y, ...targetClasses)) {
+                        // reuse variable tileCenter and colliding
+                        tileCenter = tileGrid[current.y][neighbour.x].center();
+                        let tileCenter2 = tileGrid[neighbour.y][current.x].center();
+
+                        colliding = sprite.isCollidingUsingTile(tileCenter.x, tileCenter.y);
+                        let colliding2 = sprite.isCollidingUsingTile(tileCenter2.x, tileCenter2.y);
+                        if ((colliding && colliding != target) || (colliding2 && colliding2 != target)) {
                             continue;
                         }
                     }
                 }
-                neighbor.g = tentativeG;
-                neighbor.h = heuristic(neighbor, end);
-                neighbor.f = neighbor.g + neighbor.h;
-                neighbor.parent = current;
-                heap.add(neighbor);
+
+                let heuristicVal = heuristic(neighbour, end);
+                heap.add({tile: neighbour, parent: current, g: tentativeG, h: heuristicVal, f: tentativeG + heuristicVal});
             }
-            else if (tentativeG < neighbor.g) {
-                neighbor.g = tentativeG;
-                neighbor.h = heuristic(neighbor, end);
-                neighbor.f = neighbor.g + neighbor.h;
-                neighbor.parent = current;
+            else if (tentativeG < neighbour.g) {
+                let heuristicVal = heuristic(neighbour, end);
+                heap.add({tile: neighbour, parent: current, g: tentativeG, h: heuristicVal, f: tentativeG + heuristicVal});
 
                 // Heapify up to maintain the heap property
                 heap.heapifyUp();
@@ -552,68 +554,6 @@ function heuristic(node, end) {
 
 
 
-/**
- *
- * @param {Vector} vector - coordinate of the tile
- * @returns {Array<Vector>} - all the neighbour of the tile
- */
-function findNeighbour(vector) {
-    const { x, y } = vector;
-
-    const result = [];
-
-    // returns neighbour to all 8 directions, and x and y cannot be lower than 0 and higher than the map size
-    for (let dx = -1; dx <= 1; dx++) {
-        for (let dy = -1; dy <= 1; dy++) {
-            if (dx === 0 && dy === 0) continue;
-            const neighbour = { x: x + dx, y: y + dy };
-            if (inBoundOfGrid(neighbour.x, neighbour.y)) {
-                result.push(neighbour);
-            }
-        }
-    }
-
-    return result;
-}
-
-/**
- *
- * @param {Vector} vector - coordinate of the tile
- * @returns {Array<Vector>} - all the neighbour of the tile
- */
-function findNeighbourNoDiagonal(vector) {
-    const { x, y } = vector;
-
-    // Preallocate result array with fixed size
-    const result = new Array(4);
-
-    const directions = [
-        { dx: 0, dy: -1 }, // Up
-        { dx: 0, dy: 1 },  // Down
-        { dx: -1, dy: 0 }, // Left
-        { dx: 1, dy: 0 }   // Right
-    ];
-
-    // Reuse neighbour object
-    const neighbour = { x: 0, y: 0 };
-
-    let index = 0;
-    for (const direction of directions) {
-        // Update neighbour properties
-        neighbour.x = x + direction.dx;
-        neighbour.y = y + direction.dy;
-
-        // Check if neighbour is within grid bounds
-        if (inBoundOfGrid(neighbour.x, neighbour.y)) {
-            result[index++] = { ...neighbour }; // Clone neighbour object
-        }
-    }
-
-    // Trim result array if necessary
-    result.length = index;
-
-    return result;
-}
 
 /**
  * @param {CallableFunction} callable

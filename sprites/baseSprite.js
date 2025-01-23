@@ -90,8 +90,8 @@ class BaseSprite {
         }
     }
 
-    moveToTile(x, y) {
-        return this.moveTo(x * tileSize + tileSize / 2, y * tileSize + tileSize / 2)
+    moveToTile(tile) {
+        return this.moveTo(tile.x * tileSize + tileSize / 2, tile.y * tileSize + tileSize / 2)
     }
 
     checkMapChange(forced = false, deleted = false) {
@@ -282,8 +282,7 @@ class BaseSprite {
      * @param {number} y - Hypothetical y-coordinate
      * @returns {boolean}
      */
-    isColliding(other, x, y, ...excluding) {
-        if (anyInstance(other, excluding)) return false;
+    isColliding(other, x, y) {
         for (const layer of other.collision_layers) {
             if (this.collision_masks.has(layer)) {
                 if (x - this.collide_range < other.x + other.collide_range &&
@@ -302,32 +301,13 @@ class BaseSprite {
      * Find hypothetical collision with any sprite 
      * @param {number} x - Hypothetical x-coordinate
      * @param {number} y - Hypothetical y-coordinate
-     * @param {...BaseSprite} excluding - Sprites to exclude from collision check
      * @returns {BaseSprite | null} Sprite in a tile that is colliding
      */
-    isCollidingAnySprite(x = this.x, y = this.y, ...excluding) {
+    isCollidingAnySprite(x = this.x, y = this.y) {
         for (const sprite of sprites) {
             if (sprite == this) continue;
-            if (anyInstance(sprite, excluding)) continue;
             if (this.isColliding(sprite, x, y)) {
                 return sprite;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Find collision in range
-     * @param {number} x - Hypothetical x-coordinate
-     * @param {number} y - Hypothetical y-coordinate
-     * @param {number} range - Radius for search
-     * @returns {BaseSprite} Sprite that is colliding
-     */
-    isCollidingInRange(x, y, range, ...excluding) {
-        const targets = findRangedTargets(x, y, range, "All");
-        for (const target of targets) {
-            if (this.isColliding(target, x, y, ...excluding)) {
-                return target;
             }
         }
         return null;
@@ -339,7 +319,7 @@ class BaseSprite {
      * @param {number} y - Hypothetical y-coordinate
      * @returns {BaseSprite} Sprite that is colliding
      */
-    isCollidingUsingTile(x, y, ...excluding){
+    isCollidingUsingTile(x, y){
         let lastTile = getTile(x + this.collide_range + tileSize, y + this.collide_range + tileSize);
         let firstTile = getTile(x - this.collide_range - tileSize, y - this.collide_range - tileSize);
 
@@ -347,7 +327,7 @@ class BaseSprite {
         for(let i = firstTile.x; i <= lastTile.x; i++){
             for(let j = firstTile.y; j <= lastTile.y; j++){
                 for(const target of tileGrid[j][i].occupied){
-                    if (this.isColliding(target, x, y, ...excluding)) {
+                    if (this.isColliding(target, x, y)) {
                         return target;
                     }
                 }

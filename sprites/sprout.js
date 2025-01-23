@@ -51,13 +51,13 @@ class Sprout extends BaseSprite {
     chopWood() {
         const currentTile = getTile(this.x, this.y);
 
-        for (const neighbor of findNeighbour(currentTile)) {
+        for (const neighbour of currentTile.neighbour()) {
             if (
-                tileGrid[neighbor.y][neighbor.x].sprite instanceof Tree &&
-                tileGrid[neighbor.y][neighbor.x].sprite.hasGrown === true &&
+                neighbour.sprite instanceof Tree &&
+                neighbour.sprite.hasGrown === true &&
                 resource < parseInt(document.getElementsByClassName('progress-bar')[0].dataset.number.split('/')[1])
             ) {
-                unappendSprite(tileGrid[neighbor.y][neighbor.x].sprite);
+                unappendSprite(neighbour.sprite);
 
                 resource += 2;
 

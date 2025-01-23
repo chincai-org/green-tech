@@ -39,6 +39,27 @@ class Tile extends BaseSprite {
         }
     }
 
+	/**
+     * @param {boolean} diagonal - allow diagonal? default is true
+	 * @returns {Array<Vector>} - all the neighbour of the tile
+	 */
+	neighbour(diagonal = true) {
+	    const result = [];
+
+        // guarentees valid tile
+	    for (let dx = -1; dx <= 1; dx++) {
+	        for (let dy = -1; dy <= 1; dy++) {
+	            if (dx === 0 && dy === 0) continue;
+                if (!diagonal && Math.abs(dx) + Math.abs(dy) == 2) continue;
+	            const neighbour = { x: this.x + dx, y: this.y + dy };
+	            if (inBoundOfGrid(neighbour.x, neighbour.y)) {
+	                result.push(tileGrid[neighbour.y][neighbour.x]);
+	            }
+	        }
+	    }
+
+	    return result;
+	}
 }
 
 function centerFromCoord(x, y) {
@@ -72,3 +93,5 @@ function getTile(x, y) {
     }
     return tileGrid[tileY][tileX];
 }
+
+

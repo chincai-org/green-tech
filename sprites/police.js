@@ -23,15 +23,17 @@ class Police extends BaseSprite {
     }
 
     _tick() {
+        // Idle
         if (this.timeIdle > 0) {
             this.timeIdle--
-            return
         }
-        this.move(this.target.x, this.target.y);
-        this.timeNewDirection--
-        if (this.timeNewDirection < 1) {
-            this.target = p5.Vector.random2D();
-            this.timeNewDirection = randint(15, 50);
+        else{
+            this.move(this.target.x, this.target.y);
+            this.timeNewDirection--
+            if (this.timeNewDirection < 1) {
+                this.target = p5.Vector.random2D();
+                this.timeNewDirection = randint(15, 50);
+            }
             this.timeIdle = randint(250, 500);
         }
     }

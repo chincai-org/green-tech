@@ -13,7 +13,8 @@ class Lumberjack extends BaseSprite {
             collision_layers: new Set(["lumberjack"]),
             collision_masks: new Set(["policeStation", "police", "sprout"]),
             collide_range: tileSize / 2 * 2,
-            name: "Lumberjack"
+            name: "Lumberjack",
+            hp: 100
         });
         this.path = [];
         this.pathfindCooldown = 0;
@@ -73,13 +74,15 @@ class Lumberjack extends BaseSprite {
                 if (target instanceof Tree) {
                     // Chop tree
                     if (target.hasGrown) {
-                        unappendSprite(target);
+                        target.hp -= 10;
+                        target.isDamaged = true;
                     }
                 }
                 else if (target instanceof Police) {
                     // Kill police
                     target.parent.spawned--;
-                    unappendSprite(target);
+                    target.hp -= 10;
+                    target.isDamaged = true;
                 }
                 else if (target instanceof Sprout) {
                     // Push sprout

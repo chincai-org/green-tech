@@ -109,18 +109,43 @@ img{
 }
 
 .bars {
-    position: absolute;
+    position: relative;
     left: var(--progress-bar-left);
     width: var(--bars);
 }
 
-.progress-bar {
+.health-color {
+    background-color: red;
+}
+
+.stat-color {
+    background-color: green;
+}
+
+.width-11 {
+    width: var(--width-11);
+}
+
+.health-color {
+    background-color: grey;
+}
+
+.progress-bar, .health-bar {
     position: relative;
     height: 1.5em;
-    background-color: magenta;
     border-radius: 100vh;
     color: black;
     margin-block: 0.5rem;
+}
+
+.health-bar {
+    color: white;
+}
+
+.allign-to-bottom-left{
+    position: absolute;
+    bottom: 0;
+    left: 0;
 }
 
 .progress-bar::before {
@@ -136,7 +161,23 @@ img{
     max-width: calc(100% - .6em);
     background-color: lightblue;
     border-radius: 100vh;
-    padding-left: 0.5em;
+    padding-left: .5em;
+}
+
+.health-bar::before {
+    white-space: nowrap;
+    content: attr(data-number) " " attr(data-label);
+    display: flex;
+    align-items: center;
+    position: absolute;
+    left: .3em;
+    top: .3em;
+    bottom: .3em;
+    width: calc(var(--width, 0) * 1%);
+    max-width: calc(100% - .6em);
+    background-color: red;
+    border-radius: 100vh;
+    padding-left: .5em;
 }
 
 .big-image{

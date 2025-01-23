@@ -454,7 +454,7 @@ function lagProfileTest(
     let center = centerFromCoord(centerTileCoord.x, centerTileCoord.y);
     sprout.x = center.x;
     sprout.y = center.y;
-    let neighbours = centerTileCoord.neighbour();
+    let neighbours = getTile(center.x, center.y).neighbour();
     for (const neighbour of neighbours) {
         let rock = new Rock(0, 0);
         rock.collide_range = (tileSize / 2) * 0.9;
@@ -470,14 +470,13 @@ function lagProfileTest(
  * @returns {Array<Vector>}
  */
 function pathFind(range, sprite, ...targetClasses) {
-    const maxIterations = (3 * range * range) / tileSize / tileSize;
+    const maxIterations = (3 * range) / tileSize;
 
     const targets = sprite.findRangedTargetsSorted(range, ...targetClasses);
-    const startTile = getTile(sprite.x, sprite.y);
     let path = [];
 
     for (const target of targets) {
-        path = astar(sprite, target, maxIterations, startTile, target.tile);
+        path = astar(sprite, target, maxIterations, sprite.tile, target.tile);
         if (path != 0) {
             return path;
         }
@@ -497,10 +496,7 @@ function astar(sprite, target, maxIterations, start, end) {
         closedSet.push(current);
 
         let currentCenter = current.tile.center();
-        if (
-            sprite.isCollidingUsingTile(currentCenter.x, currentCenter.y) ==
-            target
-        ) {
+        if (sprite.overlap(target, currentCenter.x, currentCenter.y)) {
             // Path found, reconstruct and return path
             const path = [];
             let temp = current;
@@ -516,61 +512,66 @@ function astar(sprite, target, maxIterations, start, end) {
             let neighbour = heap.getElement(neighbourTile.x, neighbourTile.y);
             // if not in heap yet means not processsed
             if (neighbour === null) {
-                neighbour = neighbourTile;
+                neighbour = { tile: neighbourTile };
             }
 
-            if (arrayExistVector(closedSet, neighbour)) continue;
+            if (arrayExistVector(closedSet, neighbour.tile)) {
+                continue;
+            }
 
             const tentativeG = current.g + 1; // Assuming each step costs 1
 
-            if (!arrayExistVector(heap.heap, neighbour)) {
-                let tileCenter = tileGrid[neighbour.y][neighbour.x].center();
+            if (!arrayExistVector(heap.heap, neighbour.tile)) {
+                let tileCenter = neighbour.tile.center();
 
-                let colliding = sprite.isCollidingUsingTile(
-                    tileCenter.x,
-                    tileCenter.y
-                );
-                if (colliding && colliding != target) {
+                if (
+                    sprite.isCollidingUsingTileExcluding(
+                        tileCenter.x,
+                        tileCenter.y,
+                        target
+                    )
+                ) {
                     continue;
                 } else {
                     // diaonal check ajacent tile
-                    let dy = neighbour.y - current.y;
-                    let dx = neighbour.x - current.x;
+                    let dy = neighbour.tile.y - current.tile.y;
+                    let dx = neighbour.tile.x - current.tile.x;
                     if (abs(dy) + abs(dx) == 2) {
                         // reuse variable tileCenter and colliding
-                        tileCenter = tileGrid[current.y][neighbour.x].center();
+                        tileCenter =
+                            tileGrid[current.tile.y][neighbour.tile.x].center();
                         let tileCenter2 =
-                            tileGrid[neighbour.y][current.x].center();
+                            tileGrid[neighbour.tile.y][current.tile.x].center();
 
-                        colliding = sprite.isCollidingUsingTile(
-                            tileCenter.x,
-                            tileCenter.y
-                        );
-                        let colliding2 = sprite.isCollidingUsingTile(
-                            tileCenter2.x,
-                            tileCenter2.y
-                        );
                         if (
-                            (colliding && colliding != target) ||
-                            (colliding2 && colliding2 != target)
+                            sprite.isCollidingUsingTileExcluding(
+                                tileCenter2.x,
+                                tileCenter2.y,
+                                target
+                            ) ||
+                            sprite.isCollidingUsingTileExcluding(
+                                tileCenter.x,
+                                tileCenter.y,
+                                target
+                            )
                         ) {
                             continue;
                         }
                     }
                 }
 
-                let heuristicVal = heuristic(neighbour, end);
+                let heuristicVal = heuristic(neighbour.tile, end);
                 heap.add({
-                    tile: neighbour,
+                    tile: neighbour.tile,
                     parent: current,
                     g: tentativeG,
                     h: heuristicVal,
                     f: tentativeG + heuristicVal
                 });
             } else if (tentativeG < neighbour.g) {
-                let heuristicVal = heuristic(neighbour, end);
+                let heuristicVal = heuristic(neighbour.tile, end);
                 heap.add({
-                    tile: neighbour,
+                    tile: neighbour.tile,
                     parent: current,
                     g: tentativeG,
                     h: heuristicVal,

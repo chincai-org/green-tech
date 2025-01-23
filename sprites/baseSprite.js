@@ -314,6 +314,46 @@ class BaseSprite {
     }
 
     /**
+     * Use tile to check
+     * @param {BaseSprite} other - Another sprite to detect overlap
+     * @param {number} x - Hypothetical x-coordinate
+     * @param {number} y - Hypothetical y-coordinate
+     * @returns {boolean}
+     */
+    nextToAny(...targetClasses) {
+        for (const neighbour of this.tile.doubleNeighbour()) {
+            for (const target of neighbour.occupied) {
+                let neighbourCenter = neighbour.center();
+                if (
+                    anyInstance(target, targetClasses) &&
+                    this.overlap(target, neighbourCenter.x, neighbourCenter.y)
+                ) {
+                    return target;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Check whether two collision box overlap
+     * @param {BaseSprite} other - Another sprite to detect overlap
+     * @param {number} x - Hypothetical x-coordinate
+     * @param {number} y - Hypothetical y-coordinate
+     * @returns {boolean}
+     */
+    overlap(other, x, y) {
+        if (
+            x - this.collide_range < other.x + other.collide_range &&
+            x + this.collide_range > other.x - other.collide_range &&
+            y - this.collide_range < other.y + other.collide_range &&
+            y + this.collide_range > other.y - other.collide_range
+        ) {
+            return true;
+        }
+    }
+
+    /**
      * Find hypothetical collision with another sprite
      * @param {BaseSprite} other - Another sprite to detect collision
      * @param {number} x - Hypothetical x-coordinate
@@ -323,17 +363,9 @@ class BaseSprite {
     isColliding(other, x, y) {
         for (const layer of other.collision_layers) {
             if (this.collision_masks.has(layer)) {
-                if (
-                    x - this.collide_range < other.x + other.collide_range &&
-                    x + this.collide_range > other.x - other.collide_range &&
-                    y - this.collide_range < other.y + other.collide_range &&
-                    y + this.collide_range > other.y - other.collide_range
-                ) {
-                    return true;
-                }
+                return this.overlap(other, x, y);
             }
         }
-        return false;
     }
 
     /**
@@ -359,22 +391,24 @@ class BaseSprite {
      * @returns {BaseSprite} Sprite that is colliding
      */
     isCollidingUsingTile(x, y) {
-        let lastTile = getTile(
-            x + this.collide_range + tileSize,
-            y + this.collide_range + tileSize
-        );
-        let firstTile = getTile(
-            x - this.collide_range - tileSize,
-            y - this.collide_range - tileSize
-        );
-
         // check own occupied tile if collding with target
-        for (let i = firstTile.x; i <= lastTile.x; i++) {
-            for (let j = firstTile.y; j <= lastTile.y; j++) {
-                for (const target of tileGrid[j][i].occupied) {
-                    if (this.isColliding(target, x, y)) {
-                        return target;
-                    }
+        for (const neighbour of this.tile.doubleNeighbour()) {
+            for (const target of neighbour.occupied) {
+                if (this.isColliding(target, x, y)) {
+                    return target;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    isCollidingUsingTileExcluding(x, y, exclude) {
+        // check own occupied tile if collding with target
+        for (const neighbour of getTile(x, y).doubleNeighbour()) {
+            for (const target of neighbour.occupied) {
+                if (target != exclude && this.isColliding(target, x, y)) {
+                    return target;
                 }
             }
         }
@@ -390,9 +424,6 @@ class BaseSprite {
      */
     findRangedTargetsSorted(range, ...targetClasses) {
         const targetSprites = [];
-        if (targetClasses.length === 0) {
-            return [];
-        }
 
         for (const sprite of sprites) {
             if (anyInstance(sprite, targetClasses)) {
@@ -407,31 +438,6 @@ class BaseSprite {
 
         return targetSprites.map(item => item.sprite);
     }
-}
-
-/**
- * Find targets in a hypothetical position in a range
- * @param {number} x, y - Hypothetical position
- * @param {number} range - Radius for search
- * @param {...BaseSprite} targetClasses - Classes to target, "all" target all
- * @returns {Array<BaseSprite>} Sprite sorted by distance
- */
-function findRangedTargets(x, y, range, ...targetClasses) {
-    const targetSprites = [];
-    if (targetClasses.length === 0) {
-        return [];
-    }
-
-    for (const sprite of sprites) {
-        if (
-            anyInstance(sprite, targetClasses) &&
-            distance(x, y, sprite.x, sprite.y) <= range
-        ) {
-            targetSprites.push(sprite);
-        }
-    }
-
-    return targetSprites;
 }
 
 /**

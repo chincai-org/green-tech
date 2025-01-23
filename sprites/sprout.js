@@ -13,7 +13,7 @@ class Sprout extends BaseSprite {
             collision_layers: new Set(["sprout"]),
             collision_masks: new Set(["lumberjack", "tree"]),
             image: "assets/sproutfront.png",
-            collide_range: tileSize / 2 * 0.9,
+            collide_range: (tileSize / 2) * 0.9,
             name: "Sprout",
             hp: 100
         });
@@ -41,10 +41,14 @@ class Sprout extends BaseSprite {
             windowHeight / 2
         );
 
-
         // handle animation
         if (this.animation && this.animation.time > 0) {
-            this.move(this.animation.x, this.animation.y, this.animation.speed, this.animation);
+            this.move(
+                this.animation.x,
+                this.animation.y,
+                this.animation.speed,
+                this.animation
+            );
             this.animation.time -= this.deltaTime;
         }
     }
@@ -56,7 +60,12 @@ class Sprout extends BaseSprite {
             if (
                 neighbour.sprite instanceof Tree &&
                 neighbour.sprite.hasGrown === true &&
-                resource < parseInt(document.getElementsByClassName('progress-bar')[0].dataset.number.split('/')[1])
+                resource <
+                    parseInt(
+                        document
+                            .getElementsByClassName("progress-bar")[0]
+                            .dataset.number.split("/")[1]
+                    )
             ) {
                 unappendSprite(neighbour.sprite);
 
@@ -96,9 +105,11 @@ class Sprout extends BaseSprite {
 
             fill(0, 153, 255, 150);
 
-            square(windowWidth / 2 + this.x - camX - this.collide_range,
+            square(
+                windowWidth / 2 + this.x - camX - this.collide_range,
                 windowHeight / 2 + this.y - camY - this.collide_range,
-                this.collide_range * 2);
+                this.collide_range * 2
+            );
             pop();
         }
     }

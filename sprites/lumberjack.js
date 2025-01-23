@@ -12,7 +12,7 @@ class Lumberjack extends BaseSprite {
             speed: widthRatio * 0.25,
             collision_layers: new Set(["lumberjack"]),
             collision_masks: new Set(["policeStation", "police", "sprout"]),
-            collide_range: tileSize / 2 * 2,
+            collide_range: (tileSize / 2) * 2,
             name: "Lumberjack",
             hp: 100
         });
@@ -32,12 +32,17 @@ class Lumberjack extends BaseSprite {
         this.actionCooldown -= this.deltaTime;
 
         if (this.pathfindCooldown < 0 && !this.onPath) {
-            this.path = pathFind(tileSize * 20, this, Tree, Sprout, Police);
+            this.path = pathFind(
+                tileSize * Lumberjack.pathFindRange,
+                this,
+                Tree,
+                Sprout,
+                Police
+            );
             if (this.path.length < 1) {
                 this.pathfindCooldown = 2000;
             }
         }
-
 
         if (this.path.length > 1) {
             this.onPath = true;
@@ -51,10 +56,15 @@ class Lumberjack extends BaseSprite {
             if (this.moveToTile(this.path[1])) {
                 if (!this.mapChanged) {
                     this.path.shift();
-                }
-                else {
+                } else {
                     this.mapChanged = false;
-                    this.path = pathFind(tileSize * Lumberjack.PathFindRange, this, Tree, Sprout, Police);
+                    this.path = pathFind(
+                        tileSize * Lumberjack.pathFindRange,
+                        this,
+                        Tree,
+                        Sprout,
+                        Police
+                    );
                 }
             }
 
@@ -62,31 +72,31 @@ class Lumberjack extends BaseSprite {
                 this.onPath = false;
                 this.path = [];
             }
-        }
-        else {
+        } else {
             this.onPath = false;
         }
 
         if (this.actionCooldown < 0) {
-            let tryFindTarget = this.findRangedTargetsSorted(this.collide_range + tileSize * 2, Sprout, Tree, Police);
-            if (tryFindTarget.length > 0) {
-                const target = tryFindTarget[0];
+            let target = this.nextToAny(Sprout, Tree, Police);
+            if (target) {
                 if (target instanceof Tree) {
                     // Chop tree
                     if (target.hasGrown) {
                         target.hp -= 10;
                         target.isDamaged = true;
                     }
-                }
-                else if (target instanceof Police) {
+                } else if (target instanceof Police) {
                     // Kill police
                     target.parent.spawned--;
                     target.hp -= 10;
                     target.isDamaged = true;
-                }
-                else if (target instanceof Sprout) {
+                } else if (target instanceof Sprout) {
                     // Push sprout
-                    target.moveBy((sprout.x - this.x) * 1.5, (sprout.y - this.y) * 1.5, 200);
+                    target.moveBy(
+                        (sprout.x - this.x) * 1.5,
+                        (sprout.y - this.y) * 1.5,
+                        200
+                    );
                 }
             }
             this.actionCooldown = 1000;

@@ -14,7 +14,8 @@ class Sprout extends BaseSprite {
             collision_masks: new Set(["lumberjack", "tree"]),
             image: "assets/sproutfront.png",
             collide_range: tileSize / 2 * 0.9,
-            name: "Sprout"
+            name: "Sprout",
+            hp: 100
         });
     }
     _tick() {

@@ -45,17 +45,23 @@ function handleHotkeyChange(oldHotkey) {
 }
 
 function uiUpdate() {
-    let resourceBar = document.getElementsByClassName('progress-bar')[0];
+    let resourceBar = document.getElementById('resources');
     let resourceBarText = resourceBar.dataset.number;
     const width = (resource / parseInt(resourceBarText.split('/')[1]) * 100) || 0;
     resourceBar.dataset.number = resource + "/" + resourceBarText.split('/')[1];
     resourceBar.style.setProperty("--width", width)
 
-    let pollutionBar = document.getElementsByClassName('progress-bar')[1];
+    let pollutionBar = document.getElementById('carbon-emmision');
     let pollutionBarText = pollutionBar.dataset.number
     const width2 = (pollution / parseInt(pollutionBarText.split('/')[1]) * 100);
     pollutionBar.dataset.number = pollution + "/" + pollutionBarText.split('/')[1];
     pollutionBar.style.setProperty("--width", width2)
+
+    let healthBar = document.getElementById('health-bar');
+    let healthBarText = healthBar.dataset.number
+    const width3 = (sprout.hp / parseInt(healthBarText.split('/')[1]) * 100);
+    healthBar.dataset.number = sprout.hp + "/" + healthBarText.split('/')[1];
+    healthBar.style.setProperty("--width", width3)
 }
 
 document.addEventListener('DOMContentLoaded', function () {

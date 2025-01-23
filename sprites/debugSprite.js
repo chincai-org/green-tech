@@ -1,5 +1,5 @@
 /**
- * Sprite for acting as an obsticle, only
+ * Sprite for acting as an obstacle, only
  * @class
  * @extends {BaseSprite}
  */

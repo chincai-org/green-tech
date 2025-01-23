@@ -63,7 +63,7 @@ function windowResized() {
     heightRatio = winHeight / constWinHeight;
     tileSize = (constWinWidth * widthRatio) / 30;
 
-    for (const refrence of refrences){
+    for (const refrence of refrences) {
         refrence.collide_range *= changeInWidth;
         refrence.speed *= changeInWidth;
     }
@@ -107,7 +107,12 @@ function inDrawRange(point, camX, camY) {
     let camViewRight = camX + windowWidth / 2;
     let camViewTop = camY - windowHeight / 2;
     let camViewBottom = camY + windowHeight / 2;
-    if (point.x >= camViewLeft - tileSize && point.x <= camViewRight + tileSize && point.y >= camViewTop - tileSize && point.y <= camViewBottom + tileSize) {
+    if (
+        point.x >= camViewLeft - tileSize &&
+        point.x <= camViewRight + tileSize &&
+        point.y >= camViewTop - tileSize &&
+        point.y <= camViewBottom + tileSize
+    ) {
         return true;
     }
     return false;
@@ -141,23 +146,54 @@ function draw() {
     const timePassed = Date.now() - lastSecond;
     if (timePassed >= 1000) {
         const tickPassed = ticks - lastTick;
-        const tps = (tickPassed / timePassed * 1000).toFixed(2);
+        const tps = ((tickPassed / timePassed) * 1000).toFixed(2);
         const lag = (tickSpeed - tps).toFixed(2);
         const lagPerLumberjack = (lag / lumberjackCount).toFixed(2);
 
         // recording lag
         if (lagRecord) {
-            console.log("TPS:", tps, "Lumberjack count:", lumberjackCount, "lag", lag, "lag/lum:", lagPerLumberjack);
-            const lagPercent = lag / tickSpeed * 100;
+            console.log(
+                "TPS:",
+                tps,
+                "Lumberjack count:",
+                lumberjackCount,
+                "lag",
+                lag,
+                "lag/lum:",
+                lagPerLumberjack
+            );
+            const lagPercent = (lag / tickSpeed) * 100;
             if (lagPercent > 80) {
-                console.log("Lag rached 80% of tick speed, stepamount:", stepamount, "maxDelta:", maxDelta, "range:", Lumberjack.pathFindRange);
+                console.log(
+                    "Lag rached 80% of tick speed, stepamount:",
+                    stepamount,
+                    "maxDelta:",
+                    maxDelta,
+                    "range:",
+                    Lumberjack.pathFindRange
+                );
                 console.log("Reached number of lumberjack: ", lumberjackCount);
                 lagRecord = false;
             }
             let center = { x: sprout.x, y: sprout.y };
             for (let i = 0; i < stepamount; i++) {
                 // attempt to append new lumberjack
-                while (!appendSprite(new Lumberjack(center.x + randint(-Lumberjack.pathFindRange * tileSize, Lumberjack.pathFindRange * tileSize), center.y + randint(-Lumberjack.pathFindRange * tileSize, Lumberjack.pathFindRange * tileSize))));
+                while (
+                    !appendSprite(
+                        new Lumberjack(
+                            center.x +
+                                randint(
+                                    -Lumberjack.pathFindRange * tileSize,
+                                    Lumberjack.pathFindRange * tileSize
+                                ),
+                            center.y +
+                                randint(
+                                    -Lumberjack.pathFindRange * tileSize,
+                                    Lumberjack.pathFindRange * tileSize
+                                )
+                        )
+                    )
+                );
             }
         }
         lastSecond = Date.now();
@@ -269,8 +305,7 @@ function appendSprite(sprite, tile = null) {
     if (sprite.isCollidingAnySprite() || tile?.sprite != null) {
         console.info("cannot append sprite, colliding with other sprite");
         return false;
-    }
-    else {
+    } else {
         if (tile) {
             tile.add(sprite);
         }
@@ -283,7 +318,6 @@ function appendSprite(sprite, tile = null) {
         sprite.checkMapChange(true);
         return true;
     }
-
 }
 
 function unappendSprite(sprite) {
@@ -321,7 +355,6 @@ function mapChanged() {
     }
 }
 
-
 function initGrid() {
     for (let y = 0; y < gridHeight; y++) {
         let row = [];
@@ -336,12 +369,7 @@ function initGrid() {
 }
 
 function inBoundOfGrid(tileX, tileY) {
-    return (
-        tileX >= 0 &&
-        tileX < gridWidth &&
-        tileY >= 0 &&
-        tileY < gridHeight
-    );
+    return tileX >= 0 && tileX < gridWidth && tileY >= 0 && tileY < gridHeight;
 }
 function inBoundOfMap(x, y) {
     return (
@@ -408,7 +436,12 @@ function closeFullscreen() {
     }
 }
 
-function lagProfileTest(steps = null, _maxDelta = null, _tickSpeed = null, range = null) {
+function lagProfileTest(
+    steps = null,
+    _maxDelta = null,
+    _tickSpeed = null,
+    range = null
+) {
     resetSprites();
     lagRecord = true;
     stepamount = steps || stepamount;
@@ -424,7 +457,7 @@ function lagProfileTest(steps = null, _maxDelta = null, _tickSpeed = null, range
     let neighbors = findNeighbour(centerTileCoord);
     for (const neighbor of neighbors) {
         let rock = new Rock(0, 0);
-        rock.collide_range = tileSize / 2 * 0.9;
+        rock.collide_range = (tileSize / 2) * 0.9;
         appendSprite(rock, tileGrid[neighbor.y][neighbor.x]);
     }
     return "Test started until reached 80% lag";
@@ -437,14 +470,20 @@ function lagProfileTest(steps = null, _maxDelta = null, _tickSpeed = null, range
  * @returns {Array<Vector>}
  */
 function pathFind(range, sprite, ...targetClasses) {
-    const maxIterations = 3 * range * range / tileSize / tileSize;
+    const maxIterations = (3 * range * range) / tileSize / tileSize;
 
     const targets = sprite.findRangedTargetsSorted(range, ...targetClasses);
     const startTile = getTile(sprite.x, sprite.y);
     let path = [];
 
     for (const target of targets) {
-        path = astar(sprite, maxIterations, startTile, target.tile, ...targetClasses);
+        path = astar(
+            sprite,
+            maxIterations,
+            startTile,
+            target.tile,
+            ...targetClasses
+        );
         if (path != 0) {
             return path;
         }
@@ -486,22 +525,40 @@ function astar(sprite, maxIterations, start, end, ...targetClasses) {
 
             if (arrayExistVector(closedSet, neighbor)) continue;
 
-
             const tentativeG = current.g + 1; // Assuming each step costs 1
 
             if (!arrayExistVector(heap.heap, neighbor)) {
-                let neighborTileCenter = tileGrid[neighbor.y][neighbor.x].center();
-                if(sprite.isCollidingUsingTile(neighborTileCenter.x, neighborTileCenter.y, ...targetClasses)){
+                let neighborTileCenter =
+                    tileGrid[neighbor.y][neighbor.x].center();
+                if (
+                    sprite.isCollidingUsingTile(
+                        neighborTileCenter.x,
+                        neighborTileCenter.y,
+                        ...targetClasses
+                    )
+                ) {
                     continue;
-                }
-                else {
+                } else {
                     // diaonal check ajacent tile
                     let dy = neighbor.y - current.y;
                     let dx = neighbor.x - current.x;
                     if (abs(dy) + abs(dx) == 2) {
-                        let tile1Center = tileGrid[current.y][neighbor.x].center();
-                        let tile2Center = tileGrid[neighbor.y][current.x].center();
-                        if (sprite.isCollidingUsingTile(tile1Center.x, tile1Center.y, ...targetClasses) || sprite.isCollidingUsingTile(tile2Center.x, tile2Center.y, ...targetClasses)) {
+                        let tile1Center =
+                            tileGrid[current.y][neighbor.x].center();
+                        let tile2Center =
+                            tileGrid[neighbor.y][current.x].center();
+                        if (
+                            sprite.isCollidingUsingTile(
+                                tile1Center.x,
+                                tile1Center.y,
+                                ...targetClasses
+                            ) ||
+                            sprite.isCollidingUsingTile(
+                                tile2Center.x,
+                                tile2Center.y,
+                                ...targetClasses
+                            )
+                        ) {
                             continue;
                         }
                     }
@@ -511,8 +568,7 @@ function astar(sprite, maxIterations, start, end, ...targetClasses) {
                 neighbor.f = neighbor.g + neighbor.h;
                 neighbor.parent = current;
                 heap.add(neighbor);
-            }
-            else if (tentativeG < neighbor.g) {
+            } else if (tentativeG < neighbor.g) {
                 neighbor.g = tentativeG;
                 neighbor.h = heuristic(neighbor, end);
                 neighbor.f = neighbor.g + neighbor.h;
@@ -521,7 +577,6 @@ function astar(sprite, maxIterations, start, end, ...targetClasses) {
                 // Heapify up to maintain the heap property
                 heap.heapifyUp();
             }
-
         }
 
         iteration++;
@@ -543,14 +598,10 @@ function roundToNearest(value, place) {
     return Math.round(value / place) * place;
 }
 
-
 function heuristic(node, end) {
     // Manhattan distance heuristic
     return 2 * (Math.abs(node.x - end.x) + Math.abs(node.y - end.y));
 }
-
-
-
 
 /**
  *
@@ -589,9 +640,9 @@ function findNeighbourNoDiagonal(vector) {
 
     const directions = [
         { dx: 0, dy: -1 }, // Up
-        { dx: 0, dy: 1 },  // Down
+        { dx: 0, dy: 1 }, // Down
         { dx: -1, dy: 0 }, // Left
-        { dx: 1, dy: 0 }   // Right
+        { dx: 1, dy: 0 } // Right
     ];
 
     // Reuse neighbour object
@@ -623,7 +674,6 @@ function virtualEdit(callable) {
     callable();
     pop();
 }
-
 
 // Remove because live server
 /*

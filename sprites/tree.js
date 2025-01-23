@@ -22,27 +22,33 @@ class Tree extends BaseSprite {
     }
 
     _tick() {
-        if (Date.now() - this.timePlaced > this.timeToGrow) {
-            this.config.color = "#8B4513";
-            this.hasGrown = true;
+        if (Date.now() - this.timePlaced > this.timeToGrow && !this.hasGrown) {
+            this.grow();
         }
     }
 
     _draw(drawX, drawY) {
         if (this.hasGrown == false) {
-            virtualEdit(
-                () => {
-                    // Display time left to grow
-                    fill(this.config.color);
-                    stroke(this.config.color);
-                    let timeLeft = Math.round((this.timeToGrow - (Date.now() - this.timePlaced)) / 100);
-                    text(
-                        `${timeLeft}`,
-                        drawX - textWidth(`${timeLeft}`) / 2,
-                        drawY + tileSize * 0.8
-                    );
-                }
-            )
+            virtualEdit(() => {
+                // Display time left to grow
+                fill(this.config.color);
+                stroke(this.config.color);
+                let timeLeft = Math.round(
+                    (this.timeToGrow - (Date.now() - this.timePlaced)) / 100
+                );
+                text(
+                    `${timeLeft}`,
+                    drawX - textWidth(`${timeLeft}`) / 2,
+                    drawY + tileSize * 0.8
+                );
+            });
         }
+    }
+
+    grow() {
+        this.config.color = "#8B4513";
+        this.hasGrown = true;
+
+        polluteRate -= 0.1;
     }
 }

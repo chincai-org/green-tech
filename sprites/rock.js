@@ -1,5 +1,5 @@
 /**
- * Sprite for acting as an obsticle, only
+ * Sprite for acting as an obstacle, only
  * @class
  * @extends {BaseSprite}
  */
@@ -11,10 +11,10 @@ class Rock extends BaseSprite {
             color: "#91a8cf",
             collision_layers: new Set(["all"]),
             collision_masks: new Set(["sprout"]),
-            collide_range: tileSize / 2 * 3,
+            collide_range: (tileSize / 2) * 3,
             name: "Rock"
         });
     }
 
-    _tick() { }
+    _tick() {}
 }

@@ -13,7 +13,8 @@ class Tree extends BaseSprite {
             collision_masks: new Set(["sprout"]),
             collide_range: tileSize / 2,
             image: loadImage("assets/tree.png"),
-            name: "Tree"
+            name: "Tree",
+            hp: 100
         });
         this.timePlaced = Date.now();
         this.hasGrown = false;
@@ -25,6 +26,10 @@ class Tree extends BaseSprite {
         if (Date.now() - this.timePlaced > this.timeToGrow) {
             this.config.color = "#8B4513";
             this.hasGrown = true;
+        }
+
+        if (this.hp <= 0) {
+            unappendSprite(this);
         }
     }
 
@@ -46,3 +51,4 @@ class Tree extends BaseSprite {
         }
     }
 }
+

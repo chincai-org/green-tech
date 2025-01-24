@@ -14,7 +14,9 @@ class Sprout extends BaseSprite {
             collision_masks: new Set(["lumberjack", "tree"]),
             images: {
                 front: loadImage("assets/img/sproutFront.png"),
-                back: loadImage("assets/img/sproutBack.png")
+                back: loadImage("assets/img/sproutBack.png"),
+                left: loadImage("assets/img/sproutLeft.png"),
+                right: loadImage("assets/img/sproutRight.png")
             },
             img: loadImage("assets/img/sproutFront.png"),
             collide_range: (tileSize / 2) * 0.9,
@@ -39,9 +41,13 @@ class Sprout extends BaseSprite {
 
         if (joyY > 0) {
             // going down
-            this.img = this.config.images.back;
-        } else {
             this.img = this.config.images.front;
+        } else if (joyY < 0) {
+            this.img = this.config.images.back;
+        } else if (joyX > 0) {
+            this.img = this.config.images.right;
+        } else if (joyX < 0) {
+            this.img = this.config.images.left;
         }
 
         // moving
@@ -86,11 +92,11 @@ class Sprout extends BaseSprite {
                 neighbour.sprite instanceof Tree &&
                 neighbour.sprite.hasGrown === true &&
                 resource <
-                    parseInt(
-                        document
-                            .getElementsByClassName("progress-bar")[0]
-                            .dataset.number.split("/")[1]
-                    )
+                parseInt(
+                    document
+                        .getElementsByClassName("progress-bar")[0]
+                        .dataset.number.split("/")[1]
+                )
             ) {
                 unappendSprite(neighbour.sprite);
 

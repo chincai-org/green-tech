@@ -42,9 +42,9 @@
     --progress-bar-left: 1vw;
 }
 
-@media (width < 530px) {
+@media (width < 550px) {
     :root {
-        --bars: 100%;
+        --bars: 80%;
         --health-bar: 100%;
         --progress-bar-left: 0;
     }
@@ -243,4 +243,18 @@ img{
   border: 1px solid #3e3e3e;
   border-radius: 5px;
   margin-bottom: 5px;
+}
+
+.menu {
+    --length-2: clamp(3rem,6vh,4rem);
+    position: absolute;
+    top: 1vh;
+    right: 1vh;
+    border-radius: 20% 20% 20% 20%;
+    width: var(--length-2); 
+    height: var(--length-2);
+
+    &:hover {
+        filter: brightness(90%);
+    }
 }

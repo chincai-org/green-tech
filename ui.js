@@ -1,12 +1,16 @@
 document.addEventListener("DOMContentLoaded", function () {
     const toggleSideBoxButton = document.getElementById('side-box-button');
     const sideBox = document.getElementsByClassName('side-box')[0];
-
+    const sideBoxContainer = document.getElementById("side-box-container");
+    let sideBoxContainerOpened = true;
+    sideBoxContainer.style.animationName = "side-box-container-animations-open";
     toggleSideBoxButton.addEventListener('click', function () {
-        if (sideBox.style.display != 'none') {
-            sideBox.style.display = 'none';
+        if (sideBoxContainerOpened) {
+            sideBoxContainer.style.animationName = "side-box-container-animations-close";
+            sideBoxContainerOpened = false;
         } else {
-            sideBox.style.display = 'block';
+            sideBoxContainer.style.animationName = "side-box-container-animations-open";
+            sideBoxContainerOpened = true;
         }
     });
 

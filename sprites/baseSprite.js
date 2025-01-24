@@ -319,19 +319,33 @@ class BaseSprite {
 
     /**
      * Use tile to check
-     * @param {BaseSprite} other - Another sprite to detect overlap
-     * @param {number} x - Hypothetical x-coordinate
-     * @param {number} y - Hypothetical y-coordinate
-     * @returns {boolean}
+     * @param {BaseSprite} targetClasses
+     * @returns {BaseSprite}
      */
     nextToAny(...targetClasses) {
-        for (const neighbour of this.tile.neighbour()) {
+        for (const neighbour of this.tile.doubleNeighbour()) {
             for (const target of neighbour.occupied) {
                 if (target == this) continue;
-                let neighbourCenter = neighbour.center();
+
+                // only check nearest neighbour
+                let x =
+                    Math.abs(neighbour.x - this.tile.x) == 2
+                        ? this.tile.x + (neighbour.x - this.tile.x) / 2
+                        : neighbour.x;
+                let y =
+                    Math.abs(neighbour.y - this.tile.y) == 2
+                        ? this.tile.y + (neighbour.y - this.tile.y) / 2
+                        : neighbour.y;
+                let center = tileGrid[y][x].center();
+
                 if (
                     anyInstance(target, targetClasses) &&
-                    this.overlap(target, neighbourCenter.x, neighbourCenter.y)
+                    !this.isCollidingUsingTileExcluding(
+                        center.x,
+                        center.y,
+                        target
+                    ) &&
+                    this.overlap(target, center.x, center.y)
                 ) {
                     return target;
                 }

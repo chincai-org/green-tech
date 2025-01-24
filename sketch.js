@@ -580,6 +580,23 @@ function astar(sprite, target, maxIterations, start, end) {
     return [];
 }
 
+function testOccupied() {
+    for (let y = 0; y < gridHeight; y++) {
+        for (let x = 0; x < gridWidth; x++) {
+            for (const sprite of tileGrid[y][x].occupied) {
+                if (sprite instanceof Sprout) {
+                    sprites.push(
+                        new DebugSprite(
+                            tileGrid[y][x].center().x,
+                            tileGrid[y][x].center().y
+                        )
+                    );
+                }
+            }
+        }
+    }
+}
+
 /**
  * check if tile is in array
  * @param {array} - an array containing tile

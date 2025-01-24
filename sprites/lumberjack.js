@@ -17,8 +17,8 @@ class Lumberjack extends BaseSprite {
             hp: 100
         });
         this.path = [];
-        this.pathfindCooldown = 0;
-        this.actionCooldown = 1000;
+        this.pathfindTimer = new Timer(0);
+        this.actionTimer = new Timer(1000);
         this.tickPerUpdate = 2;
         this.onPath = false;
         this.mapChanged = true;
@@ -28,10 +28,7 @@ class Lumberjack extends BaseSprite {
     static pathFindRange = 20;
 
     _tick() {
-        this.pathfindCooldown -= this.deltaTime;
-        this.actionCooldown -= this.deltaTime;
-
-        if (this.pathfindCooldown < 0 && !this.onPath) {
+        if (this.pathfindTimer.check() && !this.onPath) {
             this.path = pathFind(
                 tileSize * Lumberjack.pathFindRange,
                 this,
@@ -40,7 +37,7 @@ class Lumberjack extends BaseSprite {
                 Police
             );
             if (this.path.length < 1) {
-                this.pathfindCooldown = 2000;
+                this.pathfindTimer.reset(2000);
             }
         }
 
@@ -49,7 +46,7 @@ class Lumberjack extends BaseSprite {
             if (this.path.length == 2) {
                 // target found do logic here
                 this.path = [];
-                this.pathfindCooldown = 1000;
+                this.pathfindTimer.reset(1000);
                 return;
             }
 
@@ -76,7 +73,7 @@ class Lumberjack extends BaseSprite {
             this.onPath = false;
         }
 
-        if (this.actionCooldown < 0) {
+        if (this.actionTimer.check()) {
             let target = this.nextToAny(Sprout, Tree, Police);
             if (target) {
                 if (target instanceof Tree) {
@@ -99,7 +96,6 @@ class Lumberjack extends BaseSprite {
                     );
                 }
             }
-            this.actionCooldown = 1000;
         }
     }
 }

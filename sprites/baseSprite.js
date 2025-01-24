@@ -14,10 +14,11 @@ class BaseSprite {
         this.speed = config.speed;
         this.cost = config.cost;
         this.tile = null;
-        this.img = config.image || null;
-        this.collision_masks = new Set(
-            config.collision_masks?.add("all") || ["all"]
-        );
+        this.img = config.img || null;
+        this.collision_masks = new Set([
+            ...(config.collision_masks || []),
+            "all"
+        ]);
         this.collision_layers = new Set(config.collision_layers || []);
         this.collide_range = config.collide_range || 0;
         this.lastUpdate = Date.now();
@@ -308,6 +309,9 @@ class BaseSprite {
                 ) {
                     return true;
                 }
+                {
+                    return false;
+                }
             }
         }
         return false;
@@ -315,18 +319,33 @@ class BaseSprite {
 
     /**
      * Use tile to check
-     * @param {BaseSprite} other - Another sprite to detect overlap
-     * @param {number} x - Hypothetical x-coordinate
-     * @param {number} y - Hypothetical y-coordinate
-     * @returns {boolean}
+     * @param {BaseSprite} targetClasses
+     * @returns {BaseSprite}
      */
     nextToAny(...targetClasses) {
         for (const neighbour of this.tile.doubleNeighbour()) {
             for (const target of neighbour.occupied) {
-                let neighbourCenter = neighbour.center();
+                if (target == this) continue;
+
+                // only check nearest neighbour
+                let x =
+                    Math.abs(neighbour.x - this.tile.x) == 2
+                        ? this.tile.x + (neighbour.x - this.tile.x) / 2
+                        : neighbour.x;
+                let y =
+                    Math.abs(neighbour.y - this.tile.y) == 2
+                        ? this.tile.y + (neighbour.y - this.tile.y) / 2
+                        : neighbour.y;
+                let center = tileGrid[y][x].center();
+
                 if (
                     anyInstance(target, targetClasses) &&
-                    this.overlap(target, neighbourCenter.x, neighbourCenter.y)
+                    !this.isCollidingUsingTileExcluding(
+                        center.x,
+                        center.y,
+                        target
+                    ) &&
+                    this.overlap(target, center.x, center.y)
                 ) {
                     return target;
                 }
@@ -351,6 +370,7 @@ class BaseSprite {
         ) {
             return true;
         }
+        return false;
     }
 
     /**
@@ -394,9 +414,17 @@ class BaseSprite {
         // check own occupied tile if collding with target
         for (const neighbour of this.tile.doubleNeighbour()) {
             for (const target of neighbour.occupied) {
+                if (target == this) continue;
                 if (this.isColliding(target, x, y)) {
                     return target;
                 }
+            }
+        }
+
+        for (const target of getTile(x, y).occupied) {
+            if (target == this) continue;
+            if (this.isColliding(target, x, y)) {
+                return target;
             }
         }
 
@@ -407,9 +435,17 @@ class BaseSprite {
         // check own occupied tile if collding with target
         for (const neighbour of getTile(x, y).doubleNeighbour()) {
             for (const target of neighbour.occupied) {
+                if (target == this) continue;
                 if (target != exclude && this.isColliding(target, x, y)) {
                     return target;
                 }
+            }
+        }
+
+        for (const target of getTile(x, y).occupied) {
+            if (target == this) continue;
+            if (target != exclude && this.isColliding(target, x, y)) {
+                return target;
             }
         }
 

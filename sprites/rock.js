@@ -10,7 +10,13 @@ class Rock extends BaseSprite {
             y,
             color: "#91a8cf",
             collision_layers: new Set(["all"]),
-            collision_masks: new Set(["sprout"]),
+            collision_masks: new Set([
+                "sprout",
+                "tree",
+                "police",
+                "policeStation",
+                "lumberjack"
+            ]),
             collide_range: (tileSize / 2) * 3,
             name: "Rock"
         });

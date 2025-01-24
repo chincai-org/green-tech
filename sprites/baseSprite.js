@@ -15,9 +15,10 @@ class BaseSprite {
         this.cost = config.cost;
         this.tile = null;
         this.img = config.img || null;
-        this.collision_masks = new Set(
-            config.collision_masks?.add("all") || ["all"]
-        );
+        this.collision_masks = new Set([
+            ...(config.collision_masks || []),
+            "all"
+        ]);
         this.collision_layers = new Set(config.collision_layers || []);
         this.collide_range = config.collide_range || 0;
         this.lastUpdate = Date.now();
@@ -308,6 +309,9 @@ class BaseSprite {
                 ) {
                     return true;
                 }
+                {
+                    return false;
+                }
             }
         }
         return false;
@@ -321,8 +325,9 @@ class BaseSprite {
      * @returns {boolean}
      */
     nextToAny(...targetClasses) {
-        for (const neighbour of this.tile.doubleNeighbour()) {
+        for (const neighbour of this.tile.neighbour()) {
             for (const target of neighbour.occupied) {
+                if (target == this) continue;
                 let neighbourCenter = neighbour.center();
                 if (
                     anyInstance(target, targetClasses) &&
@@ -351,6 +356,7 @@ class BaseSprite {
         ) {
             return true;
         }
+        return false;
     }
 
     /**
@@ -394,9 +400,17 @@ class BaseSprite {
         // check own occupied tile if collding with target
         for (const neighbour of this.tile.doubleNeighbour()) {
             for (const target of neighbour.occupied) {
+                if (target == this) continue;
                 if (this.isColliding(target, x, y)) {
                     return target;
                 }
+            }
+        }
+
+        for (const target of getTile(x, y).occupied) {
+            if (target == this) continue;
+            if (this.isColliding(target, x, y)) {
+                return target;
             }
         }
 
@@ -407,9 +421,17 @@ class BaseSprite {
         // check own occupied tile if collding with target
         for (const neighbour of getTile(x, y).doubleNeighbour()) {
             for (const target of neighbour.occupied) {
+                if (target == this) continue;
                 if (target != exclude && this.isColliding(target, x, y)) {
                     return target;
                 }
+            }
+        }
+
+        for (const target of getTile(x, y).occupied) {
+            if (target == this) continue;
+            if (target != exclude && this.isColliding(target, x, y)) {
+                return target;
             }
         }
 

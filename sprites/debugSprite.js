@@ -14,12 +14,12 @@ class DebugSprite extends BaseSprite {
             collide_range: tileSize / 2,
             name: "debugSprite"
         });
-        this.timePlaced = Date.now();
+        this.deleteTimer = new Timer(300);
     }
 
     _tick() {
-        if (Date.now() - this.timePlaced > 220) {
-            unappendSprite(this);
+        if (this.deleteTimer.check()) {
+            sprites.splice(sprites.indexOf(this), 1);
         }
     }
 }

@@ -464,7 +464,7 @@ function lagProfileTest(
  * @returns {Array<Vector>}
  */
 function pathFind(range, sprite, ...targetClasses) {
-    const maxIterations = (3 * range) / tileSize;
+    const maxIterations = (4 * range) / tileSize;
 
     const targets = sprite.findRangedTargetsSorted(range, ...targetClasses);
     let path = [];
@@ -509,13 +509,13 @@ function astar(sprite, target, maxIterations, start, end) {
                 neighbour = { tile: neighbourTile };
             }
 
-            if (arrayExistVector(closedSet, neighbour.tile)) {
+            if (isChecked(closedSet, neighbour.tile)) {
                 continue;
             }
 
             const tentativeG = current.g + 1; // Assuming each step costs 1
 
-            if (!arrayExistVector(heap.heap, neighbour.tile)) {
+            if (!isChecked(heap.heap, neighbour.tile)) {
                 let tileCenter = neighbour.tile.center();
 
                 if (
@@ -564,13 +564,10 @@ function astar(sprite, target, maxIterations, start, end) {
                 });
             } else if (tentativeG < neighbour.g) {
                 let heuristicVal = heuristic(neighbour.tile, end);
-                heap.add({
-                    tile: neighbour.tile,
-                    parent: current,
-                    g: tentativeG,
-                    h: heuristicVal,
-                    f: tentativeG + heuristicVal
-                });
+                neighbour.parent = current;
+                neighbour.g = tentativeG;
+                neighbour.h = heuristicVal;
+                neighbour.f = tentativeG + heuristicVal;
 
                 // Heapify up to maintain the heap property
                 heap.heapifyUp();
@@ -583,9 +580,13 @@ function astar(sprite, target, maxIterations, start, end) {
     return [];
 }
 
-function arrayExistVector(array, tileTarget) {
-    for (const tile of array) {
-        if (tile.x == tileTarget.x && tile.y == tileTarget.y) {
+/**
+ * check if tile is in array
+ * @param {array} - an array containing tile
+ */
+function isChecked(array, tile) {
+    for (const element of array) {
+        if (element.tile == tile) {
             return true;
         }
     }

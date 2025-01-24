@@ -66,6 +66,7 @@ function uiUpdate() {
     const width3 = (sprout.hp / parseInt(healthBarText.split('/')[1]) * 100);
     healthBar.dataset.number = sprout.hp + "/" + healthBarText.split('/')[1];
     healthBar.style.setProperty("--width", width3)
+    healthBar.style.setProperty("--health-color", `hsl(${width3}, 41%, 41%)`)
 }
 
 document.addEventListener('DOMContentLoaded', function () {

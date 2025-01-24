@@ -12,11 +12,16 @@ class Sprout extends BaseSprite {
             speed: widthRatio * 0.5,
             collision_layers: new Set(["sprout"]),
             collision_masks: new Set(["lumberjack", "tree"]),
-            image: "assets/sproutfront.png",
+            images: {
+                front: loadImage("assets/img/sproutFront.png"),
+                back: loadImage("assets/img/sproutBack.png")
+            },
+            img: loadImage("assets/img/sproutFront.png"),
             collide_range: (tileSize / 2) * 0.9,
             name: "Sprout",
             hp: 100
         });
+        this.footstepTimer = new Timer(0);
     }
     _tick() {
         let right = keyIsDown(RIGHT_ARROW) || keyIsDown(68);
@@ -31,6 +36,26 @@ class Sprout extends BaseSprite {
         } else {
             this.speed = widthRatio * 0.5;
         }
+
+        if (joyY > 0) {
+            // going down
+            this.img = this.config.images.back;
+        } else {
+            this.img = this.config.images.front;
+        }
+
+        // moving
+        if (Math.abs(joyY) + Math.abs(joyX) != 0) {
+            if (this.footstepTimer.check()) {
+                soundControl.sfxSound.play(1);
+                this.footstepTimer.reset(
+                    soundControl.getSoundObj(1).duration() * 1000
+                );
+            }
+        } else {
+            // stop sound maybe or shorter sfx
+        }
+
         this.move(joyX, joyY);
         camX = Math.max(
             Math.min(this.x, gridWidth * tileSize - windowWidth / 2),
@@ -78,7 +103,7 @@ class Sprout extends BaseSprite {
     }
 
     draw() {
-        if (sproutFrontImg === null) {
+        if (this.img === null) {
             fill(this.config.color);
             circle(
                 windowWidth / 2 + this.x - camX,
@@ -87,7 +112,7 @@ class Sprout extends BaseSprite {
             );
         } else {
             image(
-                sproutFrontImg,
+                this.img,
                 windowWidth / 2 + this.x - camX - tileSize / 2,
                 windowHeight / 2 + this.y - camY - tileSize / 2,
                 tileSize,

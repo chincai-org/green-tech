@@ -14,7 +14,7 @@ class BaseSprite {
         this.speed = config.speed;
         this.cost = config.cost;
         this.tile = null;
-        this.img = config.image || null;
+        this.img = config.img || null;
         this.collision_masks = new Set(
             config.collision_masks?.add("all") || ["all"]
         );

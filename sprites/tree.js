@@ -12,7 +12,7 @@ class Tree extends BaseSprite {
             collision_layers: new Set(["tree"]),
             collision_masks: new Set(["sprout"]),
             collide_range: tileSize / 2,
-            image: loadImage("assets/tree.png"),
+            img: loadImage("assets/img/tree.png"),
             name: "Tree",
             hp: 100
         });
@@ -57,4 +57,3 @@ class Tree extends BaseSprite {
         polluteRate -= 0.1;
     }
 }
-

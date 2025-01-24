@@ -77,10 +77,10 @@ function windowResized() {
 }
 
 function preload() {
-    // soundFormats("ogg", "wav");
-    // songData.forEach(song => {
-    //     song.about["object"] = loadSound(song.directory); 
-    // });
+    soundFormats("ogg", "wav");
+    songData.forEach(song => {
+        song.about["object"] = loadSound(song.directory);
+    });
 }
 
 function setup() {
@@ -94,11 +94,9 @@ function setup() {
 
     initGrid();
 
-
     lastPollute = Date.now();
 
     sprout = new Sprout(50, 50);
-    sproutFrontImg = loadImage(sprout.img);
     appendSprite(sprout);
 }
 
@@ -226,8 +224,6 @@ function gameTick() {
         sprite.tick();
     }
 }
-
-
 
 function keyPressed() {
     const CTRL_KEY_CODE = 17;

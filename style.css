@@ -3,6 +3,7 @@
     user-select: none; 
     padding: 0;
     margin: 0;
+    overflow: hidden;
 }
 
 :root {
@@ -37,12 +38,14 @@
     --width-14: 800px;
     --width-15: 1000px;
     --bars: var(--width-12);
-    --progress-bar-left: 2vw;
+    --health-bar: var(--width-11);
+    --progress-bar-left: 1vw;
 }
 
 @media (width < 550px) {
     :root {
-        --bars: 100%;
+        --bars: 80%;
+        --health-bar: 100%;
         --progress-bar-left: 0;
     }
    }
@@ -58,7 +61,6 @@ img{
 }
 
 .inventory-container {
-    background-color: grey;
     position: absolute;
     bottom: 1.5rem;
     left: 50%;
@@ -75,6 +77,7 @@ img{
 }
 
 .image-box{
+    background-color: hsla(0, 0%, 0%, 0.5);
     padding: 0.5rem;
     width: 100%;
 }
@@ -100,12 +103,24 @@ img{
 }
 
 .side-box-container {
+    --length: clamp(1rem, 3vh, 2rem);
     position: absolute;
     top: 50%;
     right: 0;
-    transform: translateY(-50%);
     display: flex;
     align-items: center;
+    animation-duration: 0.5s;
+    animation-fill-mode: forwards;
+}
+
+@keyframes side-box-container-animations-close {
+    from {transform: translate(0%, -50%);}
+    to {transform: translate(calc(100% - var(--length)), -50%);}
+}
+
+@keyframes side-box-container-animations-open {
+    from {transform: translate(calc(100% - var(--length)), -50%);}
+    to {transform: translate(0%, -50%);}
 }
 
 .bars {
@@ -114,32 +129,23 @@ img{
     width: var(--bars);
 }
 
-.health-color {
-    background-color: red;
+.health-bars {
+    position: relative;
+    left: var(--progress-bar-left);
+    width: var(--health-bar);
 }
 
-.stat-color {
-    background-color: green;
+
+.health-color, .stat-color {
+    background-color: black;
 }
 
-.width-11 {
-    width: var(--width-11);
-}
-
-.health-color {
-    background-color: grey;
-}
-
-.progress-bar, .health-bar {
+.progress-bar, .health-bar, .carbon-progress-bar {
     position: relative;
     height: 1.5em;
     border-radius: 100vh;
-    color: black;
+    color: peachpuff;
     margin-block: 0.5rem;
-}
-
-.health-bar {
-    color: white;
 }
 
 .allign-to-bottom-left{
@@ -159,7 +165,23 @@ img{
     bottom: .3em;
     width: calc(var(--width, 0) * 1%);
     max-width: calc(100% - .6em);
-    background-color: lightblue;
+    background-color: #7c521d;
+    border-radius: 100vh;
+    padding-left: .5em;
+}
+
+.carbon-progress-bar::before {
+    white-space: nowrap;
+    content: attr(data-number) " " attr(data-label);
+    display: flex;
+    align-items: center;
+    position: absolute;
+    left: .3em;
+    top: .3em;
+    bottom: .3em;
+    width: calc(var(--width, 0) * 1%);
+    max-width: calc(100% - .6em);
+    background-color: hsl(18, 40%, 35%);
     border-radius: 100vh;
     padding-left: .5em;
 }
@@ -175,7 +197,7 @@ img{
     bottom: .3em;
     width: calc(var(--width, 0) * 1%);
     max-width: calc(100% - .6em);
-    background-color: red;
+    background-color: var(--health-color);
     border-radius: 100vh;
     padding-left: .5em;
 }
@@ -221,4 +243,18 @@ img{
   border: 1px solid #3e3e3e;
   border-radius: 5px;
   margin-bottom: 5px;
+}
+
+.menu {
+    --length-2: clamp(3rem,6vh,4rem);
+    position: absolute;
+    top: 1vh;
+    right: 1vh;
+    border-radius: 20% 20% 20% 20%;
+    width: var(--length-2); 
+    height: var(--length-2);
+
+    &:hover {
+        filter: brightness(90%);
+    }
 }

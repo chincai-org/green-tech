@@ -117,7 +117,7 @@ function inDrawRange(point, camX, camY) {
 }
 
 function draw() {
-    background(0);
+    background("#1c6340");
 
     const now = Date.now();
     let deltaTime = now - lastUpdate;
@@ -150,26 +150,11 @@ function draw() {
 
         // recording lag
         if (lagRecord) {
-            console.log(
-                "TPS:",
-                tps,
-                "Lumberjack count:",
-                lumberjackCount,
-                "lag",
-                lag,
-                "lag/lum:",
-                lagPerLumberjack
-            );
+            console.log(`TPS:${tps} LumberjackCount:${lumberjackCount} Lag:${lag} Lag/Lum:${lagPerLumberjack}`);
             const lagPercent = (lag / tickSpeed) * 100;
             if (lagPercent > 80) {
                 console.log(
-                    "Lag rached 80% of tick speed, stepamount:",
-                    stepamount,
-                    "maxDelta:",
-                    maxDelta,
-                    "range:",
-                    Lumberjack.pathFindRange
-                );
+                    `Lag->80%tickSpeed stepamount:${stepamount} maxDelta:${maxDelta} range:${Lumberjack.pathFindRange}`);
                 console.log("Reached number of lumberjack: ", lumberjackCount);
                 lagRecord = false;
             }
@@ -180,15 +165,15 @@ function draw() {
                     !appendSprite(
                         new Lumberjack(
                             center.x +
-                                randint(
-                                    -Lumberjack.pathFindRange * tileSize,
-                                    Lumberjack.pathFindRange * tileSize
-                                ),
+                            randint(
+                                -Lumberjack.pathFindRange * tileSize,
+                                Lumberjack.pathFindRange * tileSize
+                            ),
                             center.y +
-                                randint(
-                                    -Lumberjack.pathFindRange * tileSize,
-                                    Lumberjack.pathFindRange * tileSize
-                                )
+                            randint(
+                                -Lumberjack.pathFindRange * tileSize,
+                                Lumberjack.pathFindRange * tileSize
+                            )
                         )
                     )
                 );
@@ -393,7 +378,7 @@ function drawGridLine() {
     let gy = (cy - halfWindowHeight) % tileSize;
 
     push();
-    stroke(0xffffff);
+    stroke(0);
     strokeWeight(1);
 
     for (let i = 0; i < windowWidth / tileSize + 1; i++) {

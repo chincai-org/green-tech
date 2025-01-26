@@ -19,7 +19,8 @@ class PathFindClient {
      * @returns {Array<Tile>}
      */
     pathFind() {
-        const maxIterations = (4 * this.range) / tileSize;
+        const maxIterations =
+            (4 * this.range * this.range) / tileSize / tileSize;
 
         const targets = this.sprite.findRangedTargetsSorted(
             this.range,
@@ -91,19 +92,16 @@ function astar(sprite, target, maxIterations, start, end) {
 
         const neighbourTiles = current.tile.neighbour();
         for (const neighbourTile of neighbourTiles) {
-            let neighbour = heap.getElement(neighbourTile.x, neighbourTile.y);
+            if (closedSet.has(neighbourTile)) {
+                continue;
+            }
+            const tentativeG = current.g + 1; // Assuming each step costs 1
+
+            let neighbour = heap.getElement(neighbourTile);
             // if not in heap yet means not processsed
             if (neighbour === null) {
                 neighbour = { tile: neighbourTile };
-            }
 
-            if (closedSet.has(neighbour.tile)) {
-                continue;
-            }
-
-            const tentativeG = current.g + 1; // Assuming each step costs 1
-
-            if (!isChecked(heap.heap, neighbour.tile)) {
                 let tileCenter = neighbour.tile.center();
 
                 if (
@@ -166,19 +164,6 @@ function astar(sprite, target, maxIterations, start, end) {
     }
     // No path found
     return [];
-}
-
-/**
- * check if tile is in array
- * @param {array} - an array containing tile
- */
-function isChecked(array, tile) {
-    for (const element of array) {
-        if (element.tile == tile) {
-            return true;
-        }
-    }
-    return false;
 }
 
 function heuristic(node, end) {

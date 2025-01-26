@@ -11,7 +11,12 @@ class Lumberjack extends BaseSprite {
             color: "#808080",
             speed: widthRatio * 0.25,
             collision_layers: new Set(["lumberjack"]),
-            collision_masks: new Set(["policeStation", "police", "sprout"]),
+            collision_masks: new Set([
+                "policeStation",
+                "police",
+                "sprout",
+                "tree"
+            ]),
             collide_range: (tileSize / 2) * 2,
             name: "Lumberjack",
             hp: 100

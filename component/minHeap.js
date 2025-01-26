@@ -3,22 +3,22 @@ class MinHeap {
         this.heap = [];
     }
 
-    getElement(x, y) {
-        for (const tile of this.heap) {
-            if (tile.x === x && tile.y === y) {
-                return tile;
+    getElement(tile) {
+        for (const element of this.heap) {
+            if (element.tile === tile) {
+                return element;
             }
         }
         return null; // Element not found
     }
 
-    compareTiles(tile1, tile2) {
-        if (tile1.f === tile2.f) {
+    compareElement(element1, element2) {
+        if (element1.f === element2.f) {
             // If f values are equal, compare based on h values
-            return tile1.h - tile2.h;
+            return element1.h - element2.h;
         }
 
-        return tile1.f - tile2.f;
+        return element1.f - element2.f;
     }
 
     // Helper Methods
@@ -67,7 +67,7 @@ class MinHeap {
 
     // Removing an element will remove the
     // top element with highest priority then
-    // heapifyDown will be called 
+    // heapifyDown will be called
     remove() {
         if (this.heap.length === 0) {
             return null;
@@ -86,7 +86,10 @@ class MinHeap {
 
     heapifyUp() {
         let index = this.heap.length - 1;
-        while (this.hasParent(index) && this.compareTiles(this.parent(index), this.heap[index]) > 0) {
+        while (
+            this.hasParent(index) &&
+            this.compareElement(this.parent(index), this.heap[index]) > 0
+        ) {
             this.swap(this.getParentIndex(index), index);
             index = this.getParentIndex(index);
         }
@@ -96,7 +99,13 @@ class MinHeap {
         let index = 0;
         while (this.hasLeftChild(index)) {
             let smallerChildIndex = this.getLeftChildIndex(index);
-            if (this.hasRightChild(index) && this.compareTiles(this.rightChild(index), this.leftChild(index)) < 0) {
+            if (
+                this.hasRightChild(index) &&
+                this.compareElement(
+                    this.rightChild(index),
+                    this.leftChild(index)
+                ) < 0
+            ) {
                 smallerChildIndex = this.getRightChildIndex(index);
             }
             if (this.heap[index] < this.heap[smallerChildIndex]) {
@@ -109,7 +118,7 @@ class MinHeap {
     }
 
     printHeap() {
-        var heap = ` ${this.heap[0]} `
+        var heap = ` ${this.heap[0]} `;
         for (var i = 1; i < this.heap.length; i++) {
             heap += ` ${this.heap[i]} `;
         }

@@ -25,17 +25,11 @@ class Lumberjack extends BaseSprite {
         this.maxIdleTime = 5000;
     }
 
-    static pathFindRange = 20;
+    static pathFindRange = 30;
 
     _tick() {
         if (this.pathfindTimer.check() && !this.onPath) {
-            this.path = pathFind(
-                tileSize * Lumberjack.pathFindRange,
-                this,
-                Tree,
-                Sprout,
-                Police
-            );
+            this.path = pathFind(tileSize * Lumberjack.pathFindRange, this, Tree, Sprout, Police);
             if (this.path.length < 1) {
                 this.pathfindTimer.reset(2000);
             }
@@ -89,11 +83,7 @@ class Lumberjack extends BaseSprite {
                     target.isDamaged = true;
                 } else if (target instanceof Sprout) {
                     // Push sprout
-                    target.moveBy(
-                        (sprout.x - this.x) * 1.5,
-                        (sprout.y - this.y) * 1.5,
-                        200
-                    );
+                    //target.moveBy((sprout.x - this.x) * 1.5, (sprout.y - this.y) * 1.5, 200);
                 }
             }
         }

@@ -68,14 +68,14 @@ class PathFindClient {
 }
 
 function astar(sprite, target, maxIterations, start, end) {
-    let closedSet = [];
+    let closedSet = new Set();
     let heap = new MinHeap();
     heap.add({ tile: start, g: 0 });
 
     let iteration = 0;
     while (!heap.isEmpty() && iteration < maxIterations) {
         let current = heap.remove();
-        closedSet.push(current);
+        closedSet.add(current.tile);
 
         let currentCenter = current.tile.center();
         if (sprite.overlap(target, currentCenter.x, currentCenter.y)) {
@@ -97,7 +97,7 @@ function astar(sprite, target, maxIterations, start, end) {
                 neighbour = { tile: neighbourTile };
             }
 
-            if (isChecked(closedSet, neighbour.tile)) {
+            if (closedSet.has(neighbour.tile)) {
                 continue;
             }
 

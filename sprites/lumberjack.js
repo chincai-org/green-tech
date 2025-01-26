@@ -16,61 +16,27 @@ class Lumberjack extends BaseSprite {
             name: "Lumberjack",
             hp: 100
         });
-        this.path = [];
-        this.pathfindTimer = new Timer(0);
         this.actionTimer = new Timer(1000);
         this.tickPerUpdate = 2;
-        this.onPath = false;
-        this.mapChanged = true;
-        this.maxIdleTime = 5000;
+        this.pathFindInterval = new Timer(1000);
+        this.pathFindClient = new PathFindClient(
+            this,
+            tileSize * Lumberjack.pathFindRange,
+            Tree,
+            Sprout,
+            Police
+        );
     }
 
-    static pathFindRange = 20;
+    static pathFindRange = 30;
 
     _tick() {
-        if (this.pathfindTimer.check() && !this.onPath) {
-            this.path = pathFind(
-                tileSize * Lumberjack.pathFindRange,
-                this,
-                Tree,
-                Sprout,
-                Police
-            );
-            if (this.path.length < 1) {
-                this.pathfindTimer.reset(2000);
+        if (this.pathFindClient.sucess) {
+            if (this.moveToTile(this.pathFindClient.pathResult[1])) {
+                this.pathFindClient.request();
             }
-        }
-
-        if (this.path.length > 1) {
-            this.onPath = true;
-            if (this.path.length == 2) {
-                // target found do logic here
-                this.path = [];
-                this.pathfindTimer.reset(1000);
-                return;
-            }
-
-            if (this.moveToTile(this.path[1])) {
-                if (!this.mapChanged) {
-                    this.path.shift();
-                } else {
-                    this.mapChanged = false;
-                    this.path = pathFind(
-                        tileSize * Lumberjack.pathFindRange,
-                        this,
-                        Tree,
-                        Sprout,
-                        Police
-                    );
-                }
-            }
-
-            if (this.idleTime > this.maxIdleTime) {
-                this.onPath = false;
-                this.path = [];
-            }
-        } else {
-            this.onPath = false;
+        } else if (this.pathFindInterval.check()) {
+            this.pathFindClient.request();
         }
 
         if (this.actionTimer.check()) {

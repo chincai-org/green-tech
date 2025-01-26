@@ -141,9 +141,6 @@ class BaseSprite {
                     }
                 }
             }
-
-            // Notify map changed
-            mapChanged();
         }
     }
 

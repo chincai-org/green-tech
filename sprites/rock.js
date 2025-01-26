@@ -17,7 +17,7 @@ class Rock extends BaseSprite {
                 "policeStation",
                 "lumberjack"
             ]),
-            collide_range: (tileSize / 2) * 3,
+            collide_range: (tileSize / 2) * 2.99,
             name: "Rock"
         });
     }

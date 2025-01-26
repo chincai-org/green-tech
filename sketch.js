@@ -17,7 +17,6 @@ const fullScreenElement = document.documentElement;
 const sprites = [];
 const refrences = [];
 let sprout = null;
-const mapChangedWatch = [];
 const gridWidth = 100;
 const gridHeight = 100;
 const tileGrid = [];
@@ -53,6 +52,11 @@ let lagRecord = false;
 let stepamount = 5;
 let lastSecond = Date.now();
 let lastTick = 0;
+
+let maxPathFindPerTick = 1;
+
+//debug
+let lagRecorded = 0;
 
 function windowResized() {
     let changeInWidth = window.innerWidth / winWidth;
@@ -129,6 +133,8 @@ function draw() {
     }
 
     while (delta >= 1) {
+        // Resolve pathfinding
+        PathFindClient.resolve(maxPathFindPerTick);
         gameTick();
         ticks++;
         delta--;
@@ -148,13 +154,18 @@ function draw() {
         const lag = (tickSpeed - tps).toFixed(2);
         const lagPerLumberjack = (lag / lumberjackCount).toFixed(2);
 
+        lagRecorded = lag;
+
         // recording lag
         if (lagRecord) {
-            console.log(`TPS:${tps} LumberjackCount:${lumberjackCount} Lag:${lag} Lag/Lum:${lagPerLumberjack}`);
+            console.log(
+                `TPS: ${tps} LumberjackCount: ${lumberjackCount} Lag: ${lag} Lag/Lum: ${lagPerLumberjack}`
+            );
             const lagPercent = (lag / tickSpeed) * 100;
             if (lagPercent > 80) {
                 console.log(
-                    `Lag->80%tickSpeed stepamount:${stepamount} maxDelta:${maxDelta} range:${Lumberjack.pathFindRange}`);
+                    `Lag->80% tickSpeed stepamount: ${stepamount} maxDelta: ${maxDelta} range: ${Lumberjack.pathFindRange}`
+                );
                 console.log("Reached number of lumberjack: ", lumberjackCount);
                 lagRecord = false;
             }
@@ -165,15 +176,15 @@ function draw() {
                     !appendSprite(
                         new Lumberjack(
                             center.x +
-                            randint(
-                                -Lumberjack.pathFindRange * tileSize,
-                                Lumberjack.pathFindRange * tileSize
-                            ),
+                                randint(
+                                    -Lumberjack.pathFindRange * tileSize,
+                                    Lumberjack.pathFindRange * tileSize
+                                ),
                             center.y +
-                            randint(
-                                -Lumberjack.pathFindRange * tileSize,
-                                Lumberjack.pathFindRange * tileSize
-                            )
+                                randint(
+                                    -Lumberjack.pathFindRange * tileSize,
+                                    Lumberjack.pathFindRange * tileSize
+                                )
                         )
                     )
                 );
@@ -202,6 +213,10 @@ function draw() {
     lastUpdate = now;
 
     uiUpdate();
+
+    if (debugMode) {
+        text("lag: " + lagRecorded, windowWidth - 200, 20);
+    }
 }
 
 function gameTick() {
@@ -291,9 +306,6 @@ function appendSprite(sprite, tile = null) {
         sprite.tile = getTile(sprite.x, sprite.y);
         sprites.push(sprite);
 
-        if (sprite instanceof Lumberjack) {
-            mapChangedWatch.push(sprite);
-        }
         sprite.checkMapChange(true);
         return true;
     }
@@ -305,9 +317,6 @@ function unappendSprite(sprite) {
     }
 
     sprites.splice(sprites.indexOf(sprite), 1);
-    if (sprite instanceof Lumberjack) {
-        mapChangedWatch.splice(mapChangedWatch.indexOf(sprite), 1);
-    }
 
     if (sprite.onTile) {
         sprite.tile.remove();
@@ -323,15 +332,8 @@ function resetSprites() {
         }
     }
     sprites.length = 0;
-    mapChangedWatch.length = 0;
     appendSprite(sprout);
     sprout.checkMapChange(true);
-}
-
-function mapChanged() {
-    for (const sprite of mapChangedWatch) {
-        sprite.mapChanged = true;
-    }
 }
 
 function initGrid() {
@@ -442,129 +444,6 @@ function lagProfileTest(
     return "Test started until reached 80% lag";
 }
 
-/**
- * @typedef {Object} Class - Just the class
- * @param {BaseSprite} sprite - The instance of the sprite to start from
- * @param {...Class} targetClasses  - The class that you wish to find, example: Tree
- * @returns {Array<Vector>}
- */
-function pathFind(range, sprite, ...targetClasses) {
-    const maxIterations = (4 * range) / tileSize;
-
-    const targets = sprite.findRangedTargetsSorted(range, ...targetClasses);
-    let path = [];
-
-    for (const target of targets) {
-        path = astar(sprite, target, maxIterations, sprite.tile, target.tile);
-        if (path != 0) {
-            return path;
-        }
-    }
-
-    return path;
-}
-
-function astar(sprite, target, maxIterations, start, end) {
-    let closedSet = [];
-    let heap = new MinHeap();
-    heap.add({ tile: start, g: 0 });
-
-    let iteration = 0;
-    while (!heap.isEmpty() && iteration < maxIterations) {
-        let current = heap.remove();
-        closedSet.push(current);
-
-        let currentCenter = current.tile.center();
-        if (sprite.overlap(target, currentCenter.x, currentCenter.y)) {
-            // Path found, reconstruct and return path
-            const path = [];
-            let temp = current;
-            while (temp) {
-                path.unshift(temp.tile);
-                temp = temp.parent;
-            }
-            return path;
-        }
-
-        const neighbourTiles = current.tile.neighbour();
-        for (const neighbourTile of neighbourTiles) {
-            let neighbour = heap.getElement(neighbourTile.x, neighbourTile.y);
-            // if not in heap yet means not processsed
-            if (neighbour === null) {
-                neighbour = { tile: neighbourTile };
-            }
-
-            if (isChecked(closedSet, neighbour.tile)) {
-                continue;
-            }
-
-            const tentativeG = current.g + 1; // Assuming each step costs 1
-
-            if (!isChecked(heap.heap, neighbour.tile)) {
-                let tileCenter = neighbour.tile.center();
-
-                if (
-                    sprite.isCollidingUsingTileExcluding(
-                        tileCenter.x,
-                        tileCenter.y,
-                        target
-                    )
-                ) {
-                    continue;
-                } else {
-                    // diaonal check ajacent tile
-                    let dy = neighbour.tile.y - current.tile.y;
-                    let dx = neighbour.tile.x - current.tile.x;
-                    if (abs(dy) + abs(dx) == 2) {
-                        // reuse variable tileCenter and colliding
-                        tileCenter =
-                            tileGrid[current.tile.y][neighbour.tile.x].center();
-                        let tileCenter2 =
-                            tileGrid[neighbour.tile.y][current.tile.x].center();
-
-                        if (
-                            sprite.isCollidingUsingTileExcluding(
-                                tileCenter2.x,
-                                tileCenter2.y,
-                                target
-                            ) ||
-                            sprite.isCollidingUsingTileExcluding(
-                                tileCenter.x,
-                                tileCenter.y,
-                                target
-                            )
-                        ) {
-                            continue;
-                        }
-                    }
-                }
-
-                let heuristicVal = heuristic(neighbour.tile, end);
-                heap.add({
-                    tile: neighbour.tile,
-                    parent: current,
-                    g: tentativeG,
-                    h: heuristicVal,
-                    f: tentativeG + heuristicVal
-                });
-            } else if (tentativeG < neighbour.g) {
-                let heuristicVal = heuristic(neighbour.tile, end);
-                neighbour.parent = current;
-                neighbour.g = tentativeG;
-                neighbour.h = heuristicVal;
-                neighbour.f = tentativeG + heuristicVal;
-
-                // Heapify up to maintain the heap property
-                heap.heapifyUp();
-            }
-        }
-
-        iteration++;
-    }
-    // No path found
-    return [];
-}
-
 function testOccupied() {
     for (let y = 0; y < gridHeight; y++) {
         for (let x = 0; x < gridWidth; x++) {
@@ -580,28 +459,6 @@ function testOccupied() {
             }
         }
     }
-}
-
-/**
- * check if tile is in array
- * @param {array} - an array containing tile
- */
-function isChecked(array, tile) {
-    for (const element of array) {
-        if (element.tile == tile) {
-            return true;
-        }
-    }
-    return false;
-}
-
-function roundToNearest(value, place) {
-    return Math.round(value / place) * place;
-}
-
-function heuristic(node, end) {
-    // Manhattan distance heuristic
-    return 2 * (Math.abs(node.x - end.x) + Math.abs(node.y - end.y));
 }
 
 /**

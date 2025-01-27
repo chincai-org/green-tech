@@ -23,7 +23,6 @@ class PoliceStation extends BaseSprite {
             const newPolice = new Police(this.x, this.y);
             newPolice.parent = this;
             appendSprite(newPolice);
-            this.timeSpawned = Date.now();
             this.spawned++;
         }
     }

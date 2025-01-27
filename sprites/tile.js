@@ -98,13 +98,13 @@ function getTile(x, y) {
     let tileY = Math.floor(y / tileSize);
     if (tileX < 0) {
         tileX = 0;
-    } else if (tileX > gridWidth) {
-        tileX = gridWidth;
+    } else if (tileX >= gridWidth) {
+        tileX = gridWidth - 1;
     }
     if (tileY < 0) {
         tileY = 0;
-    } else if (tileY > gridHeight) {
-        tileY = gridHeight;
+    } else if (tileY >= gridHeight) {
+        tileY = gridHeight - 1;
     }
     return tileGrid[tileY][tileX];
 }

@@ -68,6 +68,26 @@ class BaseSprite {
         }
     }
 
+    attack(target, amount) {
+        this._attack(target);
+        target.takeDamage(amount);
+    }
+
+    _attack(target) {}
+
+    takeDamage(amount) {
+        this.hp -= amount;
+        this.isDamaged = true;
+        if (this.hp <= 0) {
+            unappendSprite(this);
+            this._takeDamage(true);
+        } else {
+            this._takeDamage(false);
+        }
+    }
+
+    _takeDamage(death) {}
+
     /**
      * @param {number} x - The x direction to move to
      * @param {number} y - The y direction to move to

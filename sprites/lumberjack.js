@@ -48,16 +48,13 @@ class Lumberjack extends BaseSprite {
             let target = this.nextToAny(Sprout, Tree, Police);
             if (target) {
                 if (target instanceof Tree) {
-                    // Chop tree
+                    // Damages tree
                     if (target.hasGrown) {
-                        target.hp -= 10;
-                        target.isDamaged = true;
+                        this.attack(target, 10);
                     }
                 } else if (target instanceof Police) {
-                    // Kill police
-                    target.parent.spawned--;
-                    target.hp -= 10;
-                    target.isDamaged = true;
+                    // Damages police
+                    this.attack(target, 10);
                 } else if (target instanceof Sprout) {
                     // Push sprout
                     //target.moveBy((sprout.x - this.x) * 1.5, (sprout.y - this.y) * 1.5, 200);

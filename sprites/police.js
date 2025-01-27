@@ -24,9 +24,6 @@ class Police extends BaseSprite {
     }
 
     _tick() {
-        if (this.hp <= 0) {
-            unappendSprite(this);
-        }
         if (this.timeIdle > 0) {
             this.timeIdle--;
         }
@@ -37,6 +34,12 @@ class Police extends BaseSprite {
             this.target = p5.Vector.random2D();
             this.timeNewDirection = randint(15, 50);
             this.timeIdle = randint(250, 500);
+        }
+    }
+
+    _takeDamage(death) {
+        if (death) {
+            this.parent.spawned--;
         }
     }
 }

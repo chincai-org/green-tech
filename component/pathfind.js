@@ -19,8 +19,7 @@ class PathFindClient {
      * @returns {Array<Tile>}
      */
     pathFind() {
-        const maxIterations =
-            (4 * this.range * this.range) / tileSize / tileSize;
+        const maxIterations = (4 * this.range) / tileSize;
 
         const targets = this.sprite.findRangedTargetsSorted(
             this.range,

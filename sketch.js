@@ -321,6 +321,10 @@ function unappendSprite(sprite) {
     if (sprite.onTile) {
         sprite.tile.remove();
     }
+
+    if (sprite.pathFindClient) {
+        sprite.pathFindClient.invalid = true;
+    }
     sprite.checkMapChange(true, true);
 }
 
@@ -330,6 +334,12 @@ function resetSprites() {
         if (sprite.onTile) {
             sprite.tile.remove();
         }
+
+        if (sprite.pathFindClient) {
+            sprite.pathFindClient.invalid = true;
+        }
+
+        sprite.checkMapChange(true, true);
     }
     sprites.length = 0;
     appendSprite(sprout);

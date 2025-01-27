@@ -8,8 +8,9 @@ class PathFindClient {
         this.sprite = sprite;
         this.range = range;
         this.targetClasses = targetClasses;
+        this.invalid = false;
         this.pathResult = [];
-        this.sucess = false;
+        this.success = false;
         this.resolved = true;
     }
 
@@ -54,15 +55,22 @@ class PathFindClient {
      * @param {number} amount - Number of tasks to resolve
      */
     static resolve(amount) {
-        for (let i = 0; i < amount && PathFindClient.requests.length > 0; i++) {
-            const client = PathFindClient.requests.shift();
+        let resolvedCount = 0;
+
+        while (resolvedCount < amount && PathFindClient.requests.length > 0) {
+            let client = PathFindClient.requests.shift();
+
+            // Client is deleted
+            if (client.invalid) {
+                continue;
+            }
+
             client.pathResult = client.pathFind();
             client.resolved = true;
-            if (client.pathResult.length >= 2) {
-                client.sucess = true;
-            } else {
-                client.sucess = false;
-            }
+
+            client.success = client.pathResult.length >= 2;
+
+            resolvedCount++;
         }
     }
 }

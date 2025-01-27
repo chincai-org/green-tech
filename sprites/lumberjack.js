@@ -36,7 +36,7 @@ class Lumberjack extends BaseSprite {
     static pathFindRange = 30;
 
     _tick() {
-        if (this.pathFindClient.sucess) {
+        if (this.pathFindClient.success) {
             if (this.moveToTile(this.pathFindClient.pathResult[1])) {
                 this.pathFindClient.request();
             }

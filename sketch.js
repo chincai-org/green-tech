@@ -147,6 +147,29 @@ function draw() {
         }
     }
 
+    // little game
+    const gameLumberjack = 3;
+    let center = { x: sprout.x, y: sprout.y };
+    for (let i = lumberjackCount; i < gameLumberjack; i++) {
+        // attempt to append new lumberjack
+        while (
+            !appendSprite(
+                new Lumberjack(
+                    center.x +
+                        randint(
+                            -Lumberjack.pathFindRange * tileSize,
+                            Lumberjack.pathFindRange * tileSize
+                        ),
+                    center.y +
+                        randint(
+                            -Lumberjack.pathFindRange * tileSize,
+                            Lumberjack.pathFindRange * tileSize
+                        )
+                )
+            )
+        );
+    }
+
     const timePassed = Date.now() - lastSecond;
     if (timePassed >= 1000) {
         const tickPassed = ticks - lastTick;
@@ -169,7 +192,6 @@ function draw() {
                 console.log("Reached number of lumberjack: ", lumberjackCount);
                 lagRecord = false;
             }
-            let center = { x: sprout.x, y: sprout.y };
             for (let i = 0; i < stepamount; i++) {
                 // attempt to append new lumberjack
                 while (
@@ -283,13 +305,18 @@ function canvasClicked() {
             appendSprite(new Rock(0, 0), tile);
             break;
         default:
-            return;
+            appendSprite(
+                new Bullet(sprout, realX - sprout.x, realY - sprout.y)
+            );
     }
 }
 
 function appendSprite(sprite, tile = null) {
     if (sprite instanceof DebugSprite) {
         return;
+    }
+    if (!inBoundOfMap(sprite.x, sprite.y)) {
+        return false;
     }
     if (tile) {
         sprite.x = (tile.x + 0.5) * tileSize;

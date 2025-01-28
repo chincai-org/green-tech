@@ -61,7 +61,13 @@ class Lumberjack extends BaseSprite {
                     this.attack(target, 10);
                 } else if (target instanceof Sprout) {
                     // Push sprout
-                    //target.moveBy((sprout.x - this.x) * 1.5, (sprout.y - this.y) * 1.5, 200);
+                    target.moveBy(
+                        (sprout.x - this.x) * 1.5,
+                        (sprout.y - this.y) * 1.5,
+                        200
+                    );
+
+                    this.attack(target, 10);
                 }
             }
         }

@@ -250,7 +250,6 @@ class BaseSprite {
      * @param {boolean} checkCollision - Check for collision when moving if then stop
      */
     _move(x, y, speed) {
-        // Handle queued up movement
         let vectDist = Math.hypot(x, y);
         const newX =
             this.x +

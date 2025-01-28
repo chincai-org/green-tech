@@ -21,7 +21,8 @@ class Sprout extends BaseSprite {
             img: loadImage("assets/img/sproutFront.png"),
             collide_range: (tileSize / 2) * 0.9,
             name: "Sprout",
-            hp: 100
+            hp: 100,
+            damage: 40
         });
         this.footstepTimer = new Timer(0);
     }
@@ -92,11 +93,11 @@ class Sprout extends BaseSprite {
                 neighbour.sprite instanceof Tree &&
                 neighbour.sprite.hasGrown === true &&
                 resource <
-                parseInt(
-                    document
-                        .getElementsByClassName("progress-bar")[0]
-                        .dataset.number.split("/")[1]
-                )
+                    parseInt(
+                        document
+                            .getElementsByClassName("progress-bar")[0]
+                            .dataset.number.split("/")[1]
+                    )
             ) {
                 unappendSprite(neighbour.sprite);
 

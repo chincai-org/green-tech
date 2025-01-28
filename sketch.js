@@ -325,10 +325,7 @@ function canvasClicked() {
             spendResourcesToPlace(10, new Rock(0, 0), tile);
             break;
         default:
-            spendResourcesToPlace(
-                1,
-                new Bullet(sprout, realX - sprout.x, realY - sprout.y)
-            );
+            return;
     }
 }
 

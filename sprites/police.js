@@ -21,7 +21,11 @@ class Police extends BaseSprite {
         this.timeNewDirection = randint(15, 50);
         this.tickPerUpdate = 2;
         this.parent = null;
+        this.shootInterval = new Timer(500);
+        this.damage = 30;
     }
+
+    static shootRange = 10;
 
     _tick() {
         if (this.timeIdle > 0) {
@@ -34,6 +38,18 @@ class Police extends BaseSprite {
             this.target = p5.Vector.random2D();
             this.timeNewDirection = randint(15, 50);
             this.timeIdle = randint(250, 500);
+        }
+
+        if (this.shootInterval.check()) {
+            const target = this.findRangedTargetsSorted(
+                Police.shootRange * tileSize,
+                Lumberjack
+            )[0];
+            if (target instanceof Lumberjack) {
+                appendSprite(
+                    new Bullet(this, target.x - this.x, target.y - this.y)
+                );
+            }
         }
     }
 

@@ -36,7 +36,7 @@ class PathFindClient {
                 this.sprite.tile,
                 target.tile
             );
-            if (path != 0) {
+            if (path.length > 0) {
                 return path;
             }
         }
@@ -58,7 +58,7 @@ class PathFindClient {
         let resolvedCount = 0;
 
         while (resolvedCount < amount && PathFindClient.requests.length > 0) {
-            let client = PathFindClient.requests.shift();
+            let client = PathFindClient.requests.pop();
 
             // Client is deleted
             if (client.invalid) {
@@ -91,10 +91,10 @@ function astar(sprite, target, maxIterations, start, end) {
             const path = [];
             let temp = current;
             while (temp) {
-                path.unshift(temp.tile);
+                path.push(temp.tile);
                 temp = temp.parent;
             }
-            return path;
+            return path.reverse();
         }
 
         const neighbourTiles = current.tile.neighbour();
@@ -106,11 +106,8 @@ function astar(sprite, target, maxIterations, start, end) {
 
             let neighbour = heap.getElement(neighbourTile);
             // if not in heap yet means not processsed
-            if (neighbour === null) {
-                neighbour = { tile: neighbourTile };
-
-                let tileCenter = neighbour.tile.center();
-
+            if (!neighbour) {
+                const tileCenter = neighbourTile.center();
                 if (
                     sprite.isCollidingUsingTileExcluding(
                         tileCenter.x,
@@ -121,24 +118,24 @@ function astar(sprite, target, maxIterations, start, end) {
                     continue;
                 } else {
                     // diaonal check ajacent tile
-                    let dy = neighbour.tile.y - current.tile.y;
-                    let dx = neighbour.tile.x - current.tile.x;
-                    if (abs(dy) + abs(dx) == 2) {
+                    const dy = neighbourTile.y - neighbourTile.y;
+                    const dx = neighbourTile.x - neighbourTile.x;
+                    if (abs(dy) + abs(dx) === 2) {
                         // reuse variable tileCenter and colliding
-                        tileCenter =
-                            tileGrid[current.tile.y][neighbour.tile.x].center();
-                        let tileCenter2 =
-                            tileGrid[neighbour.tile.y][current.tile.x].center();
+                        const adjCenter1 =
+                            tileGrid[current.tile.y][neighbourTile.x].center();
+                        const adjCenter2 =
+                            tileGrid[neighbourTile.y][current.tile.x].center();
 
                         if (
                             sprite.isCollidingUsingTileExcluding(
-                                tileCenter2.x,
-                                tileCenter2.y,
+                                adjCenter1.x,
+                                adjCenter1.y,
                                 target
                             ) ||
                             sprite.isCollidingUsingTileExcluding(
-                                tileCenter.x,
-                                tileCenter.y,
+                                adjCenter2.x,
+                                adjCenter2.y,
                                 target
                             )
                         ) {
@@ -147,23 +144,22 @@ function astar(sprite, target, maxIterations, start, end) {
                     }
                 }
 
-                let heuristicVal = heuristic(neighbour.tile, end);
+                const h = heuristic(neighbourTile, end);
+                const f = tentativeG + h;
                 heap.add({
-                    tile: neighbour.tile,
+                    tile: neighbourTile,
                     parent: current,
                     g: tentativeG,
-                    h: heuristicVal,
-                    f: tentativeG + heuristicVal
+                    h: h,
+                    f: f
                 });
             } else if (tentativeG < neighbour.g) {
-                let heuristicVal = heuristic(neighbour.tile, end);
                 neighbour.parent = current;
                 neighbour.g = tentativeG;
-                neighbour.h = heuristicVal;
-                neighbour.f = tentativeG + heuristicVal;
+                neighbour.f = tentativeG + neighbour.h;
 
                 // Heapify up to maintain the heap property
-                heap.heapifyUp();
+                heap.heapifyUp(heap.tileMap.get(neighbour.tile));
             }
         }
 
@@ -173,7 +169,9 @@ function astar(sprite, target, maxIterations, start, end) {
     return [];
 }
 
+// Chebyshev distance heuristic
 function heuristic(node, end) {
-    // Manhattan distance heuristic
-    return 2 * (Math.abs(node.x - end.x) + Math.abs(node.y - end.y));
+    const dx = Math.abs(node.x - end.x);
+    const dy = Math.abs(node.y - end.y);
+    return dx + dy + (Math.SQRT2 - 2) * Math.min(dx, dy);
 }

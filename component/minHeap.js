@@ -1,15 +1,12 @@
 class MinHeap {
     constructor() {
         this.heap = [];
+        this.tileMap = new Map(); // Map tile to their indices
     }
 
     getElement(tile) {
-        for (const element of this.heap) {
-            if (element.tile === tile) {
-                return element;
-            }
-        }
-        return null; // Element not found
+        const index = this.tileMap.get(tile);
+        return index !== undefined ? this.heap[index] : null;
     }
 
     compareElement(element1, element2) {
@@ -21,50 +18,6 @@ class MinHeap {
         return element1.f - element2.f;
     }
 
-    // Helper Methods
-    getLeftChildIndex(parentIndex) {
-        return 2 * parentIndex + 1;
-    }
-    getRightChildIndex(parentIndex) {
-        return 2 * parentIndex + 2;
-    }
-    getParentIndex(childIndex) {
-        return Math.floor((childIndex - 1) / 2);
-    }
-    hasLeftChild(index) {
-        return this.getLeftChildIndex(index) < this.heap.length;
-    }
-    hasRightChild(index) {
-        return this.getRightChildIndex(index) < this.heap.length;
-    }
-    hasParent(index) {
-        return this.getParentIndex(index) >= 0;
-    }
-    leftChild(index) {
-        return this.heap[this.getLeftChildIndex(index)];
-    }
-    rightChild(index) {
-        return this.heap[this.getRightChildIndex(index)];
-    }
-    parent(index) {
-        return this.heap[this.getParentIndex(index)];
-    }
-
-    // Functions to create Min Heap
-
-    swap(indexOne, indexTwo) {
-        const temp = this.heap[indexOne];
-        this.heap[indexOne] = this.heap[indexTwo];
-        this.heap[indexTwo] = temp;
-    }
-
-    peek() {
-        if (this.heap.length === 0) {
-            return null;
-        }
-        return this.heap[0];
-    }
-
     // Removing an element will remove the
     // top element with highest priority then
     // heapifyDown will be called
@@ -72,48 +25,75 @@ class MinHeap {
         if (this.heap.length === 0) {
             return null;
         }
-        const item = this.heap[0];
-        this.heap[0] = this.heap[this.heap.length - 1];
-        this.heap.pop();
-        this.heapifyDown();
-        return item;
+        const node = this.heap[0];
+        this.tileMap.delete(node.tile);
+
+        if (this.heap.length === 1) {
+            this.heap.pop();
+        } else {
+            this.heap[0] = this.heap.pop();
+            this.tileMap.set(this.heap[0].tile, 0);
+            this.heapifyDown(0);
+        }
+
+        return node;
     }
 
-    add(item) {
-        this.heap.push(item);
-        this.heapifyUp();
+    add(node) {
+        this.heap.push(node);
+        this.tileMap.set(node.tile, this.heap.length - 1);
+        this.heapifyUp(this.heap.length - 1);
     }
 
-    heapifyUp() {
-        let index = this.heap.length - 1;
-        while (
-            this.hasParent(index) &&
-            this.compareElement(this.parent(index), this.heap[index]) > 0
-        ) {
-            this.swap(this.getParentIndex(index), index);
-            index = this.getParentIndex(index);
+    heapifyUp(index) {
+        while (index > 0) {
+            const parentIndex = Math.floor((index - 1) / 2);
+            if (
+                this.compareElement(this.heap[parentIndex], this.heap[index]) <=
+                0
+            ) {
+                break;
+            }
+            [this.heap[parentIndex], this.heap[index]] = [
+                this.heap[index],
+                this.heap[parentIndex]
+            ];
+            this.tileMap.set(this.heap[parentIndex].tile, parentIndex);
+            this.tileMap.set(this.heap[index].tile, index);
+            index = parentIndex;
         }
     }
 
-    heapifyDown() {
-        let index = 0;
-        while (this.hasLeftChild(index)) {
-            let smallerChildIndex = this.getLeftChildIndex(index);
+    heapifyDown(index) {
+        const length = this.heap.length;
+        while (true) {
+            let left = 2 * index + 1;
+            let right = 2 * index + 2;
+            let smallest = index;
+
             if (
-                this.hasRightChild(index) &&
-                this.compareElement(
-                    this.rightChild(index),
-                    this.leftChild(index)
-                ) < 0
+                left < length &&
+                this.compareElement(this.heap[left], this.heap[smallest]) < 0
             ) {
-                smallerChildIndex = this.getRightChildIndex(index);
+                smallest = left;
             }
-            if (this.heap[index] < this.heap[smallerChildIndex]) {
-                break;
-            } else {
-                this.swap(index, smallerChildIndex);
+            if (
+                right < length &&
+                this.compareElement(this.heap[right], this.heap[smallest]) < 0
+            ) {
+                smallest = right;
             }
-            index = smallerChildIndex;
+
+            if (smallest === index) break;
+
+            [this.heap[index], this.heap[smallest]] = [
+                this.heap[smallest],
+                this.heap[index]
+            ];
+            this.tileMap.set(this.heap[index].tile, index);
+            this.tileMap.set(this.heap[smallest].tile, smallest);
+
+            index = smallest;
         }
     }
 

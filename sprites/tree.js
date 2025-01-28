@@ -50,6 +50,12 @@ class Tree extends BaseSprite {
         }
     }
 
+    _takeDamage(death) {
+        if (death) {
+            polluteRate += 0.1;
+        }
+    }
+
     grow() {
         this.config.color = "#8B4513";
         this.hasGrown = true;

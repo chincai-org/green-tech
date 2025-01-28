@@ -99,14 +99,23 @@ class Sprout extends BaseSprite {
                             .dataset.number.split("/")[1]
                     )
             ) {
-                unappendSprite(neighbour.sprite);
+                this.attack(neighbour.sprite, 100);
 
-                resource += 2;
+                resource += 5;
 
                 return true;
             }
         }
         return false;
+    }
+
+    _takeDamage(death) {
+        if (death) {
+            alert("You died :(");
+            resetSprites();
+            resource = 50;
+            this.hp = 100;
+        }
     }
 
     draw() {

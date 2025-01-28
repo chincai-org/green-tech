@@ -102,6 +102,24 @@ function setup() {
 
     sprout = new Sprout(50, 50);
     appendSprite(sprout);
+
+    mapSetup();
+}
+
+function mapSetup() {
+    const gameInitialRockNum = 20;
+    for (let i = 0; i < gameInitialRockNum; i++) {
+        let randomTile = getTile(
+            randint(0, tileSize * gridWidth),
+            randint(0, tileSize * gridHeight)
+        );
+        while (!appendSprite(new Rock(0, 0), randomTile)) {
+            randomTile = getTile(
+                randint(0, tileSize * gridWidth),
+                randint(0, tileSize * gridHeight)
+            );
+        }
+    }
 }
 
 function inDrawRange(point, camX, camY) {
@@ -147,7 +165,7 @@ function draw() {
         }
     }
 
-    // little game
+    // lumberjack respawn
     const gameLumberjack = 3;
     let center = { x: sprout.x, y: sprout.y };
     for (let i = lumberjackCount; i < gameLumberjack; i++) {
@@ -278,6 +296,12 @@ function keyPressed() {
     return false;
 }
 
+function spendResourcesToPlace(amount, sprite, tile = null) {
+    if (resource >= amount && appendSprite(sprite, tile)) {
+        resource -= amount;
+    }
+}
+
 function canvasClicked() {
     let disX = windowWidth / 2 - mouseX;
     let disY = windowHeight / 2 - mouseY;
@@ -289,23 +313,20 @@ function canvasClicked() {
 
     switch (hotkey) {
         case 0:
-            if (resource >= 1) {
-                if (appendSprite(new Tree(0, 0), tile)) {
-                    resource -= 1;
-                }
-            }
+            spendResourcesToPlace(2, new Tree(0, 0), tile);
             break;
         case 1:
-            appendSprite(new PoliceStation(0, 0), tile);
+            spendResourcesToPlace(50, new PoliceStation(0, 0), tile);
             break;
         case 2:
             appendSprite(new Lumberjack(realX, realY));
             break;
         case 3:
-            appendSprite(new Rock(0, 0), tile);
+            spendResourcesToPlace(10, new Rock(0, 0), tile);
             break;
         default:
-            appendSprite(
+            spendResourcesToPlace(
+                1,
                 new Bullet(sprout, realX - sprout.x, realY - sprout.y)
             );
     }

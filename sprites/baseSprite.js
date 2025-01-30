@@ -103,7 +103,7 @@ class BaseSprite {
     }
 
     moveTo(x, y) {
-        if (this.distance(x, y) < tileSize / 4) {
+        if (this.distanceSq(x, y) < (tileSize * tileSize) / 4) {
             return true;
         } else {
             this._move(x - this.x, y - this.y, this.speed);
@@ -288,13 +288,15 @@ class BaseSprite {
     }
 
     /**
-     * Find diagonal distance from current sprite
+     * Find squared diagonal distance from current sprite
      * @param {number} x
      * @param {number} y
      * @returns {number}
      */
-    distance(x, y) {
-        return Math.hypot(this.x - x, this.y - y);
+    distanceSq(x, y) {
+        const dx = this.x - x;
+        const dy = this.y - y;
+        return dx * dx + dy * dy;
     }
 
     /**
@@ -339,30 +341,19 @@ class BaseSprite {
      * @returns {BaseSprite}
      */
     nextToAny(...targetClasses) {
+        const targets = new Set();
         for (const neighbour of this.tile.doubleNeighbour()) {
             for (const target of neighbour.occupied) {
-                if (target == this) continue;
+                if (target != this && anyInstance(target, targetClasses)) {
+                    targets.add(target);
+                }
+            }
+        }
 
-                // only check nearest neighbour
-                let x =
-                    Math.abs(neighbour.x - this.tile.x) == 2
-                        ? this.tile.x + (neighbour.x - this.tile.x) / 2
-                        : neighbour.x;
-                let y =
-                    Math.abs(neighbour.y - this.tile.y) == 2
-                        ? this.tile.y + (neighbour.y - this.tile.y) / 2
-                        : neighbour.y;
-                let center = tileGrid[y][x].center();
-
-                if (
-                    anyInstance(target, targetClasses) &&
-                    !this.isCollidingUsingTileExcluding(
-                        center.x,
-                        center.y,
-                        target
-                    ) &&
-                    this.overlap(target, center.x, center.y)
-                ) {
+        for (const neighbour of this.tile.neighbour()) {
+            const center = neighbour.center();
+            for (const target of targets.keys()) {
+                if (this.overlap(target, center.x, center.y)) {
                     return target;
                 }
             }
@@ -476,28 +467,21 @@ class BaseSprite {
      */
     findRangedTargetsSorted(range, ...targetClasses) {
         const targetSprites = [];
+        const rangeSq = range * range;
 
         for (const sprite of sprites) {
             if (anyInstance(sprite, targetClasses)) {
-                const dist = distance(this.x, this.y, sprite.x, sprite.y);
-                if (dist <= range) {
-                    targetSprites.push({ sprite, dist });
+                const distSq = this.distanceSq(sprite.x, sprite.y);
+                if (distSq <= rangeSq) {
+                    targetSprites.push({ sprite, distSq });
                 }
             }
         }
 
-        targetSprites.sort((a, b) => a.dist - b.dist);
+        targetSprites.sort((a, b) => a.distSq - b.distSq);
 
         return targetSprites.map(item => item.sprite);
     }
-}
-
-/**
- * @param {number} x1, y1, x2, y2
- * @returns {number} - Diagonal distance
- */
-function distance(x1, y1, x2, y2) {
-    return Math.hypot(x1 - x2, y1 - y2);
 }
 
 /**

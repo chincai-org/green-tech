@@ -55,6 +55,10 @@ let lastTick = 0;
 
 let maxPathFindPerTick = 1;
 
+// Game
+let respawnableLumberjack = 3;
+const gameInitialRockNum = 20;
+
 //debug
 let lagRecorded = 0;
 
@@ -107,7 +111,6 @@ function setup() {
 }
 
 function mapSetup() {
-    const gameInitialRockNum = 20;
     for (let i = 0; i < gameInitialRockNum; i++) {
         let randomTile = getTile(
             randint(0, tileSize * gridWidth),
@@ -166,9 +169,8 @@ function draw() {
     }
 
     // lumberjack respawn
-    const gameLumberjack = 3;
     let center = { x: sprout.x, y: sprout.y };
-    for (let i = lumberjackCount; i < gameLumberjack; i++) {
+    for (let i = lumberjackCount; i < respawnableLumberjack; i++) {
         // attempt to append new lumberjack
         while (
             !appendSprite(

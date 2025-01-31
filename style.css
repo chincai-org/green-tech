@@ -124,7 +124,7 @@ img{
 }
 
 .bars {
-    position: relative;
+    position: absolute;
     left: var(--progress-bar-left);
     width: var(--bars);
 }

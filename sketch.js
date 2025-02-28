@@ -4,7 +4,7 @@
  * @property {Number} y
  */
 
-let sproutFrontImg;
+let images = {};
 
 const constWinWidth = 1920;
 const constWinHeight = 1080;
@@ -56,7 +56,7 @@ let lastTick = 0;
 let maxPathFindPerTick = 1;
 
 // Game
-let respawnableLumberjack = 3;
+let respawnableLumberjack = 0;
 const gameInitialRockNum = 20;
 
 //debug
@@ -89,6 +89,14 @@ function preload() {
     songData.forEach(song => {
         song.about["object"] = loadSound(song.directory);
     });
+
+    images = {
+        tree: loadImage("assets/img/tree.png"),
+        sprout_front: loadImage("assets/img/sproutFront.png"),
+        sprout_back: loadImage("assets/img/sproutBack.png"),
+        sprout_left: loadImage("assets/img/sproutLeft.png"),
+        sprout_right: loadImage("assets/img/sproutRight.png")
+    };
 }
 
 function setup() {

@@ -12,13 +12,7 @@ class Sprout extends BaseSprite {
             speed: widthRatio * 0.5,
             collision_layers: new Set(["sprout"]),
             collision_masks: new Set(["lumberjack", "tree"]),
-            images: {
-                front: loadImage("assets/img/sproutFront.png"),
-                back: loadImage("assets/img/sproutBack.png"),
-                left: loadImage("assets/img/sproutLeft.png"),
-                right: loadImage("assets/img/sproutRight.png")
-            },
-            img: loadImage("assets/img/sproutFront.png"),
+            img: images.sprout_front,
             collide_range: (tileSize / 2) * 0.9,
             name: "Sprout",
             hp: 100,
@@ -42,13 +36,13 @@ class Sprout extends BaseSprite {
 
         if (joyY > 0) {
             // going down
-            this.img = this.config.images.front;
+            this.img = images.sprout_front;
         } else if (joyY < 0) {
-            this.img = this.config.images.back;
+            this.img = images.sprout_back;
         } else if (joyX > 0) {
-            this.img = this.config.images.right;
+            this.img = images.sprout_right;
         } else if (joyX < 0) {
-            this.img = this.config.images.left;
+            this.img = images.sprout_left;
         }
 
         // moving

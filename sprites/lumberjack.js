@@ -17,7 +17,8 @@ class Lumberjack extends BaseSprite {
                 "sprout",
                 "tree"
             ]),
-            collide_range: (tileSize / 2) * 2,
+            collide_range: tileSize / 2,
+            img: images.lumberjack,
             name: "Lumberjack",
             hp: 100
         });

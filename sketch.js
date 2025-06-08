@@ -56,7 +56,7 @@ let lastTick = 0;
 let maxPathFindPerTick = 1;
 
 // Game
-let respawnableLumberjack = 0;
+let respawnableLumberjack = 2;
 const gameInitialRockNum = 20;
 
 //debug
@@ -92,6 +92,7 @@ function preload() {
 
     images = {
         tree: loadImage("assets/img/tree.png"),
+        lumberjack: loadImage("assets/img/lumberjack.png"),
         sprout_front: loadImage("assets/img/sproutFront.png"),
         sprout_back: loadImage("assets/img/sproutBack.png"),
         sprout_left: loadImage("assets/img/sproutLeft.png"),
